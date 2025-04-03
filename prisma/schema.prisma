@@ -7,23 +7,11 @@ generator client {
 
 datasource db {
     provider = "mysql"
-    // NOTE: When using mysql or sqlserver, uncomment the @db.Text annotations in model Account below
+    // NOTE: When using mysql or sqlserver, uncomment the @db.LongText annotations in model Account below
     // Further reading:
     // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
     // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
     url      = env("DATABASE_URL")
-}
-
-model Post {
-    id        Int      @id @default(autoincrement())
-    name      String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    createdBy   User   @relation(fields: [createdById], references: [id])
-    createdById String
-
-    @@index([name])
 }
 
 // Necessary for Next auth
@@ -33,12 +21,12 @@ model Account {
     type                     String
     provider                 String
     providerAccountId        String
-    refresh_token            String? @db.Text
-    access_token             String? // @db.Text
+    refresh_token            String? @db.LongText
+    access_token             String? // @db.LongText
     expires_at               Int?
     token_type               String?
     scope                    String?
-    id_token                 String? // @db.Text
+    id_token                 String? // @db.LongText
     session_state            String?
     user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
     refresh_token_expires_in Int?
@@ -62,7 +50,6 @@ model User {
     image         String?
     accounts      Account[]
     sessions      Session[]
-    posts         Post[]
 }
 
 model VerificationToken {
@@ -71,4 +58,120 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+model Species {
+    id          String @id @default(cuid())
+    name        String
+    description String @db.LongText
+
+    averageAge Int
+
+    maxWeight Float // kg
+    minWeight Float // kg
+
+    maxHeight Float // cm
+    minHeight Float // cm
+
+    Animals Animal[]
+}
+
+model Population {
+    id          String @id @default(cuid())
+    name        String
+    description String @db.LongText
+
+    averageAge    Int
+    averageWeight Float // kg
+    averageHeight Float // cm
+
+    bonus String @db.LongText //metadata of the bonus for certain skills
+
+    Characters Character[]
+}
+
+model Animal {
+    id   String @id @default(cuid())
+    name String
+
+    age    Int // year
+    weight Float // kg
+    height Float // cm
+
+    sexe Sexe
+
+    detail      String @db.LongText
+    phisics     String @db.LongText
+    personality String @db.LongText
+
+    //Skills
+    Skills Skill[] @relation("AnimalSkills")
+
+    hp Float
+
+    Species   Species @relation(fields: [speciesId], references: [id])
+    speciesId String
+
+    characterId String
+    Character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+}
+
+model Character {
+    id String @id @default(cuid())
+
+    name      String
+    firstName String
+
+    age    Int // year
+    weight Float // kg
+    height Float // cm
+
+    sexe Sexe
+
+    history     String @db.LongText
+    detail      String @db.LongText
+    phisics     String @db.LongText
+    personality String @db.LongText
+
+    //Skills
+    Skills Skill[] @relation("CharacterSkills")
+
+    populationId String
+    Population   Population @relation(fields: [populationId], references: [id])
+
+    Animals Animal[]
+}
+
+enum Sexe {
+    MALE
+    FEMEALE
+}
+
+model BaseSkill {
+    id          String    @id @default(cuid())
+    name        String
+    description String    @db.LongText
+    type        TypeSkill
+
+    Skills Skill[]
+}
+
+enum TypeSkill {
+    PHISIC
+    SOCIAL
+    MENTAL
+}
+
+model Skill {
+    id    String @id @default(cuid())
+    name  String
+    value Int
+
+    baseSkillId String
+    BaseSkill   BaseSkill @relation(fields: [baseSkillId], references: [id])
+
+    characterId String?
+    Character   Character? @relation("CharacterSkills", fields: [characterId], references: [id], onDelete: Cascade)
+    animalId    String?
+    Animal      Animal?    @relation("AnimalSkills", fields: [animalId], references: [id], onDelete: Cascade)
 }
