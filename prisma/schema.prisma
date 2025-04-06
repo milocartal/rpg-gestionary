@@ -35,11 +35,12 @@ model Account {
 }
 
 model Session {
-    id           String   @id @default(cuid())
-    sessionToken String   @unique
+    id           String         @id @default(cuid())
+    sessionToken String         @unique
     userId       String
     expires      DateTime
-    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+    univers      UserToUnivers? @relation("UserToUnivers")
 }
 
 model User {
@@ -48,8 +49,14 @@ model User {
     email         String?   @unique
     emailVerified DateTime?
     image         String?
+    role          String    @default("default")
     accounts      Account[]
     sessions      Session[]
+
+    // Relations
+    Universes  UserToUnivers[]
+    Characters Character[]
+    Animals    Animal[]
 }
 
 model VerificationToken {
@@ -58,6 +65,34 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+model Univers {
+    id          String @id @default(cuid())
+    name        String
+    description String @db.LongText
+
+    // Relations
+    Users       UserToUnivers[]
+    Stories     Story[]
+    Species     Species[]
+    Populations Population[]
+    BaseSkills  BaseSkill[]
+    Sexes       Sexe[]
+}
+
+model UserToUnivers {
+    userId    String
+    universId String
+    role      String
+
+    User    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+    Univers Univers @relation(fields: [universId], references: [id], onDelete: Cascade)
+
+    sessionId String?  @unique
+    Session   Session? @relation("UserToUnivers", fields: [sessionId], references: [id], onDelete: Cascade)
+
+    @@id([userId, universId])
 }
 
 model Species {
@@ -74,6 +109,9 @@ model Species {
     minHeight Float // cm
 
     Animals Animal[]
+
+    Univers   Univers @relation(fields: [universId], references: [id], onDelete: Cascade)
+    universId String
 }
 
 model Population {
@@ -88,6 +126,33 @@ model Population {
     bonus String @db.LongText //metadata of the bonus for certain skills
 
     Characters Character[]
+
+    Univers   Univers @relation(fields: [universId], references: [id], onDelete: Cascade)
+    universId String
+}
+
+model BaseSkill {
+    id          String @id @default(cuid())
+    name        String
+    description String @db.LongText
+
+    Skills Skill[]
+
+    Univers   Univers @relation(fields: [universId], references: [id], onDelete: Cascade)
+    universId String
+}
+
+model Story {
+    id          String @id @default(cuid())
+    name        String
+    description String @db.LongText
+
+    // Relations
+    universId String
+    Univers   Univers @relation(fields: [universId], references: [id], onDelete: Cascade)
+
+    Characters Character[]
+    Animals    Animal[]
 }
 
 model Animal {
@@ -98,7 +163,10 @@ model Animal {
     weight Float // kg
     height Float // cm
 
-    sexe Sexe
+    hp Float
+
+    sexeId String
+    Sexe   Sexe   @relation(fields: [sexeId], references: [id])
 
     detail      String @db.LongText
     phisics     String @db.LongText
@@ -107,13 +175,17 @@ model Animal {
     //Skills
     Skills Skill[] @relation("AnimalSkills")
 
-    hp Float
-
     Species   Species @relation(fields: [speciesId], references: [id])
     speciesId String
 
     characterId String
     Character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+
+    storyId String
+    Story   Story  @relation(fields: [storyId], references: [id], onDelete: Cascade)
+
+    userId String
+    User   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Character {
@@ -126,7 +198,10 @@ model Character {
     weight Float // kg
     height Float // cm
 
-    sexe Sexe
+    hp Float
+
+    sexeId String
+    Sexe   Sexe   @relation(fields: [sexeId], references: [id])
 
     history     String @db.LongText
     detail      String @db.LongText
@@ -136,30 +211,27 @@ model Character {
     //Skills
     Skills Skill[] @relation("CharacterSkills")
 
+    Animals Animal[]
+
     populationId String
     Population   Population @relation(fields: [populationId], references: [id])
 
-    Animals Animal[]
+    userId String
+    User   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    storyId String
+    Story   Story  @relation(fields: [storyId], references: [id], onDelete: Cascade)
 }
 
-enum Sexe {
-    MALE
-    FEMEALE
-}
+model Sexe {
+    id   String @id @default(cuid())
+    name String
 
-model BaseSkill {
-    id          String    @id @default(cuid())
-    name        String
-    description String    @db.LongText
-    type        TypeSkill
+    Characters Character[]
+    Animals    Animal[]
 
-    Skills Skill[]
-}
-
-enum TypeSkill {
-    PHISIC
-    SOCIAL
-    MENTAL
+    universId String
+    Univers   Univers @relation(fields: [universId], references: [id], onDelete: Cascade)
 }
 
 model Skill {

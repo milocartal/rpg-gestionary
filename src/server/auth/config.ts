@@ -14,9 +14,12 @@ declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
       id: string;
-      // ...other properties
-      // role: UserRole;
+      role: string;
     } & DefaultSession["user"];
+    univers: {
+      id: string;
+      role: string;
+    };
   }
 
   // interface User {
@@ -31,6 +34,7 @@ declare module "next-auth" {
  * @see https://next-auth.js.org/configuration/options
  */
 export const authConfig = {
+  trustHost: true,
   providers: [
     DiscordProvider,
     /**
