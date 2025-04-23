@@ -1,5 +1,13 @@
-import { postRouter } from "~/server/api/routers/post";
 import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
+import { universRouter } from "./routers/univers";
+import { animalRouter } from "./routers/animal";
+import { baseSkillRouter } from "./routers/base_skill";
+import { characterRouter } from "./routers/character";
+import { populationRouter } from "./routers/population";
+import { sexeRouter } from "./routers/sexe";
+import { skillRouter } from "./routers/skill";
+import { speciesRouter } from "./routers/species";
+import { storyRouter } from "./routers/story";
 
 /**
  * This is the primary router for your server.
@@ -7,7 +15,15 @@ import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
-  post: postRouter,
+  animal: animalRouter,
+  baseSkill: baseSkillRouter,
+  character: characterRouter,
+  population: populationRouter,
+  sexe: sexeRouter,
+  skill: skillRouter,
+  species: speciesRouter,
+  story: storyRouter,
+  univers: universRouter,
 });
 
 // export type definition of API

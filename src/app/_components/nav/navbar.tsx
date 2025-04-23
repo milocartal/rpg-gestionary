@@ -16,6 +16,8 @@ import {
   UsersRound,
 } from "lucide-react";
 
+import Image from "next/image";
+
 import { Button } from "~/app/_components/ui/button";
 import { Link as ShadLink } from "~/app/_components/ui/link";
 import {
@@ -135,13 +137,17 @@ const NavbarOne: React.FC<NavbarProps> = ({ session }) => {
       <SidebarHeader className="bg-primary border-b px-0 py-2">
         <Link href="/" className="cursor-pointer">
           <div className="flex h-16 items-center justify-center">
-            {open ? (
-              <h1 className="text-secondary text-2xl font-bold">
-                RPG Gestionary
-              </h1>
+            {/* open ? (
+              <h1 className="text-secondary text-2xl font-bold">SAGA</h1>
             ) : (
-              <h1 className="text-secondary text-lg font-bold">RPG</h1>
-            )}
+              <h1 className="text-secondary text-lg font-bold">S</h1>
+            ) */}
+            <Image
+              src={!open ? "/monogramme.svg" : "/text.svg"}
+              alt="logo"
+              width={!open ? 40 : 125}
+              height={40}
+            />
           </div>
         </Link>
       </SidebarHeader>

@@ -123,7 +123,7 @@ model Population {
     averageWeight Float // kg
     averageHeight Float // cm
 
-    bonus String @db.LongText //metadata of the bonus for certain skills
+    bonus String? @db.LongText //metadata of the bonus for certain skills
 
     Characters Character[]
 

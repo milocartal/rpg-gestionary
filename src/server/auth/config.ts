@@ -2,6 +2,9 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import { type DefaultSession, type NextAuthConfig } from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
 
+import type { Session as SessionAuth } from "next-auth";
+import { type AdapterUser } from "next-auth/adapters";
+
 import { db } from "~/server/db";
 
 /**
@@ -16,7 +19,7 @@ declare module "next-auth" {
       id: string;
       role: string;
     } & DefaultSession["user"];
-    univers: {
+    univers?: {
       id: string;
       role: string;
     };
@@ -49,12 +52,63 @@ export const authConfig = {
   ],
   adapter: PrismaAdapter(db),
   callbacks: {
-    session: ({ session, user }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: user.id,
-      },
-    }),
+    async session({
+      session,
+      user,
+      trigger,
+      newSession,
+    }: {
+      session: SessionAuth;
+      user: AdapterUser;
+      trigger?: string;
+      newSession: SessionAuth;
+    }) {
+      if (trigger === "update" && user) {
+        if (
+          session &&
+          newSession &&
+          session.univers &&
+          newSession.univers &&
+          session.univers?.id !== newSession.univers?.id
+        ) {
+          const univers = await db.univers.findFirst({
+            where: {
+              id: newSession.univers.id,
+            },
+            include: {
+              Users: true,
+            },
+          });
+          if (univers) {
+            session.univers = {
+              id: univers.id,
+              role: univers.Users.find((temp) => temp.userId === user.id)!.role,
+            };
+          }
+        }
+      }
+
+      if (session.univers) {
+        return {
+          ...session,
+          user: {
+            ...session.user,
+            id: user.id,
+          },
+          univers: {
+            id: session.univers.id,
+            role: session.univers.role,
+          },
+        };
+      }
+
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          id: user.id,
+        },
+      };
+    },
   },
 } satisfies NextAuthConfig;

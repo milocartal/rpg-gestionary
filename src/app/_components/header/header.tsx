@@ -25,7 +25,7 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <header
       className={cn(
-        `fixed z-10 flex h-20 w-full items-center justify-between bg-white px-4 shadow-[0_10px_13px_-15px_rgba(0,0,0,0.3)]`,
+        `bg-sidebar border-sidebar-border fixed z-10 flex h-20 items-center justify-between border-b px-4`,
         isMobile
           ? "w-full"
           : open
