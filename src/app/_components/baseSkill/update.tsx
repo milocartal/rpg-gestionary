@@ -1,10 +1,8 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import "react-quill/dist/quill.snow.css";
 import { toast } from "sonner";
 import * as z from "zod";
 
@@ -18,11 +16,9 @@ import {
   FormMessage,
 } from "~/app/_components/ui/form";
 import { api } from "~/trpc/react";
-import { modules } from "~/utils/quill";
 import { Input } from "~/app/_components/ui/input";
 import type { BaseSkill } from "@prisma/client";
-
-const Quill = dynamic(() => import("react-quill"), { ssr: false });
+import { Textarea } from "~/app/_components/ui/textarea";
 
 const UpdateBaseSkillSchema = z.object({
   name: z
@@ -100,11 +96,11 @@ export const UpdateBaseSkill: React.FC<UpdateBaseSkillProps> = ({
             <FormItem className="flex w-full flex-col">
               <FormLabel>Description</FormLabel>
               <FormControl>
-                <Quill
-                  theme="snow"
-                  modules={modules}
-                  value={field.value || ""}
-                  onChange={field.onChange}
+                <Textarea
+                  placeholder="Description"
+                  className="resize-none"
+                  rows={5}
+                  {...field}
                 />
               </FormControl>
 

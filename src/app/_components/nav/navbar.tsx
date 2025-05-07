@@ -1,5 +1,12 @@
 "use client";
 
+import { Fragment } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { signIn, signOut } from "next-auth/react";
+import { usePathname } from "next/navigation";
+import type { Session } from "next-auth";
+
 import {
   Binary,
   BookMarked,
@@ -16,7 +23,10 @@ import {
   UsersRound,
 } from "lucide-react";
 
-import Image from "next/image";
+import { cn } from "~/lib/utils";
+import { UniversSwitcher } from "~/app/_components/univers/switcher";
+import type { UniversWithUsers } from "~/lib/models/Univers";
+import { withSessionProvider } from "~/utils/withSessionProvider";
 
 import { Button } from "~/app/_components/ui/button";
 import { Link as ShadLink } from "~/app/_components/ui/link";
@@ -41,18 +51,30 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "~/app/_components/ui/tooltip";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "~/app/_components/ui/collapsible";
 
 interface NavLink {
   title: string;
   label?: string;
   href?: string;
   icon: LucideIcon;
-  children?: NavLink[];
+  children?: NavLinkChildren[];
+}
+
+interface NavLinkChildren {
+  title: string;
+  label?: string;
+  href: string;
+  icon: LucideIcon;
 }
 
 type ExclusiveNavLink =
   | (NavLink & { href: string; children?: never })
-  | (NavLink & { href?: never; children: NavLink[] });
+  | (NavLink & { href?: never; children: NavLinkChildren[] });
 
 const links: ExclusiveNavLink[][] = [
   [
@@ -60,6 +82,11 @@ const links: ExclusiveNavLink[][] = [
       title: "Univers",
       icon: Box,
       children: [
+        {
+          title: "Liste",
+          href: "/univers",
+          icon: Box,
+        },
         {
           title: "Contexte",
           href: "/context",
@@ -114,22 +141,10 @@ const links: ExclusiveNavLink[][] = [
 
 interface NavbarProps {
   readonly session: Session | null;
+  readonly univers: UniversWithUsers[];
 }
 
-import { Fragment } from "react";
-import { withSessionProvider } from "~/utils/withSessionProvider";
-import { usePathname } from "next/navigation";
-import { cn } from "~/lib/utils";
-import { signIn, signOut } from "next-auth/react";
-import type { Session } from "next-auth";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "../ui/collapsible";
-import Link from "next/link";
-
-const NavbarOne: React.FC<NavbarProps> = ({ session }) => {
+const NavbarOne: React.FC<NavbarProps> = ({ session, univers }) => {
   const { open } = useSidebar();
 
   return (
@@ -153,6 +168,10 @@ const NavbarOne: React.FC<NavbarProps> = ({ session }) => {
       </SidebarHeader>
 
       <SidebarContent>
+        <SidebarGroup className="gap-2">
+          <UniversSwitcher univers={univers} session={session} />
+        </SidebarGroup>
+        <SidebarSeparator />
         {links.map((group, index) => {
           return (
             <Fragment key={index}>
@@ -251,7 +270,7 @@ function NavItem({ link }: { readonly link: NavLink }) {
       <SidebarMenu>
         <Collapsible
           defaultOpen={link.children.some((child) =>
-            pathname.includes(child.href!),
+            pathname.includes(child.href),
           )}
           className="group/collapsible"
         >
@@ -262,18 +281,25 @@ function NavItem({ link }: { readonly link: NavLink }) {
                   className={cn(
                     "justify-start",
                     !link.children.some((child) =>
-                      pathname.includes(child.href!),
+                      pathname.includes(child.href),
                     ) && "text-text",
                   )}
                   variant={
-                    link.children.some((child) =>
-                      pathname.includes(child.href!),
-                    )
+                    link.children.some((child) => pathname.includes(child.href))
                       ? "default"
                       : null
                   }
                 >
-                  <link.icon className="text-accent h-4 w-4" />
+                  <link.icon
+                    className={cn(
+                      "h-4 w-4",
+                      link.children.some((child) =>
+                        pathname.includes(child.href),
+                      )
+                        ? "text-secondary"
+                        : "text-accent",
+                    )}
+                  />
                   <span>{link.title}</span>
                 </Button>
               </SidebarMenuButton>
@@ -282,22 +308,22 @@ function NavItem({ link }: { readonly link: NavLink }) {
               <SidebarMenuSub>
                 {link.children.map((child) => {
                   return (
-                    <SidebarMenuSubItem key={child.href}>
+                    <SidebarMenuSubItem key={child.href} className="">
                       <SidebarMenuSubButton asChild>
                         <ShadLink
                           href={child.href}
                           className={cn(
                             "justify-start",
-                            !pathname.includes(child.href!) && "text-text",
+                            !pathname.includes(child.href) && "text-text",
                           )}
                           variant={
-                            pathname.includes(child.href!) ? "default" : null
+                            pathname.includes(child.href) ? "default" : null
                           }
                         >
                           <child.icon
                             className={cn(
                               "h-4 w-4",
-                              pathname.includes(child.href!)
+                              pathname.includes(child.href)
                                 ? "text-secondary"
                                 : "text-accent",
                             )}

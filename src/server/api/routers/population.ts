@@ -7,6 +7,7 @@ import {
   publicProcedure,
 } from "~/server/api/trpc";
 import { db } from "~/server/db";
+import { canInUnivers } from "~/utils/accesscontrol";
 
 const populationSchema = z.object({
   name: z.string(),
@@ -53,6 +54,13 @@ export const populationRouter = createTRPCRouter({
   create: protectedProcedure
     .input(populationSchema)
     .mutation(async ({ ctx, input }) => {
+      if (!canInUnivers(ctx.session).createAny("population")) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "You are not allowed to create this population",
+        });
+      }
+
       const population = await db.population.create({
         data: {
           name: input.name,
@@ -78,6 +86,13 @@ export const populationRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ input, ctx }) => {
+      if (!canInUnivers(ctx.session).updateAny("population")) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "You are not allowed to update this population",
+        });
+      }
+
       const population = await db.population.update({
         where: { id: input.id },
         data: {
@@ -95,6 +110,13 @@ export const populationRouter = createTRPCRouter({
   delete: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
+      if (!canInUnivers(ctx.session).deleteAny("population")) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "You are not allowed to delete this population",
+        });
+      }
+
       const population = await db.population.delete({
         where: { id: input.id },
       });

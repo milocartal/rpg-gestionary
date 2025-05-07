@@ -13,7 +13,11 @@ ac.grant("default")
   .extend("anonyme")
   .readOwn("user")
   .updateOwn("user")
-  .deleteOwn("user");
+  .deleteOwn("user")
+  .createOwn("univers")
+  .updateOwn("univers")
+  .deleteOwn("univers")
+  .readAny("univers");
 
 //Admin
 ac.grant("administrateur")
@@ -24,7 +28,11 @@ ac.grant("administrateur")
   .deleteAny("user");
 
 //Spectateur
-acUnivers.grant("spectateur");
+acUnivers
+  .grant("spectateur")
+  .readAny("species")
+  .readAny("population")
+  .readAny("story");
 
 //Roliste
 acUnivers
@@ -37,7 +45,11 @@ acUnivers
   .readOwn("companion")
   .createOwn("companion")
   .updateOwn("companion")
-  .deleteOwn("companion");
+  .deleteOwn("companion")
+  .readOwn("skill")
+  .createOwn("skill")
+  .updateOwn("skill")
+  .deleteOwn("skill");
 
 //Gestionnaire
 acUnivers
@@ -50,7 +62,27 @@ acUnivers
   .readAny("companion")
   .createAny("companion")
   .updateAny("companion")
-  .deleteAny("companion");
+  .deleteAny("companion")
+  .readOwn("univers")
+  .updateOwn("univers")
+  .deleteOwn("univers")
+  .createOwn("story")
+  .updateOwn("story")
+  .deleteOwn("story")
+  .readAny("story")
+  .createAny("species")
+  .updateAny("species")
+  .deleteAny("species")
+  .readAny("population")
+  .createAny("population")
+  .updateAny("population")
+  .deleteAny("population")
+  .createAny("sexe")
+  .updateAny("sexe")
+  .deleteAny("sexe")
+  .createAny("base-skill")
+  .updateAny("base-skill")
+  .deleteAny("base-skill");
 
 //Maitre du jeu
 acUnivers
@@ -79,15 +111,15 @@ export function canInUnivers(session: Session | null): Query {
   let role = "anonyme";
   if (!session) return acUnivers.can(role);
 
-  if (!session.univers) {
+  if (!session.Univers) {
     role = "anonyme";
     return acUnivers.can(role);
   }
 
-  if (session.univers.role.includes("spectateur")) role = "spectateur";
-  if (session.univers.role.includes("roliste")) role = "roliste";
-  if (session.univers.role.includes("gestionnaire")) role = "gestionnaire";
-  if (session.univers.role.includes("maitre-du-jeu")) role = "maitre-du-jeu";
+  if (session.Univers.role.includes("spectateur")) role = "spectateur";
+  if (session.Univers.role.includes("roliste")) role = "roliste";
+  if (session.Univers.role.includes("gestionnaire")) role = "gestionnaire";
+  if (session.Univers.role.includes("maitre-du-jeu")) role = "maitre-du-jeu";
 
   return acUnivers.can(role);
 }

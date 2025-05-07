@@ -7,6 +7,7 @@ import {
   protectedProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
+import { canInUnivers } from "~/utils/accesscontrol";
 
 export const sexeRouter = createTRPCRouter({
   get: publicProcedure
@@ -48,6 +49,13 @@ export const sexeRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      if (!canInUnivers(ctx.session).createAny("sexe")) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "You are not allowed to create this sexe",
+        });
+      }
+
       const sexe = await db.sexe.create({
         data: {
           name: input.name,
@@ -66,6 +74,13 @@ export const sexeRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      if (!canInUnivers(ctx.session).updateAny("sexe")) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "You are not allowed to update this sexe",
+        });
+      }
+
       const sexe = await db.sexe.update({
         where: { id: input.id },
         data: {
@@ -79,6 +94,13 @@ export const sexeRouter = createTRPCRouter({
   delete: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
+      if (!canInUnivers(ctx.session).deleteAny("sexe")) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "You are not allowed to delete this sexe",
+        });
+      }
+
       const sexe = await db.sexe.delete({
         where: { id: input.id },
       });

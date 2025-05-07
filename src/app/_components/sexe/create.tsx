@@ -3,7 +3,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import "react-quill/dist/quill.snow.css";
 import { toast } from "sonner";
 import * as z from "zod";
 
@@ -54,7 +53,7 @@ export const CreateSexe: React.FC<CreateSexeProps> = ({ univers }) => {
   const form = useForm<z.infer<typeof CreateSexeSchema>>({
     resolver: zodResolver(CreateSexeSchema),
     defaultValues: {
-      name: undefined,
+      name: "",
     },
   });
 

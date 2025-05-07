@@ -35,12 +35,14 @@ model Account {
 }
 
 model Session {
-    id           String         @id @default(cuid())
-    sessionToken String         @unique
+    id           String   @id @default(cuid())
+    sessionToken String   @unique
     userId       String
     expires      DateTime
-    user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-    univers      UserToUnivers? @relation("UserToUnivers")
+    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    universId String?
+    Univers   UserToUnivers? @relation(fields: [universId], references: [id])
 }
 
 model User {
@@ -72,6 +74,9 @@ model Univers {
     name        String
     description String @db.LongText
 
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
     // Relations
     Users       UserToUnivers[]
     Stories     Story[]
@@ -82,6 +87,7 @@ model Univers {
 }
 
 model UserToUnivers {
+    id        String @id @default(cuid())
     userId    String
     universId String
     role      String
@@ -89,10 +95,10 @@ model UserToUnivers {
     User    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
     Univers Univers @relation(fields: [universId], references: [id], onDelete: Cascade)
 
-    sessionId String?  @unique
-    Session   Session? @relation("UserToUnivers", fields: [sessionId], references: [id], onDelete: Cascade)
+    Session Session[]
 
-    @@id([userId, universId])
+    @@unique([userId, universId])
+    @@index([userId, universId])
 }
 
 model Species {

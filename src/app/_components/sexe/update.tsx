@@ -3,7 +3,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import "react-quill/dist/quill.snow.css";
 import { toast } from "sonner";
 import * as z from "zod";
 

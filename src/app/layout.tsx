@@ -8,6 +8,7 @@ import { Toaster } from "sonner";
 import { SidebarProvider } from "~/app/_components/ui/sidebar";
 import Navbar from "~/app/_components/nav/navbar";
 import { auth } from "~/server/auth";
+import { db } from "~/server/db";
 
 export const metadata: Metadata = {
   title: "SAGA",
@@ -24,12 +25,24 @@ export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const session = await auth();
+  const univers = await db.univers.findMany({
+    where: {
+      Users: {
+        some: {
+          userId: session?.user.id,
+        },
+      },
+    },
+    include: {
+      Users: true,
+    },
+  });
   return (
     <html lang="fr" className={`${geist.variable}`}>
       <body>
         <TRPCReactProvider>
           <SidebarProvider>
-            <Navbar session={session} />
+            <Navbar session={session} univers={univers} />
             <main className="relative max-h-screen min-h-screen w-full overflow-y-auto">
               {children}
             </main>

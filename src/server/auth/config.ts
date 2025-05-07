@@ -19,7 +19,8 @@ declare module "next-auth" {
       id: string;
       role: string;
     } & DefaultSession["user"];
-    univers?: {
+    universId?: string;
+    Univers?: {
       id: string;
       role: string;
     };
@@ -63,43 +64,81 @@ export const authConfig = {
       trigger?: string;
       newSession: SessionAuth;
     }) {
-      if (trigger === "update" && user) {
-        if (
-          session &&
-          newSession &&
-          session.univers &&
-          newSession.univers &&
-          session.univers?.id !== newSession.univers?.id
-        ) {
-          const univers = await db.univers.findFirst({
+      if (trigger === "update") {
+        const univers = await db.userToUnivers.findFirst({
+          where: {
+            universId: newSession.universId,
+          },
+        });
+        if (univers) {
+          session.universId = univers.id;
+          session.Univers = {
+            id: univers.id,
+            role: univers.role,
+          };
+
+          await db.session.updateMany({
             where: {
-              id: newSession.univers.id,
+              user: {
+                id: user.id,
+              },
             },
-            include: {
-              Users: true,
+            data: {
+              universId: univers.id,
             },
           });
-          if (univers) {
-            session.univers = {
+
+          return {
+            ...session,
+            user: {
+              ...session.user,
+              id: user.id,
+            },
+            Univers: {
               id: univers.id,
-              role: univers.Users.find((temp) => temp.userId === user.id)!.role,
-            };
-          }
+              role: univers.role,
+            },
+          };
+        } else {
+          console.warn("univers not found");
         }
       }
 
-      if (session.univers) {
+      if (session.Univers) {
         return {
           ...session,
           user: {
             ...session.user,
             id: user.id,
           },
-          univers: {
-            id: session.univers.id,
-            role: session.univers.role,
+          Univers: {
+            id: session.Univers.id,
+            role: session.Univers.role,
           },
         };
+      }
+
+      if (session.universId) {
+        const univers = await db.userToUnivers.findFirst({
+          where: {
+            id: session.universId,
+          },
+        });
+        if (univers) {
+          return {
+            ...session,
+            user: {
+              ...session.user,
+              id: user.id,
+            },
+            Univers: {
+              id: univers.id,
+              role: univers.role,
+            },
+          };
+        } else {
+          console.warn("univers not found");
+        }
       }
 
       return {

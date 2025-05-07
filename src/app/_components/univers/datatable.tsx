@@ -197,7 +197,7 @@ const columns: ColumnDef<UniversWithAll>[] = [
                   <Eye className="h-4 w-4" />
                 </Link>
               </TooltipTrigger>
-              <TooltipContent className="text-primary">Aperçu</TooltipContent>
+              <TooltipContent>Aperçu</TooltipContent>
             </Tooltip>
 
             <Tooltip>
@@ -211,7 +211,7 @@ const columns: ColumnDef<UniversWithAll>[] = [
                   <FilePen className="h-4 w-4" />
                 </Link>
               </TooltipTrigger>
-              <TooltipContent className="text-primary">Modifier</TooltipContent>
+              <TooltipContent>Modifier</TooltipContent>
             </Tooltip>
 
             <Tooltip>
@@ -272,10 +272,10 @@ const DataTableUniversOne: React.FC<UniversDataTableProps> = ({
     getRowId: (row) => row.id,
   });
 
-  const selectedRows = table.getFilteredSelectedRowModel().rows.map((row) => {
+  /* const selectedRows = table.getFilteredSelectedRowModel().rows.map((row) => {
     return row.original.id;
   });
-
+ */
   return (
     <DataTableBase table={table} columns={columns} selection>
       {children}

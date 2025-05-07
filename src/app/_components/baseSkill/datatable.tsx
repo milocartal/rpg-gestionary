@@ -198,9 +198,9 @@ const DataTableBaseSkillOne: React.FC<BaseSkillDataTableProps> = ({
     getRowId: (row) => row.id,
   });
 
-  const selectedRows = table.getFilteredSelectedRowModel().rows.map((row) => {
+  /*  const selectedRows = table.getFilteredSelectedRowModel().rows.map((row) => {
     return row.original.id;
-  });
+  }); */
 
   return (
     <DataTableBase table={table} columns={columns} selection>

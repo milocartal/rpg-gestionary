@@ -7,6 +7,7 @@ import {
   publicProcedure,
 } from "~/server/api/trpc";
 import { db } from "~/server/db";
+import { canInUnivers } from "~/utils/accesscontrol";
 
 const speciesSchema = z.object({
   name: z.string(),
@@ -60,6 +61,13 @@ export const speciesRouter = createTRPCRouter({
   create: protectedProcedure
     .input(speciesSchema)
     .mutation(async ({ input, ctx }) => {
+      if (!canInUnivers(ctx.session).createAny("species")) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "You are not allowed to create this species",
+        });
+      }
+
       const species = await db.species.create({
         data: {
           name: input.name,
@@ -82,6 +90,13 @@ export const speciesRouter = createTRPCRouter({
   update: protectedProcedure
     .input(speciesSchema.extend({ id: z.string() }))
     .mutation(async ({ input, ctx }) => {
+      if (!canInUnivers(ctx.session).updateAny("species")) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "You are not allowed to update this species",
+        });
+      }
+
       const species = await db.species.update({
         where: { id: input.id },
         data: {
@@ -100,6 +115,13 @@ export const speciesRouter = createTRPCRouter({
   delete: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input, ctx }) => {
+      if (!canInUnivers(ctx.session).deleteAny("species")) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "You are not allowed to delete this species",
+        });
+      }
+
       const species = await db.species.delete({
         where: { id: input.id },
       });

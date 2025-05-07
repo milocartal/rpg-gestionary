@@ -1,11 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
-import {
-  createTRPCRouter,
-  protectedProcedure,
-  publicProcedure,
-} from "~/server/api/trpc";
+import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { db } from "~/server/db";
 import { can, canInUnivers, UniversRolesEnum } from "~/utils/accesscontrol";
 
@@ -13,6 +9,12 @@ export const universRouter = createTRPCRouter({
   create: protectedProcedure
     .input(z.object({ name: z.string(), description: z.string() }))
     .mutation(async ({ ctx, input }) => {
+      if (!can(ctx.session).createOwn("univers")) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "You are not allowed to create this univers",
+        });
+      }
       const univers = await db.univers.create({
         data: {
           name: input.name,
@@ -35,7 +37,7 @@ export const universRouter = createTRPCRouter({
       z.object({ id: z.string(), name: z.string(), description: z.string() }),
     )
     .mutation(async ({ ctx, input }) => {
-      /* if (
+      if (
         !canInUnivers(ctx.session).updateOwn("univers") ||
         !can(ctx.session).updateAny("univers")
       ) {
@@ -43,7 +45,7 @@ export const universRouter = createTRPCRouter({
           code: "UNAUTHORIZED",
           message: "You are not allowed to update this univers",
         });
-      } */
+      }
 
       const univers = await db.univers.update({
         where: { id: input.id },
@@ -58,7 +60,7 @@ export const universRouter = createTRPCRouter({
   delete: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      /* if (
+      if (
         !canInUnivers(ctx.session).deleteOwn("univers") ||
         !can(ctx.session).deleteAny("univers")
       ) {
@@ -66,7 +68,7 @@ export const universRouter = createTRPCRouter({
           code: "UNAUTHORIZED",
           message: "You are not allowed to delete this univers",
         });
-      } */
+      }
 
       const univers = await db.univers.delete({
         where: { id: input.id },
