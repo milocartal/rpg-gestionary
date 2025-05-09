@@ -109,7 +109,7 @@ const links: ExclusiveNavLink[][] = [
         },
         {
           title: "Compétences",
-          href: "/base-skills",
+          href: "/skills",
           icon: Binary,
         },
         {

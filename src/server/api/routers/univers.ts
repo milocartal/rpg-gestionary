@@ -9,7 +9,7 @@ export const universRouter = createTRPCRouter({
   create: protectedProcedure
     .input(z.object({ name: z.string(), description: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      if (!can(ctx.session).createOwn("univers")) {
+      if (!can(ctx.session).createOwn("univers").granted) {
         throw new TRPCError({
           code: "UNAUTHORIZED",
           message: "You are not allowed to create this univers",
@@ -38,8 +38,8 @@ export const universRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       if (
-        !canInUnivers(ctx.session).updateOwn("univers") ||
-        !can(ctx.session).updateAny("univers")
+        !canInUnivers(ctx.session).updateOwn("univers").granted ||
+        !can(ctx.session).updateAny("univers").granted
       ) {
         throw new TRPCError({
           code: "UNAUTHORIZED",
@@ -61,8 +61,8 @@ export const universRouter = createTRPCRouter({
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
       if (
-        !canInUnivers(ctx.session).deleteOwn("univers") ||
-        !can(ctx.session).deleteAny("univers")
+        !canInUnivers(ctx.session).deleteOwn("univers").granted ||
+        !can(ctx.session).deleteAny("univers").granted
       ) {
         throw new TRPCError({
           code: "UNAUTHORIZED",

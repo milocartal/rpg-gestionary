@@ -54,7 +54,7 @@ export const populationRouter = createTRPCRouter({
   create: protectedProcedure
     .input(populationSchema)
     .mutation(async ({ ctx, input }) => {
-      if (!canInUnivers(ctx.session).createAny("population")) {
+      if (!canInUnivers(ctx.session).createAny("population").granted) {
         throw new TRPCError({
           code: "UNAUTHORIZED",
           message: "You are not allowed to create this population",
@@ -86,7 +86,7 @@ export const populationRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ input, ctx }) => {
-      if (!canInUnivers(ctx.session).updateAny("population")) {
+      if (!canInUnivers(ctx.session).updateAny("population").granted) {
         throw new TRPCError({
           code: "UNAUTHORIZED",
           message: "You are not allowed to update this population",
@@ -110,7 +110,7 @@ export const populationRouter = createTRPCRouter({
   delete: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      if (!canInUnivers(ctx.session).deleteAny("population")) {
+      if (!canInUnivers(ctx.session).deleteAny("population").granted) {
         throw new TRPCError({
           code: "UNAUTHORIZED",
           message: "You are not allowed to delete this population",

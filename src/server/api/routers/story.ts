@@ -16,8 +16,8 @@ export const storyRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       if (
-        !canInUnivers(ctx.session).createOwn("story") ||
-        !can(ctx.session).createAny("story")
+        !canInUnivers(ctx.session).createOwn("story").granted ||
+        !can(ctx.session).createAny("story").granted
       ) {
         throw new TRPCError({
           code: "UNAUTHORIZED",
@@ -42,8 +42,8 @@ export const storyRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       if (
-        !canInUnivers(ctx.session).updateOwn("story") ||
-        !can(ctx.session).updateAny("story")
+        !canInUnivers(ctx.session).updateOwn("story").granted ||
+        !can(ctx.session).updateAny("story").granted
       ) {
         throw new TRPCError({
           code: "UNAUTHORIZED",
@@ -65,8 +65,8 @@ export const storyRouter = createTRPCRouter({
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
       if (
-        !canInUnivers(ctx.session).deleteOwn("story") ||
-        !can(ctx.session).deleteAny("story")
+        !canInUnivers(ctx.session).deleteOwn("story").granted ||
+        !can(ctx.session).deleteAny("story").granted
       ) {
         throw new TRPCError({
           code: "UNAUTHORIZED",

@@ -49,7 +49,7 @@ export const sexeRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      if (!canInUnivers(ctx.session).createAny("sexe")) {
+      if (!canInUnivers(ctx.session).createAny("sexe").granted) {
         throw new TRPCError({
           code: "UNAUTHORIZED",
           message: "You are not allowed to create this sexe",
@@ -74,7 +74,7 @@ export const sexeRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      if (!canInUnivers(ctx.session).updateAny("sexe")) {
+      if (!canInUnivers(ctx.session).updateAny("sexe").granted) {
         throw new TRPCError({
           code: "UNAUTHORIZED",
           message: "You are not allowed to update this sexe",
@@ -94,7 +94,7 @@ export const sexeRouter = createTRPCRouter({
   delete: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      if (!canInUnivers(ctx.session).deleteAny("sexe")) {
+      if (!canInUnivers(ctx.session).deleteAny("sexe").granted) {
         throw new TRPCError({
           code: "UNAUTHORIZED",
           message: "You are not allowed to delete this sexe",

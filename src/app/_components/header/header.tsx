@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "~/app/_components/ui/button";
 import { cn } from "~/lib/utils";
 
-import { SidebarTrigger, useSidebar } from "../ui/sidebar";
+import { SidebarTrigger, useSidebar } from "~/app/_components/ui/sidebar";
 
 interface HeaderProps extends React.HTMLAttributes<HTMLDivElement> {
   readonly title: string;

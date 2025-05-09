@@ -11,7 +11,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { FilePen, Trash2 } from "lucide-react";
+import { Eye, FilePen, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import * as React from "react";
 import { toast } from "sonner";
@@ -29,14 +29,14 @@ import {
 import { api } from "~/trpc/react";
 import { withSessionProvider } from "~/utils/withSessionProvider";
 import { Checkbox } from "~/app/_components/ui/checkbox";
-import type { BaseSkill } from "@prisma/client";
+import type { Population } from "@prisma/client";
 
-interface BaseSkillDataTableProps {
-  data: BaseSkill[];
+interface PopulationDataTableProps {
+  data: Population[];
   children?: React.ReactNode;
 }
 
-const columns: ColumnDef<BaseSkill>[] = [
+const columns: ColumnDef<Population>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -70,27 +70,19 @@ const columns: ColumnDef<BaseSkill>[] = [
       );
     },
   },
-  {
-    accessorFn: (row) => row.description,
-    header: "Description",
-    cell: (data) => {
-      return (
-        <div className="text-xs capitalize">{data.getValue() as string}</div>
-      );
-    },
-  },
+
   {
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
-      const BaseSkillDataTableCell = () => {
+      const PopulationDataTableCell = () => {
         const router = useRouter();
-        const baseSkill = row.original;
+        const population = row.original;
 
-        const deleteBaseSkill = api.baseSkill.delete.useMutation({
+        const deletePopulation = api.population.delete.useMutation({
           onSuccess: () => {
             router.refresh();
-            toast.success("Compétence de base supprimée");
+            toast.success("Population supprimé");
           },
           onError: () => {
             toast.error("Une erreur est survenue");
@@ -99,9 +91,9 @@ const columns: ColumnDef<BaseSkill>[] = [
 
         async function handleDelete() {
           try {
-            await deleteBaseSkill.mutateAsync({ id: baseSkill.id });
+            await deletePopulation.mutateAsync({ id: population.id });
           } catch (error) {
-            console.error("Delete baseSkill error:", error);
+            console.error("Delete population error:", error);
             toast.error(
               error instanceof Error
                 ? error.message
@@ -115,7 +107,21 @@ const columns: ColumnDef<BaseSkill>[] = [
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
-                  href={`/baseSkill/${baseSkill.id}`}
+                  href={`/populations/${population.id}`}
+                  variant={"icon"}
+                  size={"icon"}
+                  className="text-succes p-0"
+                >
+                  <Eye className="h-4 w-4" />
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent className="text-primary">Aperçu</TooltipContent>
+            </Tooltip>
+
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  href={`/populations/${population.id}/edit`}
                   variant={"icon"}
                   size={"icon"}
                   className="text-primary p-0"
@@ -145,12 +151,12 @@ const columns: ColumnDef<BaseSkill>[] = [
         );
       };
 
-      return <BaseSkillDataTableCell />;
+      return <PopulationDataTableCell />;
     },
   },
 ];
 
-const DataTableBaseSkillOne: React.FC<BaseSkillDataTableProps> = ({
+const DataTablePopulationOne: React.FC<PopulationDataTableProps> = ({
   data,
   children,
 }) => {
@@ -184,7 +190,7 @@ const DataTableBaseSkillOne: React.FC<BaseSkillDataTableProps> = ({
     getRowId: (row) => row.id,
   });
 
-  /*  const selectedRows = table.getFilteredSelectedRowModel().rows.map((row) => {
+  /* const selectedRows = table.getFilteredSelectedRowModel().rows.map((row) => {
     return row.original.id;
   }); */
 
@@ -192,7 +198,7 @@ const DataTableBaseSkillOne: React.FC<BaseSkillDataTableProps> = ({
     <DataTableBase table={table} columns={columns} selection>
       {children}
       <Input
-        placeholder="Chercher une compétence..."
+        placeholder="Chercher une population..."
         value={(table.getColumn("Nom")?.getFilterValue() as string) ?? ""}
         onChange={(event) =>
           table.getColumn("Nom")?.setFilterValue(event.target.value)
@@ -203,4 +209,4 @@ const DataTableBaseSkillOne: React.FC<BaseSkillDataTableProps> = ({
   );
 };
 
-export const DataTableBaseSkill = withSessionProvider(DataTableBaseSkillOne);
+export const DataTablePopulation = withSessionProvider(DataTablePopulationOne);
