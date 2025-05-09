@@ -25,7 +25,11 @@ ac.grant("administrateur")
   .readAny("user")
   .createAny("user")
   .updateAny("user")
-  .deleteAny("user");
+  .deleteAny("user")
+  .readAny("univers")
+  .createAny("univers")
+  .updateAny("univers")
+  .deleteAny("univers");
 
 //Spectateur
 acUnivers
@@ -98,6 +102,7 @@ acUnivers
   .deleteAny("story");
 
 export function can(session: Session | null): Query {
+  //console.log("session can", session);
   let role = "anonyme";
   if (!session) return ac.can(role);
 
@@ -108,6 +113,7 @@ export function can(session: Session | null): Query {
 }
 
 export function canInUnivers(session: Session | null): Query {
+  //console.log("session canInUnivers", session);
   let role = "anonyme";
   if (!session) return acUnivers.can(role);
 

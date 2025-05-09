@@ -8,7 +8,7 @@ import "~/styles/globals.css";
 import { HydrateClient } from "~/trpc/server";
 import { DataTableSpecies } from "~/app/_components/species";
 
-export default async function Univers() {
+export default async function Species() {
   const session = await auth();
 
   if (!session) {
@@ -38,7 +38,7 @@ export default async function Univers() {
 
   return (
     <HydrateClient>
-      <Header title={"Univers"} />
+      <Header title={`Espèces | ${univers.name}`} />
       <main className="relative flex min-h-screen flex-col items-center bg-[url('/assets/images/bg.webp')] bg-cover bg-fixed px-4 pt-24 pb-10">
         <div className="bg-background flex h-full w-full flex-col rounded-lg px-6 py-4 shadow">
           <DataTableSpecies data={species}>

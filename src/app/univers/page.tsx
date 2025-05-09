@@ -8,6 +8,10 @@ import "~/styles/globals.css";
 import { HydrateClient } from "~/trpc/server";
 import { DataTableUnivers } from "~/app/_components/univers/datatable";
 
+export const metadata = {
+  title: "Liste des univers | SAGA",
+};
+
 export default async function Univers() {
   const session = await auth();
 
@@ -35,7 +39,7 @@ export default async function Univers() {
 
   return (
     <HydrateClient>
-      <Header title={"Univers"} />
+      <Header title={"Liste des univers | SAGA"} />
       <main className="relative flex min-h-screen flex-col items-center bg-[url('/assets/images/bg.webp')] bg-cover bg-fixed px-4 pt-24 pb-10">
         <div className="bg-background flex h-full w-full flex-col rounded-lg px-6 py-4 shadow">
           <DataTableUnivers data={univers}>

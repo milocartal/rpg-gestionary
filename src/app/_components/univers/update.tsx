@@ -38,7 +38,7 @@ export const UpdateUnivers: React.FC<UpdateUniversProps> = ({ univers }) => {
 
   const updateUnivers = api.univers.update.useMutation({
     onSuccess: () => {
-      toast.success("Document créé avec succès");
+      toast.success("Univers mis à jour avec succès");
       router.push("/univers");
     },
     onError: (error) => {

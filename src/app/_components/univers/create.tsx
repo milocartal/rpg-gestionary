@@ -33,7 +33,7 @@ export const CreateUnivers: React.FC = () => {
 
   const createUnivers = api.univers.create.useMutation({
     onSuccess: () => {
-      toast.success("Document créé avec succès");
+      toast.success("Univers créé avec succès");
       router.push("/univers");
     },
     onError: (error) => {

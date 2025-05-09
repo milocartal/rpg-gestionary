@@ -34,7 +34,7 @@ export const UpdateSexe: React.FC<UpdateSexeProps> = ({ sexe }) => {
 
   const updateSexe = api.sexe.update.useMutation({
     onSuccess: () => {
-      toast.success("Document créé avec succès");
+      toast.success("Sexe mis à jour avec succès");
       router.push("/sexe");
     },
     onError: (error) => {

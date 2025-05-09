@@ -41,7 +41,7 @@ export default async function NewSpecies() {
 
   return (
     <HydrateClient>
-      <Header back title={"Créer un species"} />
+      <Header back title={`Créer une espèce | ${univers.name}`} />
       <main className="relative flex min-h-screen flex-col items-center bg-[url('/assets/images/bg.webp')] bg-cover bg-fixed px-4 pt-24 pb-10">
         <div className="bg-background flex h-full w-full flex-col rounded-lg px-6 py-4 shadow">
           <h1 className="text-text mb-4 text-2xl font-bold">
