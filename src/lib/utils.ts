@@ -38,8 +38,38 @@ export function SwitchBorderColor(
       return "border-[#5EA880]";
     case "spectateur":
       return "border-[#5E80A8]";
-
     default:
       return "border-[#B4B4B4]";
   }
+}
+
+export function lancerDes(nbDe: number, nbFaces: number): number[] {
+  const result = [];
+  for (let i = 0; i < nbDe; i++) {
+    result.push(Math.floor(Math.random() * nbFaces) + 1);
+  }
+  return result;
+}
+
+export function sommeDes(nbDe: number, nbFaces: number): number {
+  const result = lancerDes(nbDe, nbFaces);
+  return result.reduce((acc, val) => acc + val, 0);
+}
+
+export function lancerDesAvecModificateur(
+  nbDe: number,
+  nbFaces: number,
+  modificateur: number,
+): number {
+  const result = lancerDes(nbDe, nbFaces);
+  return result.reduce((acc, val) => acc + val, modificateur);
+}
+
+export function sommeDesAvecModificateur(
+  nbDe: number,
+  nbFaces: number,
+  modificateur: number,
+): number {
+  const result = lancerDes(nbDe, nbFaces);
+  return result.reduce((acc, val) => acc + val, modificateur);
 }

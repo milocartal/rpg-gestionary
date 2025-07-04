@@ -1,11 +1,15 @@
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { type DefaultSession, type NextAuthConfig } from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
+import CredentialsProvider from "next-auth/providers/credentials";
+import GithubProvider from "next-auth/providers/github";
 
 import type { Session as SessionAuth } from "next-auth";
 import { type AdapterUser } from "next-auth/adapters";
 
 import { db } from "~/server/db";
+
+import { verify } from "argon2";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -41,6 +45,38 @@ export const authConfig = {
   trustHost: true,
   providers: [
     DiscordProvider,
+    GithubProvider,
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Mot de passe", type: "password" },
+      },
+      async authorize(credentials) {
+        console.log("credentials", credentials);
+        if (!credentials?.email || !credentials.password) {
+          console.warn("Missing credentials");
+          return null;
+        }
+        const user = await db.user.findUnique({
+          /*  */ where: { email: credentials.email as string },
+        });
+        if (!user?.password) {
+          console.warn("User not found or password not set");
+          return null;
+        }
+        const isValid = await verify(
+          user.password,
+          credentials.password as string,
+        );
+
+        if (!isValid) {
+          console.warn("Invalid password");
+          return null;
+        }
+        return { id: user.id, email: user.email, name: user.name };
+      },
+    }),
     /**
      * ...add more providers here.
      *
@@ -52,6 +88,9 @@ export const authConfig = {
      */
   ],
   adapter: PrismaAdapter(db),
+  session: {
+    strategy: "database",
+  },
   callbacks: {
     async session({
       session,

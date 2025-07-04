@@ -83,11 +83,6 @@ const links: ExclusiveNavLink[][] = [
       icon: Box,
       children: [
         {
-          title: "Liste",
-          href: "/univers",
-          icon: Box,
-        },
-        {
           title: "Contexte",
           href: "/context",
           icon: ScrollText,
@@ -187,45 +182,7 @@ const NavbarOne: React.FC<NavbarProps> = ({ session, univers }) => {
       </SidebarContent>
 
       <SidebarFooter>
-        {session ? (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                className="w-full"
-                variant={"secondary"}
-                onClick={() => signOut({ callbackUrl: "/" })}
-                size={!open ? "icon" : "default"}
-              >
-                <PowerOff className={"h-4 w-4"} />
-                <span className={cn("ml-2", !open && "hidden")}>
-                  Se déconnecter
-                </span>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="right" className={!open ? "" : "hidden"}>
-              Se déconnecter
-            </TooltipContent>
-          </Tooltip>
-        ) : (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                className="w-full"
-                variant={"accent"}
-                onClick={() => signIn()}
-                size={!open ? "icon" : "default"}
-              >
-                <Power className={"h-4 w-4"} />
-                <span className={cn("ml-2", !open && "hidden")}>
-                  Se connecter
-                </span>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="right" className={!open ? "" : "hidden"}>
-              Se connecter
-            </TooltipContent>
-          </Tooltip>
-        )}
+        <ConnectionButton session={session} open={open} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
@@ -343,3 +300,52 @@ function NavItem({ link }: { readonly link: NavLink }) {
   }
   return null;
 }
+
+export const ConnectionButton: React.FC<{
+  readonly session: Session | null;
+  open?: boolean;
+}> = ({ session, open = true }) => {
+  return (
+    <Fragment>
+      {session ? (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              className="w-full"
+              variant={"secondary"}
+              onClick={() => signOut({ callbackUrl: "/" })}
+              size={!open ? "icon" : "default"}
+            >
+              <PowerOff className={"h-4 w-4"} />
+              <span className={cn("ml-2", !open && "sr-only")}>
+                Se déconnecter
+              </span>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="right" className={!open ? "" : "hidden"}>
+            Se déconnecter
+          </TooltipContent>
+        </Tooltip>
+      ) : (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              className="w-full"
+              variant={"accent"}
+              onClick={() => signIn()}
+              size={!open ? "icon" : "default"}
+            >
+              <Power className={"h-4 w-4"} />
+              <span className={cn("ml-2", !open && "sr-only")}>
+                Se connecter
+              </span>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="right" className={!open ? "" : "hidden"}>
+            Se connecter
+          </TooltipContent>
+        </Tooltip>
+      )}
+    </Fragment>
+  );
+};

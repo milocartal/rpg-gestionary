@@ -8,6 +8,7 @@ import { sexeRouter } from "./routers/sexe";
 import { skillRouter } from "./routers/skill";
 import { speciesRouter } from "./routers/species";
 import { storyRouter } from "./routers/story";
+import { userRouter } from "./routers/user";
 
 /**
  * This is the primary router for your server.
@@ -24,6 +25,7 @@ export const appRouter = createTRPCRouter({
   species: speciesRouter,
   story: storyRouter,
   univers: universRouter,
+  user: userRouter,
 });
 
 // export type definition of API

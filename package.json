@@ -1,6 +1,8 @@
 {
   "name": "rpg-gestionary",
   "version": "0.1.0",
+  "license": "MIT",
+  "description": "A modern RPG management tool built with Next.js, Prisma, and Tailwind CSS.",
   "private": true,
   "type": "module",
   "scripts": {
@@ -61,6 +63,7 @@
     "@trpc/react-query": "^11.0.0",
     "@trpc/server": "^11.0.0",
     "accesscontrol": "^2.2.1",
+    "argon2": "^0.43.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
