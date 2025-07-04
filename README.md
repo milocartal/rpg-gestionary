@@ -1,6 +1,6 @@
 # SAGA - Service d'Admistration et de Gestion des Aventures (RPG-Gestionary)
 
-**SAGA** est une application web de gestion de jeux de rôle qui permet aux maîtres de jeu de créer et organiser leurs univers, personnages, espèces, populations et compétences.
+**RPG-Gestionary** est une application web de gestion de jeux de rôle qui permet aux maîtres de jeu de créer et organiser leurs univers, personnages, espèces, populations et compétences.
 
 ## 📋 Fonctionnalités
 
