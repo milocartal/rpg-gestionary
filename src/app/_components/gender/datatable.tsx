@@ -29,14 +29,14 @@ import {
 import { api } from "~/trpc/react";
 import { withSessionProvider } from "~/utils/withSessionProvider";
 import { Checkbox } from "~/app/_components/ui/checkbox";
-import type { Sexe } from "@prisma/client";
+import type { Gender } from "@prisma/client";
 
-interface SexeDataTableProps {
-  data: Sexe[];
+interface GenderDataTableProps {
+  data: Gender[];
   children?: React.ReactNode;
 }
 
-const columns: ColumnDef<Sexe>[] = [
+const columns: ColumnDef<Gender>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -75,14 +75,14 @@ const columns: ColumnDef<Sexe>[] = [
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
-      const SexeDataTableCell = () => {
+      const GenderDataTableCell = () => {
         const router = useRouter();
-        const sexe = row.original;
+        const gender = row.original;
 
-        const deleteSexe = api.sexe.delete.useMutation({
+        const deleteGender = api.gender.delete.useMutation({
           onSuccess: () => {
             router.refresh();
-            toast.success("Sexe supprimé");
+            toast.success("Gender supprimé");
           },
           onError: () => {
             toast.error("Une erreur est survenue");
@@ -91,9 +91,9 @@ const columns: ColumnDef<Sexe>[] = [
 
         async function handleDelete() {
           try {
-            await deleteSexe.mutateAsync({ id: sexe.id });
+            await deleteGender.mutateAsync({ id: gender.id });
           } catch (error) {
-            console.error("Delete sexe error:", error);
+            console.error("Delete gender error:", error);
             toast.error(
               error instanceof Error
                 ? error.message
@@ -107,7 +107,7 @@ const columns: ColumnDef<Sexe>[] = [
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
-                  href={`/sexe/${sexe.id}`}
+                  href={`/gender/${gender.id}`}
                   variant={"icon"}
                   size={"icon"}
                   className="text-succes p-0"
@@ -121,7 +121,7 @@ const columns: ColumnDef<Sexe>[] = [
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
-                  href={`/sexe/${sexe.id}/edit`}
+                  href={`/gender/${gender.id}/edit`}
                   variant={"icon"}
                   size={"icon"}
                   className="text-primary p-0"
@@ -151,12 +151,15 @@ const columns: ColumnDef<Sexe>[] = [
         );
       };
 
-      return <SexeDataTableCell />;
+      return <GenderDataTableCell />;
     },
   },
 ];
 
-const DataTableSexeOne: React.FC<SexeDataTableProps> = ({ data, children }) => {
+const DataTableGenderOne: React.FC<GenderDataTableProps> = ({
+  data,
+  children,
+}) => {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -195,7 +198,7 @@ const DataTableSexeOne: React.FC<SexeDataTableProps> = ({ data, children }) => {
     <DataTableBase table={table} columns={columns} selection>
       {children}
       <Input
-        placeholder="Chercher un sexe..."
+        placeholder="Chercher un gender..."
         value={(table.getColumn("Nom")?.getFilterValue() as string) ?? ""}
         onChange={(event) =>
           table.getColumn("Nom")?.setFilterValue(event.target.value)
@@ -206,4 +209,4 @@ const DataTableSexeOne: React.FC<SexeDataTableProps> = ({ data, children }) => {
   );
 };
 
-export const DataTableSexe = withSessionProvider(DataTableSexeOne);
+export const DataTableGender = withSessionProvider(DataTableGenderOne);

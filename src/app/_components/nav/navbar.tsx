@@ -108,8 +108,8 @@ const links: ExclusiveNavLink[][] = [
           icon: Binary,
         },
         {
-          title: "Sexes",
-          href: "/sexes",
+          title: "Genders",
+          href: "/genders",
           icon: Transgender,
         },
       ],

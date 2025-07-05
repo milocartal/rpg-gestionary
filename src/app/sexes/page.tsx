@@ -7,9 +7,9 @@ import { db } from "~/server/db";
 import "~/styles/globals.css";
 import { HydrateClient } from "~/trpc/server";
 
-import { DataTableSexe } from "~/app/_components/sexe";
+import { DataTableGender } from "~/app/_components/gender";
 
-export default async function Sexes() {
+export default async function Genders() {
   const session = await auth();
 
   if (!session) {
@@ -31,7 +31,7 @@ export default async function Sexes() {
       notFound();
     });
 
-  const sexes = await db.sexe.findMany({
+  const genders = await db.gender.findMany({
     where: {
       universId: session.universId,
     },
@@ -39,14 +39,14 @@ export default async function Sexes() {
 
   return (
     <HydrateClient>
-      <Header title={`Sexes | ${univers.name}`} />
+      <Header title={`Genders | ${univers.name}`} />
       <main className="relative flex min-h-screen flex-col items-center bg-[url('/assets/images/bg.webp')] bg-cover bg-fixed px-4 pt-24 pb-10">
         <div className="bg-background flex h-full w-full flex-col rounded-lg px-6 py-4 shadow">
-          <DataTableSexe data={sexes}>
+          <DataTableGender data={genders}>
             <Link href="/skills/new" className="w-full lg:w-auto">
-              Créer un sexe
+              Créer un gender
             </Link>
-          </DataTableSexe>
+          </DataTableGender>
         </div>
       </main>
     </HydrateClient>

@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   title: "Nouvelle compétence de base",
 };
 
-export default async function NewSexe() {
+export default async function NewGender() {
   const session = await auth();
 
   if (!session) {

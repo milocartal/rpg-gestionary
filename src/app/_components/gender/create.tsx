@@ -17,25 +17,25 @@ import {
 } from "~/app/_components/ui/form";
 import { api } from "~/trpc/react";
 import { Input } from "~/app/_components/ui/input";
-import type { Sexe } from "@prisma/client";
+import type { Univers } from "@prisma/client";
 
-const UpdateSexeSchema = z.object({
+const CreateGenderSchema = z.object({
   name: z
     .string({ required_error: "Le nom est requis" })
     .min(1, "Le nom est requis"),
 });
 
-interface UpdateSexeProps {
-  sexe: Sexe;
+interface CreateGenderProps {
+  univers: Univers;
 }
 
-export const UpdateSexe: React.FC<UpdateSexeProps> = ({ sexe }) => {
+export const CreateGender: React.FC<CreateGenderProps> = ({ univers }) => {
   const router = useRouter();
 
-  const updateSexe = api.sexe.update.useMutation({
+  const createGender = api.gender.create.useMutation({
     onSuccess: () => {
-      toast.success("Sexe mis à jour avec succès");
-      router.push("/sexe");
+      toast.success("Gender créé avec succès");
+      router.push("/gender");
     },
     onError: (error) => {
       console.error(error);
@@ -43,18 +43,17 @@ export const UpdateSexe: React.FC<UpdateSexeProps> = ({ sexe }) => {
     },
   });
 
-  async function onSubmit(values: z.infer<typeof UpdateSexeSchema>) {
-    await updateSexe.mutateAsync({
-      id: sexe.id,
+  async function onSubmit(values: z.infer<typeof CreateGenderSchema>) {
+    await createGender.mutateAsync({
+      universId: univers.id,
       name: values.name,
-      universId: sexe.universId,
     });
   }
 
-  const form = useForm<z.infer<typeof UpdateSexeSchema>>({
-    resolver: zodResolver(UpdateSexeSchema),
+  const form = useForm<z.infer<typeof CreateGenderSchema>>({
+    resolver: zodResolver(CreateGenderSchema),
     defaultValues: {
-      name: sexe.name,
+      name: "",
     },
   });
 
@@ -70,7 +69,7 @@ export const UpdateSexe: React.FC<UpdateSexeProps> = ({ sexe }) => {
           render={({ field }) => (
             <FormItem className="w-full">
               <FormLabel>
-                Nom du sexe <span className="text-red-500">*</span>
+                Nom du gender <span className="text-red-500">*</span>
               </FormLabel>
               <FormControl>
                 <Input placeholder="Nom" {...field} />
@@ -82,12 +81,10 @@ export const UpdateSexe: React.FC<UpdateSexeProps> = ({ sexe }) => {
 
         <Button
           type="submit"
-          disabled={updateSexe.isPending}
+          disabled={createGender.isPending}
           className="mt-4 self-end"
         >
-          {updateSexe.isPending
-            ? "Enregistrement..."
-            : "Enregistrer les modifications"}
+          {createGender.isPending ? "Création..." : "Créer le gender"}
         </Button>
       </form>
     </Form>

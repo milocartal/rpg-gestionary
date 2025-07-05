@@ -83,7 +83,7 @@ model Univers {
     Species     Species[]
     Populations Population[]
     BaseSkills  BaseSkill[]
-    Sexes       Sexe[]
+    Genders       Gender[]
 }
 
 model UserToUnivers {
@@ -171,8 +171,8 @@ model Animal {
 
     hp Float
 
-    sexeId String
-    Sexe   Sexe   @relation(fields: [sexeId], references: [id])
+    genderId String
+    Gender   Gender   @relation(fields: [genderId], references: [id])
 
     detail      String @db.LongText
     phisics     String @db.LongText
@@ -206,8 +206,8 @@ model Character {
 
     hp Float
 
-    sexeId String
-    Sexe   Sexe   @relation(fields: [sexeId], references: [id])
+    genderId String
+    Gender   Gender   @relation(fields: [genderId], references: [id])
 
     history     String @db.LongText
     detail      String @db.LongText
@@ -229,7 +229,7 @@ model Character {
     Story   Story  @relation(fields: [storyId], references: [id], onDelete: Cascade)
 }
 
-model Sexe {
+model Gender {
     id   String @id @default(cuid())
     name String
 

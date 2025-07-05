@@ -84,7 +84,7 @@ model Univers {
     Species     Species[]
     Populations Population[]
     BaseSkills  BaseSkill[]
-    Sexes       Sexe[]
+    Genders     Gender[]
 }
 
 model UserToUnivers {
@@ -172,11 +172,11 @@ model Animal {
 
     hp Float
 
-    sexeId String
-    Sexe   Sexe   @relation(fields: [sexeId], references: [id])
+    genderId String
+    Gender   Gender @relation(fields: [genderId], references: [id])
 
     detail      String @db.LongText
-    phisics     String @db.LongText
+    appearance  String @db.LongText
     personality String @db.LongText
 
     //Skills
@@ -193,6 +193,9 @@ model Animal {
 
     userId String
     User   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }
 
 model Character {
@@ -207,12 +210,12 @@ model Character {
 
     hp Float
 
-    sexeId String
-    Sexe   Sexe   @relation(fields: [sexeId], references: [id])
+    genderId String
+    Gender   Gender @relation(fields: [genderId], references: [id])
 
     history     String @db.LongText
     detail      String @db.LongText
-    phisics     String @db.LongText
+    appearance  String @db.LongText
     personality String @db.LongText
 
     //Skills
@@ -228,9 +231,12 @@ model Character {
 
     storyId String
     Story   Story  @relation(fields: [storyId], references: [id], onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }
 
-model Sexe {
+model Gender {
     id   String @id @default(cuid())
     name String
 
@@ -253,4 +259,7 @@ model Skill {
     Character   Character? @relation("CharacterSkills", fields: [characterId], references: [id], onDelete: Cascade)
     animalId    String?
     Animal      Animal?    @relation("AnimalSkills", fields: [animalId], references: [id], onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }

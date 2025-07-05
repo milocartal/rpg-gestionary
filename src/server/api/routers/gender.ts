@@ -9,36 +9,36 @@ import {
 } from "~/server/api/trpc";
 import { canInUnivers } from "~/utils/accesscontrol";
 
-export const sexeRouter = createTRPCRouter({
+export const genderRouter = createTRPCRouter({
   get: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input }) => {
-      const sexe = await db.sexe.findUnique({
+      const gender = await db.gender.findUnique({
         where: { id: input.id },
         include: {
           Univers: true,
         },
       });
-      if (!sexe) {
+      if (!gender) {
         throw new TRPCError({
           code: "NOT_FOUND",
-          message: "Sexe not found",
+          message: "Gender not found",
         });
       }
-      return sexe;
+      return gender;
     }),
 
   getAll: publicProcedure
     .input(z.object({ universId: z.string() }))
     .query(async ({ input }) => {
-      const sexes = await db.sexe.findMany({
+      const genders = await db.gender.findMany({
         where: { Univers: { id: input.universId } },
         include: {
           Univers: true,
         },
       });
 
-      return sexes;
+      return genders;
     }),
 
   create: protectedProcedure
@@ -49,20 +49,20 @@ export const sexeRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      if (!canInUnivers(ctx.session).createAny("sexe").granted) {
+      if (!canInUnivers(ctx.session).createAny("gender").granted) {
         throw new TRPCError({
           code: "UNAUTHORIZED",
-          message: "You are not allowed to create this sexe",
+          message: "You are not allowed to create this gender",
         });
       }
 
-      const sexe = await db.sexe.create({
+      const gender = await db.gender.create({
         data: {
           name: input.name,
           Univers: { connect: { id: input.universId } },
         },
       });
-      return sexe;
+      return gender;
     }),
 
   update: protectedProcedure
@@ -74,36 +74,36 @@ export const sexeRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      if (!canInUnivers(ctx.session).updateAny("sexe").granted) {
+      if (!canInUnivers(ctx.session).updateAny("gender").granted) {
         throw new TRPCError({
           code: "UNAUTHORIZED",
-          message: "You are not allowed to update this sexe",
+          message: "You are not allowed to update this gender",
         });
       }
 
-      const sexe = await db.sexe.update({
+      const gender = await db.gender.update({
         where: { id: input.id },
         data: {
           name: input.name,
           Univers: { connect: { id: input.universId } },
         },
       });
-      return sexe;
+      return gender;
     }),
 
   delete: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      if (!canInUnivers(ctx.session).deleteAny("sexe").granted) {
+      if (!canInUnivers(ctx.session).deleteAny("gender").granted) {
         throw new TRPCError({
           code: "UNAUTHORIZED",
-          message: "You are not allowed to delete this sexe",
+          message: "You are not allowed to delete this gender",
         });
       }
 
-      const sexe = await db.sexe.delete({
+      const gender = await db.gender.delete({
         where: { id: input.id },
       });
-      return sexe;
+      return gender;
     }),
 });

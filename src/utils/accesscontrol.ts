@@ -81,9 +81,9 @@ acUnivers
   .createAny("population")
   .updateAny("population")
   .deleteAny("population")
-  .createAny("sexe")
-  .updateAny("sexe")
-  .deleteAny("sexe")
+  .createAny("gender")
+  .updateAny("gender")
+  .deleteAny("gender")
   .createAny("base-skill")
   .updateAny("base-skill")
   .deleteAny("base-skill");

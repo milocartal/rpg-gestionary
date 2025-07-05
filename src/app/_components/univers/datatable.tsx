@@ -101,11 +101,11 @@ const columns: ColumnDef<UniversWithAll>[] = [
   },
   {
     accessorFn: (originalRow) => {
-      return originalRow.Sexes.length;
+      return originalRow.Genders.length;
     },
-    id: "Sexes",
+    id: "Genders",
     header: ({ column }) => {
-      return <DataTableColumnHeader column={column} title="Sexes" />;
+      return <DataTableColumnHeader column={column} title="Genders" />;
     },
     cell: (info) => {
       const nb = info.getValue() as number;

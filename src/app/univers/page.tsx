@@ -30,7 +30,7 @@ export default async function Univers() {
     include: {
       Users: true,
       Stories: true,
-      Sexes: true,
+      Genders: true,
       Species: true,
       Populations: true,
       BaseSkills: true,

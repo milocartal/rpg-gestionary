@@ -4,7 +4,7 @@ export type UniversWithAll = Prisma.UniversGetPayload<{
   include: {
     Users: true;
     Stories: true;
-    Sexes: true;
+    Genders: true;
     Species: true;
     Populations: true;
     BaseSkills: true;
