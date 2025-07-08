@@ -82,7 +82,7 @@ export const CreateSpecies: React.FC<CreateSpeciesProps> = ({
     defaultValues: {
       name: "",
       image: undefined,
-      universId: univers.id,
+      universeId: univers.id,
       description: "",
       averageAge: 0,
       maxHeight: 0,

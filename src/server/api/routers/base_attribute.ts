@@ -9,101 +9,100 @@ import {
 } from "~/server/api/trpc";
 import { canInUniverse } from "~/utils/accesscontrol";
 
-export const genderRouter = createTRPCRouter({
+const baseAttributeSchema = z.object({
+  name: z.string(),
+  description: z.string(),
+  universeId: z.string(),
+});
+
+export const baseAttributeRouter = createTRPCRouter({
   get: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input }) => {
-      const gender = await db.gender.findUnique({
+      const baseAttribute = await db.baseAttribute.findUnique({
         where: { id: input.id },
         include: {
           Universe: true,
         },
       });
-      if (!gender) {
+      if (!baseAttribute) {
         throw new TRPCError({
           code: "NOT_FOUND",
-          message: "Gender not found",
+          message: "Base attribute not found",
         });
       }
-      return gender;
+      return baseAttribute;
     }),
 
   getAll: publicProcedure
     .input(z.object({ universeId: z.string() }))
     .query(async ({ input }) => {
-      const genders = await db.gender.findMany({
+      const baseAttributes = await db.baseAttribute.findMany({
         where: { Universe: { id: input.universeId } },
         include: {
           Universe: true,
         },
       });
 
-      return genders;
+      return baseAttributes;
     }),
-
   create: protectedProcedure
-    .input(
-      z.object({
-        name: z.string(),
-        universeId: z.string(),
-      }),
-    )
+    .input(baseAttributeSchema)
     .mutation(async ({ ctx, input }) => {
-      if (!canInUniverse(ctx.session).createAny("gender").granted) {
+      if (!canInUniverse(ctx.session).createAny("base-attribute").granted) {
         throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "You are not allowed to create this gender",
+          code: "FORBIDDEN",
+          message: "You do not have permission to create a base attribute",
         });
       }
 
-      const gender = await db.gender.create({
+      const baseAttributes = await db.baseAttribute.create({
         data: {
           name: input.name,
+          description: input.description,
           Universe: { connect: { id: input.universeId } },
         },
       });
-      return gender;
+      return baseAttributes;
     }),
 
   update: protectedProcedure
     .input(
-      z.object({
+      baseAttributeSchema.extend({
         id: z.string(),
-        name: z.string(),
-        universeId: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      if (!canInUniverse(ctx.session).updateAny("gender").granted) {
+      if (!canInUniverse(ctx.session).updateAny("base-attribute").granted) {
         throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "You are not allowed to update this gender",
+          code: "FORBIDDEN",
+          message: "You do not have permission to update a base attribute",
         });
       }
 
-      const gender = await db.gender.update({
+      const baseAttribute = await db.baseAttribute.update({
         where: { id: input.id },
         data: {
           name: input.name,
-          Universe: { connect: { id: input.universeId } },
+          description: input.description,
         },
       });
-      return gender;
+      return baseAttribute;
     }),
 
   delete: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      if (!canInUniverse(ctx.session).deleteAny("gender").granted) {
+      if (!canInUniverse(ctx.session).deleteAny("base-attribute").granted) {
         throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "You are not allowed to delete this gender",
+          code: "FORBIDDEN",
+          message: "You do not have permission to delete a base attribute",
         });
       }
 
-      const gender = await db.gender.delete({
+      const baseAttribute = await db.baseAttribute.delete({
         where: { id: input.id },
       });
-      return gender;
+      return baseAttribute;
     }),
 });

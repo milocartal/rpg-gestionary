@@ -82,7 +82,7 @@ export const UpdateSpecies: React.FC<UpdateSpeciesProps> = ({
     defaultValues: {
       name: species.name,
       image: undefined,
-      universId: species.universId,
+      universeId: species.universeId,
       description: species.description,
       averageAge: species.averageAge,
       maxHeight: species.maxHeight,

@@ -7,7 +7,7 @@ import { auth } from "~/server/auth";
 import { db } from "~/server/db";
 import "~/styles/globals.css";
 import { HydrateClient } from "~/trpc/server";
-import { canInUnivers } from "~/utils/accesscontrol";
+import { canInUniverse } from "~/utils/accesscontrol";
 
 export const metadata: Metadata = {
   title: "Nouvel species",
@@ -20,16 +20,16 @@ export default async function NewSpecies() {
     notFound();
   }
 
-  if (!canInUnivers(session).createOwn("species").granted) {
+  if (!canInUniverse(session).createOwn("species").granted) {
     notFound();
   }
 
-  const univers = await db.univers
+  const univers = await db.universe
     .findFirstOrThrow({
       where: {
         Users: {
           some: {
-            id: session.universId,
+            id: session.universeId,
           },
         },
       },

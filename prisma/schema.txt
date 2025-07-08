@@ -41,8 +41,8 @@ model Session {
     expires      DateTime
     user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    universId String?
-    Univers   UserToUnivers? @relation(fields: [universId], references: [id])
+    universeId String?
+    Univers   UserToUnivers? @relation(fields: [universeId], references: [id])
 }
 
 model User {
@@ -89,16 +89,16 @@ model Univers {
 model UserToUnivers {
     id        String @id @default(cuid())
     userId    String
-    universId String
+    universeId String
     role      String
 
     User    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-    Univers Univers @relation(fields: [universId], references: [id], onDelete: Cascade)
+    Univers Univers @relation(fields: [universeId], references: [id], onDelete: Cascade)
 
     Session Session[]
 
-    @@unique([userId, universId])
-    @@index([userId, universId])
+    @@unique([userId, universeId])
+    @@index([userId, universeId])
 }
 
 model Species {
@@ -116,8 +116,8 @@ model Species {
 
     Animals Animal[]
 
-    Univers   Univers @relation(fields: [universId], references: [id], onDelete: Cascade)
-    universId String
+    Univers   Univers @relation(fields: [universeId], references: [id], onDelete: Cascade)
+    universeId String
 }
 
 model Population {
@@ -133,8 +133,8 @@ model Population {
 
     Characters Character[]
 
-    Univers   Univers @relation(fields: [universId], references: [id], onDelete: Cascade)
-    universId String
+    Univers   Univers @relation(fields: [universeId], references: [id], onDelete: Cascade)
+    universeId String
 }
 
 model BaseSkill {
@@ -144,8 +144,8 @@ model BaseSkill {
 
     Skills Skill[]
 
-    Univers   Univers @relation(fields: [universId], references: [id], onDelete: Cascade)
-    universId String
+    Univers   Univers @relation(fields: [universeId], references: [id], onDelete: Cascade)
+    universeId String
 }
 
 model Story {
@@ -154,8 +154,8 @@ model Story {
     description String @db.LongText
 
     // Relations
-    universId String
-    Univers   Univers @relation(fields: [universId], references: [id], onDelete: Cascade)
+    universeId String
+    Univers   Univers @relation(fields: [universeId], references: [id], onDelete: Cascade)
 
     Characters Character[]
     Animals    Animal[]
@@ -236,8 +236,8 @@ model Gender {
     Characters Character[]
     Animals    Animal[]
 
-    universId String
-    Univers   Univers @relation(fields: [universId], references: [id], onDelete: Cascade)
+    universeId String
+    Univers   Univers @relation(fields: [universeId], references: [id], onDelete: Cascade)
 }
 
 model Skill {

@@ -1,6 +1,6 @@
 import { type Prisma } from "@prisma/client";
 
-export type UniversWithAll = Prisma.UniversGetPayload<{
+export type UniverseWithAll = Prisma.UniverseGetPayload<{
   include: {
     Users: true;
     Stories: true;
@@ -11,7 +11,7 @@ export type UniversWithAll = Prisma.UniversGetPayload<{
   };
 }>;
 
-export type UniversWithUsers = Prisma.UniversGetPayload<{
+export type UniverseWithUsers = Prisma.UniverseGetPayload<{
   include: {
     Users: true;
   };

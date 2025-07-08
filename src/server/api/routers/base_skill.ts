@@ -7,12 +7,13 @@ import {
   protectedProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
-import { canInUnivers } from "~/utils/accesscontrol";
+import { canInUniverse } from "~/utils/accesscontrol";
 
 const baseSkillSchema = z.object({
   name: z.string(),
   description: z.string(),
-  universId: z.string(),
+  universeId: z.string(),
+  attributeId: z.string(),
 });
 
 export const baseSkillRouter = createTRPCRouter({
@@ -22,7 +23,7 @@ export const baseSkillRouter = createTRPCRouter({
       const baseSkill = await db.baseSkill.findUnique({
         where: { id: input.id },
         include: {
-          Univers: true,
+          Universe: true,
         },
       });
       if (!baseSkill) {
@@ -35,12 +36,12 @@ export const baseSkillRouter = createTRPCRouter({
     }),
 
   getAll: publicProcedure
-    .input(z.object({ universId: z.string() }))
+    .input(z.object({ universeId: z.string() }))
     .query(async ({ input }) => {
       const baseSkills = await db.baseSkill.findMany({
-        where: { Univers: { id: input.universId } },
+        where: { Universe: { id: input.universeId } },
         include: {
-          Univers: true,
+          Universe: true,
         },
       });
 
@@ -49,7 +50,7 @@ export const baseSkillRouter = createTRPCRouter({
   create: protectedProcedure
     .input(baseSkillSchema)
     .mutation(async ({ ctx, input }) => {
-      if (!canInUnivers(ctx.session).createAny("base-skill").granted) {
+      if (!canInUniverse(ctx.session).createAny("base-skill").granted) {
         throw new TRPCError({
           code: "FORBIDDEN",
           message: "You do not have permission to create a base skill",
@@ -60,7 +61,8 @@ export const baseSkillRouter = createTRPCRouter({
         data: {
           name: input.name,
           description: input.description,
-          Univers: { connect: { id: input.universId } },
+          BaseAttribute: { connect: { id: input.attributeId } },
+          Universe: { connect: { id: input.universeId } },
         },
       });
       return baseSkills;
@@ -73,7 +75,7 @@ export const baseSkillRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      if (!canInUnivers(ctx.session).updateAny("base-skill").granted) {
+      if (!canInUniverse(ctx.session).updateAny("base-skill").granted) {
         throw new TRPCError({
           code: "FORBIDDEN",
           message: "You do not have permission to update a base skill",
@@ -93,7 +95,7 @@ export const baseSkillRouter = createTRPCRouter({
   delete: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      if (!canInUnivers(ctx.session).deleteAny("base-skill").granted) {
+      if (!canInUniverse(ctx.session).deleteAny("base-skill").granted) {
         throw new TRPCError({
           code: "FORBIDDEN",
           message: "You do not have permission to delete a base skill",

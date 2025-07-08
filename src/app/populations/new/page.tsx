@@ -19,12 +19,12 @@ export default async function NewPopulation() {
     notFound();
   }
 
-  const univers = await db.univers
+  const univers = await db.universe
     .findFirstOrThrow({
       where: {
         Users: {
           some: {
-            id: session.universId,
+            id: session.universeId,
           },
         },
       },

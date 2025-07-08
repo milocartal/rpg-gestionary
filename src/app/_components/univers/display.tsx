@@ -1,6 +1,6 @@
 "use client";
 
-import { type Univers } from "@prisma/client";
+import { type Universe } from "@prisma/client";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Pencil } from "lucide-react";
@@ -9,11 +9,11 @@ import { type Session } from "next-auth";
 import { Link as ShadLink } from "~/app/_components/ui/link";
 import { Separator } from "~/app/_components/ui/separator";
 import { useIsMobile } from "~/hooks/use-mobile";
-import { canInUnivers } from "~/utils/accesscontrol";
+import { canInUniverse } from "~/utils/accesscontrol";
 import { withSessionProvider } from "~/utils/withSessionProvider";
 
 interface UniversResumeProps {
-  univers: Univers;
+  univers: Universe;
   species: number;
   populations: number;
   animals: number;
@@ -39,7 +39,7 @@ const UniversResumeOne: React.FC<UniversResumeProps> = ({
           Aperçu de l&apos;univers
         </h2>
 
-        {canInUnivers(session).updateOwn("univers").granted && (
+        {canInUniverse(session).updateOwn("univers").granted && (
           <ShadLink
             href={`/univers/${univers.id}/edit`}
             size={isMobile ? "icon" : "default"}

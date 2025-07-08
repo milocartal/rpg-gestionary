@@ -7,7 +7,7 @@ import { db } from "~/server/db";
 import "~/styles/globals.css";
 import { HydrateClient } from "~/trpc/server";
 import { auth } from "~/server/auth";
-import { canInUnivers } from "~/utils/accesscontrol";
+import { canInUniverse } from "~/utils/accesscontrol";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -41,16 +41,16 @@ export default async function SpeciesDetail({ params }: Props) {
     notFound();
   }
 
-  if (!canInUnivers(session).updateOwn("species").granted) {
+  if (!canInUniverse(session).updateOwn("species").granted) {
     notFound();
   }
 
-  const univers = await db.univers
+  const univers = await db.universe
     .findFirstOrThrow({
       where: {
         Users: {
           some: {
-            id: session.universId,
+            id: session.universeId,
           },
         },
       },

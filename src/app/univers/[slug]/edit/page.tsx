@@ -1,7 +1,7 @@
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { UpdateUnivers } from "~/app/_components/univers";
+import { UpdateUniverse } from "~/app/_components/univers";
 import { Header } from "~/app/_components/header/header";
 import { db } from "~/server/db";
 import "~/styles/globals.css";
@@ -13,7 +13,7 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const univers = await db.univers.findUnique({
+  const univers = await db.universe.findUnique({
     where: { id: slug },
   });
 
@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function UniversDetail({ params }: Props) {
   const { slug } = await params;
 
-  const univers = await db.univers.findUnique({
+  const univers = await db.universe.findUnique({
     where: { id: slug },
   });
 
@@ -46,7 +46,7 @@ export default async function UniversDetail({ params }: Props) {
       <Header back title={`Univers ${univers.name}`} />
       <main className="relative flex min-h-screen flex-col items-center bg-[url('/assets/images/bg.webp')] bg-cover bg-fixed px-4 pt-24 pb-10">
         <div className="bg-background flex h-full w-full flex-col rounded-lg px-6 py-4 shadow">
-          <UpdateUnivers univers={univers} />
+          <UpdateUniverse univers={univers} />
         </div>
       </main>
     </HydrateClient>

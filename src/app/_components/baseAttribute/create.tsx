@@ -17,34 +17,31 @@ import {
 } from "~/app/_components/ui/form";
 import { api } from "~/trpc/react";
 import { Input } from "~/app/_components/ui/input";
-import type { BaseSkill } from "@prisma/client";
+import type { Universe } from "@prisma/client";
 import { Textarea } from "~/app/_components/ui/textarea";
 
-const UpdateBaseSkillSchema = z.object({
+const CreateBaseAttributeSchema = z.object({
   name: z
     .string({ required_error: "Le nom est requis" })
     .min(1, "Le nom est requis"),
   description: z
     .string({ required_error: "La description est requise" })
     .min(1, "La description est requise"),
-  attributeId: z
-    .string({ required_error: "L'attribut est requis" })
-    .min(1, "L'attribut est requis"),
 });
 
-interface UpdateBaseSkillProps {
-  baseSkill: BaseSkill;
+interface CreateBaseAttributeProps {
+  univers: Universe;
 }
 
-export const UpdateBaseSkill: React.FC<UpdateBaseSkillProps> = ({
-  baseSkill,
+export const CreateBaseAttribute: React.FC<CreateBaseAttributeProps> = ({
+  univers,
 }) => {
   const router = useRouter();
 
-  const updateBaseSkill = api.baseSkill.update.useMutation({
+  const createBaseAttribute = api.baseAttribute.create.useMutation({
     onSuccess: () => {
-      toast.success("Compétence de base créée mise à jour avec succès");
-      router.push("/baseSkill");
+      toast.success("Compétence de base créée avec succès");
+      router.push("/baseAttribute");
     },
     onError: (error) => {
       console.error(error);
@@ -52,26 +49,22 @@ export const UpdateBaseSkill: React.FC<UpdateBaseSkillProps> = ({
     },
   });
 
-  async function onSubmit(values: z.infer<typeof UpdateBaseSkillSchema>) {
-    await updateBaseSkill.mutateAsync({
-      id: baseSkill.id,
-      universeId: baseSkill.universeId,
+  async function onSubmit(values: z.infer<typeof CreateBaseAttributeSchema>) {
+    await createBaseAttribute.mutateAsync({
+      universeId: univers.id,
       name: values.name,
       description: values.description,
-      attributeId: values.attributeId,
     });
   }
 
-  const form = useForm<z.infer<typeof UpdateBaseSkillSchema>>({
-    resolver: zodResolver(UpdateBaseSkillSchema),
+  const form = useForm<z.infer<typeof CreateBaseAttributeSchema>>({
+    resolver: zodResolver(CreateBaseAttributeSchema),
     defaultValues: {
-      name: baseSkill.name,
-      description: baseSkill.description,
-      attributeId: baseSkill.attributeId,
+      name: "",
+      description: "",
     },
   });
 
-  //TODO: Add attribute selection
   return (
     <Form {...form}>
       <form
@@ -117,12 +110,12 @@ export const UpdateBaseSkill: React.FC<UpdateBaseSkillProps> = ({
 
         <Button
           type="submit"
-          disabled={updateBaseSkill.isPending}
+          disabled={createBaseAttribute.isPending}
           className="mt-4 self-end"
         >
-          {updateBaseSkill.isPending
-            ? "Enregistrement..."
-            : "Enregistrer les modifications"}
+          {createBaseAttribute.isPending
+            ? "Création..."
+            : "Créer la compétence de base"}
         </Button>
       </form>
     </Form>

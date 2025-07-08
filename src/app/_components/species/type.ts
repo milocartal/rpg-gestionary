@@ -1,8 +1,8 @@
-import type { Species, Univers } from "@prisma/client";
+import type { Species, Universe } from "@prisma/client";
 import { z } from "zod";
 
 interface CreateSpeciesProps {
-  univers: Univers;
+  univers: Universe;
   redirectionSuccess?: string;
 }
 
@@ -30,7 +30,7 @@ const CreateSpeciesSchema = z.object({
   minWeight: z
     .number({ message: "The minimum weight is required" })
     .min(0, { message: "The minimum weight must be greater than 0" }),
-  universId: z.string({ required_error: "The universId is required" }),
+  universeId: z.string({ required_error: "The universeId is required" }),
 });
 
 const UpdateSpeciesSchema = CreateSpeciesSchema.extend({

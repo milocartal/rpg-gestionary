@@ -82,12 +82,11 @@ export const UpdatePopulation: React.FC<UpdatePopulationProps> = ({
     defaultValues: {
       name: population.name,
       image: undefined,
-      universId: population.universId,
+      universeId: population.universeId,
       description: population.description,
       averageAge: population.averageAge,
       averageHeight: population.averageHeight,
       averageWeight: population.averageWeight,
-      bonus: population.bonus ?? undefined,
     },
     resolver: zodResolver(UpdatePopulationSchema),
   });

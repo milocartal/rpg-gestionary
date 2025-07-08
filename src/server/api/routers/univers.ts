@@ -3,9 +3,9 @@ import { z } from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { db } from "~/server/db";
-import { can, canInUnivers, UniversRolesEnum } from "~/utils/accesscontrol";
+import { can, canInUniverse, UniversRolesEnum } from "~/utils/accesscontrol";
 
-export const universRouter = createTRPCRouter({
+export const universeRouter = createTRPCRouter({
   create: protectedProcedure
     .input(z.object({ name: z.string(), description: z.string() }))
     .mutation(async ({ ctx, input }) => {
@@ -15,17 +15,18 @@ export const universRouter = createTRPCRouter({
           message: "You are not allowed to create this univers",
         });
       }
-      const univers = await db.univers.create({
+      const univers = await db.universe.create({
         data: {
           name: input.name,
           description: input.description,
+          createdById: ctx.session.user.id,
         },
       });
 
-      await db.userToUnivers.create({
+      await db.userToUniverse.create({
         data: {
           userId: ctx.session.user.id,
-          universId: univers.id,
+          universeId: univers.id,
           role: UniversRolesEnum.MANAGER,
         },
       });
@@ -38,7 +39,7 @@ export const universRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       if (
-        !canInUnivers(ctx.session).updateOwn("univers").granted ||
+        !canInUniverse(ctx.session).updateOwn("univers").granted ||
         !can(ctx.session).updateAny("univers").granted
       ) {
         throw new TRPCError({
@@ -47,7 +48,7 @@ export const universRouter = createTRPCRouter({
         });
       }
 
-      const univers = await db.univers.update({
+      const univers = await db.universe.update({
         where: { id: input.id },
         data: {
           name: input.name,
@@ -61,7 +62,7 @@ export const universRouter = createTRPCRouter({
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
       if (
-        !canInUnivers(ctx.session).deleteOwn("univers").granted ||
+        !canInUniverse(ctx.session).deleteOwn("univers").granted ||
         !can(ctx.session).deleteAny("univers").granted
       ) {
         throw new TRPCError({
@@ -70,7 +71,7 @@ export const universRouter = createTRPCRouter({
         });
       }
 
-      const univers = await db.univers.delete({
+      const univers = await db.universe.delete({
         where: { id: input.id },
       });
       return univers;

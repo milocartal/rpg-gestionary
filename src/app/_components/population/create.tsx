@@ -82,12 +82,11 @@ export const CreatePopulation: React.FC<CreatePopulationProps> = ({
     defaultValues: {
       name: "",
       image: undefined,
-      universId: univers.id,
+      universeId: univers.id,
       description: "",
       averageAge: 0,
       averageHeight: 0,
       averageWeight: 0,
-      bonus: undefined,
     },
     resolver: zodResolver(CreatePopulationSchema),
   });

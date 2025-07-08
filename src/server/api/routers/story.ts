@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { db } from "~/server/db";
-import { can, canInUnivers } from "~/utils/accesscontrol";
+import { can, canInUniverse } from "~/utils/accesscontrol";
 
 export const storyRouter = createTRPCRouter({
   create: protectedProcedure
@@ -11,12 +11,12 @@ export const storyRouter = createTRPCRouter({
       z.object({
         name: z.string(),
         description: z.string(),
-        universId: z.string(),
+        universeId: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       if (
-        !canInUnivers(ctx.session).createOwn("story").granted ||
+        !canInUniverse(ctx.session).createOwn("story").granted ||
         !can(ctx.session).createAny("story").granted
       ) {
         throw new TRPCError({
@@ -29,7 +29,8 @@ export const storyRouter = createTRPCRouter({
         data: {
           name: input.name,
           description: input.description,
-          universId: input.universId,
+          universeId: input.universeId,
+          createdById: ctx.session.user.id,
         },
       });
 
@@ -42,7 +43,7 @@ export const storyRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       if (
-        !canInUnivers(ctx.session).updateOwn("story").granted ||
+        !canInUniverse(ctx.session).updateOwn("story").granted ||
         !can(ctx.session).updateAny("story").granted
       ) {
         throw new TRPCError({
@@ -65,7 +66,7 @@ export const storyRouter = createTRPCRouter({
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
       if (
-        !canInUnivers(ctx.session).deleteOwn("story").granted ||
+        !canInUniverse(ctx.session).deleteOwn("story").granted ||
         !can(ctx.session).deleteAny("story").granted
       ) {
         throw new TRPCError({

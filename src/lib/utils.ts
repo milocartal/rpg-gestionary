@@ -1,13 +1,13 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import type { UniversWithUsers } from "./models/Univers";
+import type { UniverseWithUsers } from "./models/Univers";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
 export function formatUniversRole(
-  univers: UniversWithUsers,
+  univers: UniverseWithUsers,
   userId: string | null | undefined,
 ): string {
   const user = univers.Users.find((temp) => temp.userId === userId);
@@ -24,7 +24,7 @@ export function formatUniversRole(
 }
 
 export function SwitchBorderColor(
-  univers: UniversWithUsers,
+  univers: UniverseWithUsers,
   userId: string | null | undefined,
 ): string {
   const role = formatUniversRole(univers, userId);

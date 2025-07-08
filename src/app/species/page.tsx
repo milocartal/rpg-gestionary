@@ -15,12 +15,12 @@ export default async function Species() {
     notFound();
   }
 
-  const univers = await db.univers
+  const univers = await db.universe
     .findFirstOrThrow({
       where: {
         Users: {
           some: {
-            id: session.universId,
+            id: session.universeId,
           },
         },
       },
@@ -32,7 +32,7 @@ export default async function Species() {
 
   const species = await db.species.findMany({
     where: {
-      universId: univers.id,
+      universeId: univers.id,
     },
   });
 

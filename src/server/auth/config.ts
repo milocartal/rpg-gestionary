@@ -23,7 +23,7 @@ declare module "next-auth" {
       id: string;
       role: string;
     } & DefaultSession["user"];
-    universId?: string;
+    universeId?: string;
     Univers?: {
       id: string;
       role: string;
@@ -59,7 +59,7 @@ export const authConfig = {
           return null;
         }
         const user = await db.user.findUnique({
-          /*  */ where: { email: credentials.email as string },
+          where: { email: credentials.email as string },
         });
         if (!user?.password) {
           console.warn("User not found or password not set");
@@ -104,13 +104,13 @@ export const authConfig = {
       newSession: SessionAuth;
     }) {
       if (trigger === "update") {
-        const univers = await db.userToUnivers.findFirst({
+        const univers = await db.userToUniverse.findFirst({
           where: {
-            universId: newSession.universId,
+            universeId: newSession.universeId,
           },
         });
         if (univers) {
-          session.universId = univers.id;
+          session.universeId = univers.id;
           session.Univers = {
             id: univers.id,
             role: univers.role,
@@ -123,7 +123,7 @@ export const authConfig = {
               },
             },
             data: {
-              universId: univers.id,
+              universeId: univers.id,
             },
           });
 
@@ -133,7 +133,7 @@ export const authConfig = {
               ...session.user,
               id: user.id,
             },
-            Univers: {
+            Universe: {
               id: univers.id,
               role: univers.role,
             },
@@ -150,17 +150,17 @@ export const authConfig = {
             ...session.user,
             id: user.id,
           },
-          Univers: {
+          Universe: {
             id: session.Univers.id,
             role: session.Univers.role,
           },
         };
       }
 
-      if (session.universId) {
-        const univers = await db.userToUnivers.findFirst({
+      if (session.universeId) {
+        const univers = await db.userToUniverse.findFirst({
           where: {
-            id: session.universId,
+            id: session.universeId,
           },
         });
         if (univers) {
@@ -170,7 +170,7 @@ export const authConfig = {
               ...session.user,
               id: user.id,
             },
-            Univers: {
+            Universe: {
               id: univers.id,
               role: univers.role,
             },

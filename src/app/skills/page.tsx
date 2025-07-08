@@ -16,12 +16,12 @@ export default async function BaseSkills() {
     notFound();
   }
 
-  const univers = await db.univers
+  const univers = await db.universe
     .findFirstOrThrow({
       where: {
         Users: {
           some: {
-            id: session.universId,
+            id: session.universeId,
           },
         },
       },
@@ -33,7 +33,7 @@ export default async function BaseSkills() {
 
   const baseSkills = await db.baseSkill.findMany({
     where: {
-      universId: session.universId,
+      universeId: session.universeId,
     },
   });
 

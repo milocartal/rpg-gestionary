@@ -17,7 +17,7 @@ import {
 } from "~/app/_components/ui/form";
 import { api } from "~/trpc/react";
 import { Input } from "~/app/_components/ui/input";
-import type { Univers } from "@prisma/client";
+import type { Universe } from "@prisma/client";
 
 const CreateGenderSchema = z.object({
   name: z
@@ -26,7 +26,7 @@ const CreateGenderSchema = z.object({
 });
 
 interface CreateGenderProps {
-  univers: Univers;
+  univers: Universe;
 }
 
 export const CreateGender: React.FC<CreateGenderProps> = ({ univers }) => {
@@ -45,7 +45,7 @@ export const CreateGender: React.FC<CreateGenderProps> = ({ univers }) => {
 
   async function onSubmit(values: z.infer<typeof CreateGenderSchema>) {
     await createGender.mutateAsync({
-      universId: univers.id,
+      universeId: univers.id,
       name: values.name,
     });
   }

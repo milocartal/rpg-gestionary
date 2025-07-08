@@ -17,7 +17,7 @@ import {
 } from "~/app/_components/ui/form";
 import { api } from "~/trpc/react";
 import { Input } from "~/app/_components/ui/input";
-import type { Univers } from "@prisma/client";
+import type { Universe } from "@prisma/client";
 import { Textarea } from "~/app/_components/ui/textarea";
 
 const CreateBaseSkillSchema = z.object({
@@ -27,10 +27,13 @@ const CreateBaseSkillSchema = z.object({
   description: z
     .string({ required_error: "La description est requise" })
     .min(1, "La description est requise"),
+  attributeId: z
+    .string({ required_error: "L'attribut est requis" })
+    .min(1, "L'attribut est requis"),
 });
 
 interface CreateBaseSkillProps {
-  univers: Univers;
+  univers: Universe;
 }
 
 export const CreateBaseSkill: React.FC<CreateBaseSkillProps> = ({
@@ -51,9 +54,10 @@ export const CreateBaseSkill: React.FC<CreateBaseSkillProps> = ({
 
   async function onSubmit(values: z.infer<typeof CreateBaseSkillSchema>) {
     await createBaseSkill.mutateAsync({
-      universId: univers.id,
+      universeId: univers.id,
       name: values.name,
       description: values.description,
+      attributeId: values.attributeId,
     });
   }
 
@@ -62,9 +66,11 @@ export const CreateBaseSkill: React.FC<CreateBaseSkillProps> = ({
     defaultValues: {
       name: "",
       description: "",
+      attributeId: "",
     },
   });
 
+  //TODO: Add attribute selection
   return (
     <Form {...form}>
       <form

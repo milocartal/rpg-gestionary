@@ -17,7 +17,7 @@ import {
 } from "~/app/_components/ui/form";
 import { api } from "~/trpc/react";
 import { Input } from "~/app/_components/ui/input";
-import type { Univers } from "@prisma/client";
+import type { Universe } from "@prisma/client";
 import { Textarea } from "~/app/_components/ui/textarea";
 
 const UpdateUniversSchema = z.object({
@@ -30,13 +30,13 @@ const UpdateUniversSchema = z.object({
 });
 
 interface UpdateUniversProps {
-  univers: Univers;
+  univers: Universe;
 }
 
-export const UpdateUnivers: React.FC<UpdateUniversProps> = ({ univers }) => {
+export const UpdateUniverse: React.FC<UpdateUniversProps> = ({ univers }) => {
   const router = useRouter();
 
-  const updateUnivers = api.univers.update.useMutation({
+  const updateUnivers = api.universe.update.useMutation({
     onSuccess: () => {
       toast.success("Univers mis à jour avec succès");
       router.push("/univers");

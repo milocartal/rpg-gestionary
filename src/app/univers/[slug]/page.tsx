@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
-  const univers = await db.univers.findUnique({
+  const univers = await db.universe.findUnique({
     where: { id: slug },
   });
 
@@ -53,7 +53,7 @@ export default async function UniversDetail({ params }: Props) {
     redirect("/");
   }
 
-  const univers = await db.univers
+  const univers = await db.universe
     .findUniqueOrThrow({
       where: { id: slug },
     })
@@ -63,21 +63,21 @@ export default async function UniversDetail({ params }: Props) {
     });
 
   const species = await db.species.count({
-    where: { universId: univers.id },
+    where: { universeId: univers.id },
   });
   const populations = await db.population.count({
-    where: { universId: univers.id },
+    where: { universeId: univers.id },
   });
 
   const animals = await db.animal.count({
-    where: { Story: { universId: univers.id } },
+    where: { Story: { universeId: univers.id } },
   });
   const characters = await db.character.count({
-    where: { Story: { universId: univers.id } },
+    where: { Story: { universeId: univers.id } },
   });
 
   const stories = await db.story.count({
-    where: { universId: univers.id },
+    where: { universeId: univers.id },
   });
 
   return (

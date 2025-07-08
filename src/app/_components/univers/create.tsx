@@ -28,10 +28,10 @@ const CreateUniversSchema = z.object({
     .min(1, "La description est requise"),
 });
 
-export const CreateUnivers: React.FC = () => {
+export const CreateUniverse: React.FC = () => {
   const router = useRouter();
 
-  const createUnivers = api.univers.create.useMutation({
+  const createUnivers = api.universe.create.useMutation({
     onSuccess: () => {
       toast.success("Univers créé avec succès");
       router.push("/univers");

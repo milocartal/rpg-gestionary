@@ -52,12 +52,12 @@ export default async function SpeciesDetail({ params }: Props) {
     redirect("/");
   }
 
-  const univers = await db.univers
+  const univers = await db.universe
     .findFirstOrThrow({
       where: {
         Users: {
           some: {
-            id: session.universId,
+            id: session.universeId,
           },
         },
       },

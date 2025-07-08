@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { Header } from "~/app/_components/header/header";
-import { CreateUnivers } from "~/app/_components/univers/create";
+import { CreateUniverse } from "~/app/_components/univers/create";
 import { auth } from "~/server/auth";
 import "~/styles/globals.css";
 import { HydrateClient } from "~/trpc/server";
@@ -27,7 +27,7 @@ export default async function NewUnivers() {
             Créer un univers
           </h1>
 
-          <CreateUnivers />
+          <CreateUniverse />
         </div>
       </main>
     </HydrateClient>

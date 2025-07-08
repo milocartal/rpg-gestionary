@@ -86,7 +86,10 @@ acUnivers
   .deleteAny("gender")
   .createAny("base-skill")
   .updateAny("base-skill")
-  .deleteAny("base-skill");
+  .deleteAny("base-skill")
+  .createAny("base-attribute")
+  .updateAny("base-attribute")
+  .deleteAny("base-attribute");
 
 //Maitre du jeu
 acUnivers
@@ -112,8 +115,8 @@ export function can(session: Session | null): Query {
   return ac.can(role);
 }
 
-export function canInUnivers(session: Session | null): Query {
-  //console.log("session canInUnivers", session);
+export function canInUniverse(session: Session | null): Query {
+  //console.log("session canInUniverse", session);
   let role = "anonyme";
   if (!session) return acUnivers.can(role);
 

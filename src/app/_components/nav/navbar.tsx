@@ -25,7 +25,7 @@ import {
 
 import { cn } from "~/lib/utils";
 import { UniversSwitcher } from "~/app/_components/univers/switcher";
-import type { UniversWithUsers } from "~/lib/models/Univers";
+import type { UniverseWithUsers } from "~/lib/models/Univers";
 import { withSessionProvider } from "~/utils/withSessionProvider";
 
 import { Button } from "~/app/_components/ui/button";
@@ -136,7 +136,7 @@ const links: ExclusiveNavLink[][] = [
 
 interface NavbarProps {
   readonly session: Session | null;
-  readonly univers: UniversWithUsers[];
+  readonly univers: UniverseWithUsers[];
 }
 
 const NavbarOne: React.FC<NavbarProps> = ({ session, univers }) => {

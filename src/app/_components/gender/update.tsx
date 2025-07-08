@@ -47,7 +47,7 @@ export const UpdateGender: React.FC<UpdateGenderProps> = ({ gender }) => {
     await updateGender.mutateAsync({
       id: gender.id,
       name: values.name,
-      universId: gender.universId,
+      universeId: gender.universeId,
     });
   }
 

@@ -7,7 +7,7 @@ import { type Session } from "next-auth";
 
 import { Link as ShadLink } from "~/app/_components/ui/link";
 import { useIsMobile } from "~/hooks/use-mobile";
-import { canInUnivers } from "~/utils/accesscontrol";
+import { canInUniverse } from "~/utils/accesscontrol";
 import { withSessionProvider } from "~/utils/withSessionProvider";
 
 interface PopulationResumeProps {
@@ -27,7 +27,7 @@ const PopulationResumeOne: React.FC<PopulationResumeProps> = ({
           Aperçu de la population
         </h2>
 
-        {canInUnivers(session).updateOwn("population").granted && (
+        {canInUniverse(session).updateOwn("population").granted && (
           <ShadLink
             href={`/population/${population.id}/edit`}
             size={isMobile ? "icon" : "default"}

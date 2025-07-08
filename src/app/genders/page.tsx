@@ -16,12 +16,12 @@ export default async function Genders() {
     notFound();
   }
 
-  const univers = await db.univers
+  const univers = await db.universe
     .findFirstOrThrow({
       where: {
         Users: {
           some: {
-            id: session.universId,
+            id: session.universeId,
           },
         },
       },
@@ -33,7 +33,7 @@ export default async function Genders() {
 
   const genders = await db.gender.findMany({
     where: {
-      universId: session.universId,
+      universeId: session.universeId,
     },
   });
 

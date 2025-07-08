@@ -41,8 +41,8 @@ model Session {
     expires      DateTime
     user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    universId String?
-    Univers   UserToUnivers? @relation(fields: [universId], references: [id])
+    universeId String?
+    Universe   UserToUniverse? @relation(fields: [universeId], references: [id])
 }
 
 model User {
@@ -57,9 +57,14 @@ model User {
     sessions      Session[]
 
     // Relations
-    Universes  UserToUnivers[]
-    Characters Character[]
-    Animals    Animal[]
+    Animals          Animal[]
+    Characters       Character[]
+    Stories          Story[]
+    Universes        UserToUniverse[]
+    UniversesCreated Universe[]       @relation("CreateBy")
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }
 
 model VerificationToken {
@@ -70,7 +75,7 @@ model VerificationToken {
     @@unique([identifier, token])
 }
 
-model Univers {
+model Universe {
     id          String @id @default(cuid())
     name        String
     description String @db.LongText
@@ -78,28 +83,33 @@ model Univers {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
+    createdById String
+    CreatedBy   User   @relation("CreateBy", fields: [createdById], references: [id], onDelete: Cascade)
+
     // Relations
-    Users       UserToUnivers[]
-    Stories     Story[]
-    Species     Species[]
-    Populations Population[]
-    BaseSkills  BaseSkill[]
-    Genders     Gender[]
+    BaseAttributes BaseAttribute[]
+    BaseSkills     BaseSkill[]
+    Classes        Class[]
+    Genders        Gender[]
+    Populations    Population[]
+    Species        Species[]
+    Stories        Story[]
+    Users          UserToUniverse[]
 }
 
-model UserToUnivers {
-    id        String @id @default(cuid())
-    userId    String
-    universId String
-    role      String
+model UserToUniverse {
+    id         String @id @default(cuid())
+    userId     String
+    universeId String
+    role       String
 
-    User    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-    Univers Univers @relation(fields: [universId], references: [id], onDelete: Cascade)
+    User     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    Universe Universe @relation(fields: [universeId], references: [id], onDelete: Cascade)
 
     Session Session[]
 
-    @@unique([userId, universId])
-    @@index([userId, universId])
+    @@unique([userId, universeId])
+    @@index([userId, universeId])
 }
 
 model Species {
@@ -117,8 +127,11 @@ model Species {
 
     Animals Animal[]
 
-    Univers   Univers @relation(fields: [universId], references: [id], onDelete: Cascade)
-    universId String
+    Universe   Universe @relation(fields: [universeId], references: [id], onDelete: Cascade)
+    universeId String
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }
 
 model Population {
@@ -130,23 +143,15 @@ model Population {
     averageWeight Float // kg
     averageHeight Float // cm
 
-    bonus String? @db.LongText //metadata of the bonus for certain skills
+    Modifiers PopulationModifier[]
 
     Characters Character[]
 
-    Univers   Univers @relation(fields: [universId], references: [id], onDelete: Cascade)
-    universId String
-}
+    Universe   Universe @relation(fields: [universeId], references: [id], onDelete: Cascade)
+    universeId String
 
-model BaseSkill {
-    id          String @id @default(cuid())
-    name        String
-    description String @db.LongText
-
-    Skills Skill[]
-
-    Univers   Univers @relation(fields: [universId], references: [id], onDelete: Cascade)
-    universId String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }
 
 model Story {
@@ -155,11 +160,19 @@ model Story {
     description String @db.LongText
 
     // Relations
-    universId String
-    Univers   Univers @relation(fields: [universId], references: [id], onDelete: Cascade)
+    universeId String
+    Universe   Universe @relation(fields: [universeId], references: [id], onDelete: Cascade)
 
-    Characters Character[]
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    createdById String
+    CreatedBy   User   @relation(fields: [createdById], references: [id], onDelete: Cascade)
+
     Animals    Animal[]
+    Characters Character[]
+
+    SessionsUnity SessionUnity[]
 }
 
 model Animal {
@@ -180,7 +193,9 @@ model Animal {
     personality String @db.LongText
 
     //Skills
-    Skills Skill[] @relation("AnimalSkills")
+    Attributes Attribute[] @relation("AnimalAttribute")
+    Skills     Skill[]     @relation("AnimalSkills")
+    Modifiers  Modifier[]
 
     Species   Species @relation(fields: [speciesId], references: [id])
     speciesId String
@@ -219,8 +234,11 @@ model Character {
     personality String @db.LongText
 
     //Skills
-    Skills Skill[] @relation("CharacterSkills")
+    Attributes Attribute[] @relation("CharacterAttribute")
+    Skills     Skill[]     @relation("CharacterSkills")
+    Modifiers  Modifier[]
 
+    Classes CharacterClass[]
     Animals Animal[]
 
     populationId String
@@ -243,23 +261,279 @@ model Gender {
     Characters Character[]
     Animals    Animal[]
 
-    universId String
-    Univers   Univers @relation(fields: [universId], references: [id], onDelete: Cascade)
-}
-
-model Skill {
-    id    String @id @default(cuid())
-    name  String
-    value Int
-
-    baseSkillId String
-    BaseSkill   BaseSkill @relation(fields: [baseSkillId], references: [id])
-
-    characterId String?
-    Character   Character? @relation("CharacterSkills", fields: [characterId], references: [id], onDelete: Cascade)
-    animalId    String?
-    Animal      Animal?    @relation("AnimalSkills", fields: [animalId], references: [id], onDelete: Cascade)
+    universeId String
+    Universe   Universe @relation(fields: [universeId], references: [id], onDelete: Cascade)
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+}
+
+model Class {
+    id          String @id @default(cuid())
+    name        String
+    description String @db.LongText
+
+    Characters CharacterClass[]
+
+    universeId String
+    Universe   Universe @relation(fields: [universeId], references: [id], onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model CharacterClass {
+    id          String    @id @default(cuid())
+    characterId String
+    character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+    classId     String
+    class       Class     @relation(fields: [classId], references: [id], onDelete: Cascade)
+
+    level Int
+
+    @@unique([characterId, classId])
+}
+
+model BaseAttribute {
+    id          String   @id @default(cuid())
+    name        String
+    description String   @db.LongText
+    universeId  String
+    Universe    Universe @relation(fields: [universeId], references: [id], onDelete: Cascade)
+
+    Attributes          Attribute[]
+    BaseSkills          BaseSkill[]
+    PopulationModifiers PopulationModifier[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model Attribute {
+    id              String        @id @default(cuid())
+    baseAttributeId String
+    BaseAttribute   BaseAttribute @relation(fields: [baseAttributeId], references: [id])
+    value           Int
+
+    characterId String?
+    Character   Character? @relation("CharacterAttribute", fields: [characterId], references: [id], onDelete: Cascade)
+
+    animalId String?
+    Animal   Animal? @relation("AnimalAttribute", fields: [animalId], references: [id], onDelete: Cascade)
+
+    Modifiers Modifier[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model BaseSkill {
+    id            String        @id @default(cuid())
+    name          String
+    description   String        @db.LongText
+    attributeId   String // clé étrangère vers BaseAttribute
+    BaseAttribute BaseAttribute @relation(fields: [attributeId], references: [id])
+    universeId    String
+    Universe      Universe      @relation(fields: [universeId], references: [id], onDelete: Cascade)
+
+    Skills              Skill[]
+    PopulationModifiers PopulationModifier[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model Skill {
+    id          String    @id @default(cuid())
+    baseSkillId String
+    BaseSkill   BaseSkill @relation(fields: [baseSkillId], references: [id])
+    value       Int
+
+    characterId String?
+    Character   Character? @relation("CharacterSkills", fields: [characterId], references: [id], onDelete: Cascade)
+
+    animalId String?
+    Animal   Animal? @relation("AnimalSkills", fields: [animalId], references: [id], onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    // Polymorphic relations
+    Modifiers Modifier[]
+}
+
+model Modifier {
+    id          String  @id @default(cuid())
+    name        String // Nom du modificateur (ex: Anneau de Force, Bénédiction)
+    description String? @db.LongText
+
+    type ModifierType // ENUM: ATTRIBUTE, SKILL
+
+    value    Int // Valeur du bonus/malus (ex: 2 ou -1)
+    isActive Boolean @default(true)
+
+    // Liens polymorphes
+    attributeId String?
+    Attribute   Attribute? @relation(fields: [attributeId], references: [id], onDelete: Cascade)
+
+    skillId String?
+    Skill   Skill?  @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+    characterId String?
+    Character   Character? @relation(fields: [characterId], references: [id], onDelete: Cascade)
+
+    animalId String?
+    Animal   Animal? @relation(fields: [animalId], references: [id], onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model PopulationModifier {
+    id           String     @id @default(cuid())
+    populationId String
+    Population   Population @relation(fields: [populationId], references: [id], onDelete: Cascade)
+
+    type  ModifierType // ATTRIBUTE ou SKILL
+    value Int
+
+    baseAttributeId String?
+    BaseAttribute   BaseAttribute? @relation(fields: [baseAttributeId], references: [id])
+
+    baseSkillId String?
+    BaseSkill   BaseSkill? @relation(fields: [baseSkillId], references: [id])
+
+    description String? @db.LongText
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+enum ModifierType {
+    ATTRIBUTE
+    SKILL
+}
+
+//Unity part
+
+enum SessionUnityStatus {
+    WAITING
+    IN_PROGRESS
+    FINISHED
+}
+
+model SessionUnity {
+    id      String @id @default(cuid())
+    storyId String
+    Story   Story  @relation(fields: [storyId], references: [id], onDelete: Cascade)
+
+    name        String
+    description String @db.LongText
+
+    joinCode String             @unique // Code de session pour rejoindre la partie
+    status   SessionUnityStatus @default(WAITING) // Statut de la session
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    // Relations
+    MapInstances MapInstance[]
+}
+
+model Map {
+    id          String @id @default(cuid())
+    name        String
+    description String @db.LongText
+
+    Tiles     MapTile[]
+    Instances MapInstance[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model MapInstance {
+    id String @id @default(cuid())
+
+    sessionUnityId String
+    SessionUnity   SessionUnity @relation(fields: [sessionUnityId], references: [id], onDelete: Cascade)
+
+    mapId String
+    Map   Map    @relation(fields: [mapId], references: [id], onDelete: Cascade)
+
+    Tiles TileInstance[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model TileDefinition {
+    id          String @id @default(cuid())
+    name        String
+    description String @db.LongText
+
+    spriteUrl  String // URL de l'image ou du sprite associé à la tuile
+    spritePath String? // Chemin du sprite dans le projet (si applicable)
+
+    // Propriétés de la tuile
+    tileType   TileType // Type de tuile (ex: "water", "land", "forest", etc.)
+    properties Json? // Propriétés supplémentaires de la tuile (ex: obstacles, ressources, etc.)
+    edges      Json? // Edges de la tuile (pour les tuiles hexagonales, par exemple)
+
+    // Relations
+    MapTiles MapTile[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model MapTile {
+    id String @id @default(cuid())
+
+    mapId String
+    Map   Map    @relation(fields: [mapId], references: [id], onDelete: Cascade)
+
+    q        Int // Position X sur la grille
+    r        Int // Position Y sur la grille
+    Z        Int // Position Z sur la grille (pour les tuiles 3D ou hauteur)
+    rotation Float? // Rotation de la tuile (en degrés, si applicable)
+
+    tileDefinitionId String
+    TileDefinition   TileDefinition @relation(fields: [tileDefinitionId], references: [id], onDelete: Cascade)
+
+    Instances TileInstance[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model TileInstance {
+    id String @id @default(cuid())
+
+    mapInstanceId String
+    MapInstance   MapInstance @relation(fields: [mapInstanceId], references: [id], onDelete: Cascade)
+
+    tileId String
+    Tile   MapTile @relation(fields: [tileId], references: [id], onDelete: Cascade)
+
+    q        Int // Position X sur la grille
+    r        Int // Position Y sur la grille
+    Z        Int // Position Z sur la grille (pour les tuiles 3D ou hauteur)
+    rotation Float? // Rotation de la tuile (en degrés, si applicable)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+enum TileType {
+    WATER
+    LAND
+    FOREST
+    MOUNTAIN
+    DESERT
+    GRASSLAND
+    SWAMP
+    CITY
+    ROAD
+    RIVER
 }

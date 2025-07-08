@@ -1,8 +1,8 @@
-import type { Population, Univers } from "@prisma/client";
+import type { Population, Universe } from "@prisma/client";
 import { z } from "zod";
 
 interface CreatePopulationProps {
-  univers: Univers;
+  univers: Universe;
   redirectionSuccess?: string;
 }
 
@@ -27,8 +27,7 @@ const CreatePopulationSchema = z.object({
     .number()
     .min(1, { message: "The average weight is required" })
     .min(0, { message: "The average weight must be greater than 0" }),
-  bonus: z.string().optional(),
-  universId: z.string({ required_error: "The universId is required" }),
+  universeId: z.string({ required_error: "The universeId is required" }),
 });
 
 const UpdatePopulationSchema = CreatePopulationSchema.extend({

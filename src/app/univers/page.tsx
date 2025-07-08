@@ -19,7 +19,7 @@ export default async function Univers() {
     notFound();
   }
 
-  const univers = await db.univers.findMany({
+  const univers = await db.universe.findMany({
     where: {
       Users: {
         some: {

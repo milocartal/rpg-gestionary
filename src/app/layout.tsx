@@ -25,7 +25,7 @@ export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const session = await auth();
-  const univers = await db.univers.findMany({
+  const univers = await db.universe.findMany({
     where: {
       Users: {
         some: {

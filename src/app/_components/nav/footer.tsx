@@ -47,11 +47,11 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "~/app/_components/ui/tooltip";
-import type { UniversWithUsers } from "~/lib/models/Univers";
+import type { UniverseWithUsers } from "~/lib/models/Univers";
 import { cn, formatUniversRole, SwitchBorderColor } from "~/lib/utils";
 
 interface UniversSwitcherProps {
-  readonly univers: UniversWithUsers[];
+  readonly univers: UniverseWithUsers[];
   readonly className?: string;
   readonly session: Session | null;
 }
@@ -64,11 +64,11 @@ export const UniversSwitcher: React.FC<UniversSwitcherProps> = ({
   const router = useRouter();
 
   const [selectedUnivers, setSelectedUnivers] = React.useState<
-    UniversWithUsers | undefined
+    UniverseWithUsers | undefined
   >(() => {
-    if (session?.universId) {
+    if (session?.universeId) {
       return univers.find((c) =>
-        c.Users.find((user) => user.id === session?.universId),
+        c.Users.find((user) => user.id === session?.universeId),
       );
     }
 
@@ -76,21 +76,21 @@ export const UniversSwitcher: React.FC<UniversSwitcherProps> = ({
   });
 
   React.useEffect(() => {
-    if (session?.universId) {
+    if (session?.universeId) {
       setSelectedUnivers(
         univers.find((c) =>
-          c.Users.find((user) => user.id === session?.universId),
+          c.Users.find((user) => user.id === session?.universeId),
         ),
       );
     }
-  }, [session?.universId, univers]);
+  }, [session?.universeId, univers]);
 
   const [open, setOpen] = React.useState(false);
 
-  async function onSelect(universId: string) {
-    await update({ ...session, universId: universId })
+  async function onSelect(universeId: string) {
+    await update({ ...session, universeId: universeId })
       .then(() => {
-        setSelectedUnivers(univers.find((c) => c.id === universId));
+        setSelectedUnivers(univers.find((c) => c.id === universeId));
         setOpen(false);
         router.refresh();
       })
@@ -252,18 +252,18 @@ export const UniversDropdownSwitcher: React.FC<UniversSwitcherProps> = ({
 
   const [open, setOpen] = React.useState(false);
   const [selectedUnivers, setSelectedUnivers] = React.useState<
-    UniversWithUsers | undefined
+    UniverseWithUsers | undefined
   >(() => {
-    if (session?.universId) {
-      return univers.find((c) => c.id === session?.universId);
+    if (session?.universeId) {
+      return univers.find((c) => c.id === session?.universeId);
     }
     return undefined;
   });
 
-  async function onSelect(universId: string) {
-    await update({ univers: { id: universId } })
+  async function onSelect(universeId: string) {
+    await update({ univers: { id: universeId } })
       .then(() => {
-        setSelectedUnivers(univers.find((c) => c.id === universId));
+        setSelectedUnivers(univers.find((c) => c.id === universeId));
         setOpen(false);
         router.refresh();
       })
