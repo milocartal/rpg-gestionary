@@ -13,7 +13,9 @@ export default async function Home() {
       <Header title={`Bienvenue ${session ? session.user.name : ""}`} />
       <main className="relative flex min-h-screen flex-col items-center justify-center gap-12 pt-24">
         {session ? (
-          <p className="">Connecté en tant que {session.user.name}</p>
+          <p className="">
+            Connecté en tant que {session.user.name}: coucou jean jacques
+          </p>
         ) : (
           <section className="flex w-full items-center justify-center gap-4">
             <SignIn />
