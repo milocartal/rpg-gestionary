@@ -9,7 +9,7 @@ import { db } from "~/server/db";
 import "~/styles/globals.css";
 import { HydrateClient } from "~/trpc/server";
 
-import NewUnivers from "~/app/univers/new/page";
+import NewUnivers from "~/app/universes/new/page";
 
 type Props = {
   params: Promise<{ slug: string }>;

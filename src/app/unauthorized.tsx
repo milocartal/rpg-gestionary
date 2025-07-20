@@ -4,7 +4,7 @@ import { type Metadata } from "next/types";
 import { Header } from "./_components/header/header";
 import { HydrateClient } from "~/trpc/server";
 
-import { ConnectionButton } from "~/app/_components/nav/navbar";
+import { ConnectionButton } from "~/app/_components/connection/button";
 
 export const metadata: Metadata = {
   title: "401 : Vous n'êtes pas autorisé | SAGA",

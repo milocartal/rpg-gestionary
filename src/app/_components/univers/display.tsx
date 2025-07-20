@@ -41,7 +41,7 @@ const UniversResumeOne: React.FC<UniversResumeProps> = ({
 
         {canInUniverse(session).updateOwn("univers").granted && (
           <ShadLink
-            href={`/univers/${univers.id}/edit`}
+            href={`/universes/${univers.id}/edit`}
             size={isMobile ? "icon" : "default"}
           >
             {isMobile ? <Pencil className="h-6 w-6" /> : "Modifier"}

@@ -3,20 +3,20 @@
 import { Fragment } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { signIn, signOut } from "next-auth/react";
+
 import { usePathname } from "next/navigation";
 import type { Session } from "next-auth";
 
 import {
   Binary,
+  Blocks,
   BookMarked,
   Box,
+  Landmark,
   type LucideIcon,
   Newspaper,
   Origami,
   PawPrint,
-  Power,
-  PowerOff,
   ReceiptText,
   ScrollText,
   Transgender,
@@ -46,16 +46,13 @@ import {
   SidebarSeparator,
   useSidebar,
 } from "~/app/_components/ui/sidebar";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "~/app/_components/ui/tooltip";
+
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "~/app/_components/ui/collapsible";
+import { ConnectionButton } from "~/app/_components/connection/button";
 
 interface NavLink {
   title: string;
@@ -103,14 +100,29 @@ const links: ExclusiveNavLink[][] = [
           icon: PawPrint,
         },
         {
-          title: "Compétences",
-          href: "/skills",
+          title: "Attributs",
+          href: "/attributes",
           icon: Binary,
         },
         {
-          title: "Genders",
+          title: "Compétences",
+          href: "/skills",
+          icon: Blocks,
+        },
+        {
+          title: "Classes",
+          href: "/classes",
+          icon: Landmark,
+        },
+        {
+          title: "Genres",
           href: "/genders",
           icon: Transgender,
+        },
+        {
+          title: "Objects",
+          href: "/items",
+          icon: Origami,
         },
       ],
     },
@@ -163,10 +175,14 @@ const NavbarOne: React.FC<NavbarProps> = ({ session, univers }) => {
       </SidebarHeader>
 
       <SidebarContent>
-        <SidebarGroup className="gap-2">
-          <UniversSwitcher univers={univers} session={session} />
-        </SidebarGroup>
-        <SidebarSeparator />
+        {session && (
+          <Fragment>
+            <SidebarGroup className="gap-2">
+              <UniversSwitcher universes={univers} session={session} />
+            </SidebarGroup>
+            <SidebarSeparator />
+          </Fragment>
+        )}
         {links.map((group, index) => {
           return (
             <Fragment key={index}>
@@ -300,52 +316,3 @@ function NavItem({ link }: { readonly link: NavLink }) {
   }
   return null;
 }
-
-export const ConnectionButton: React.FC<{
-  readonly session: Session | null;
-  open?: boolean;
-}> = ({ session, open = true }) => {
-  return (
-    <Fragment>
-      {session ? (
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              className="w-full"
-              variant={"secondary"}
-              onClick={() => signOut({ callbackUrl: "/" })}
-              size={!open ? "icon" : "default"}
-            >
-              <PowerOff className={"h-4 w-4"} />
-              <span className={cn("ml-2", !open && "sr-only")}>
-                Se déconnecter
-              </span>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="right" className={!open ? "" : "hidden"}>
-            Se déconnecter
-          </TooltipContent>
-        </Tooltip>
-      ) : (
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              className="w-full"
-              variant={"accent"}
-              onClick={() => signIn()}
-              size={!open ? "icon" : "default"}
-            >
-              <Power className={"h-4 w-4"} />
-              <span className={cn("ml-2", !open && "sr-only")}>
-                Se connecter
-              </span>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="right" className={!open ? "" : "hidden"}>
-            Se connecter
-          </TooltipContent>
-        </Tooltip>
-      )}
-    </Fragment>
-  );
-};

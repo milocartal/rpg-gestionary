@@ -91,6 +91,7 @@ model Universe {
     BaseSkills     BaseSkill[]
     Classes        Class[]
     Genders        Gender[]
+    Items          Item[]
     Populations    Population[]
     Species        Species[]
     Stories        Story[]
@@ -209,6 +210,8 @@ model Animal {
     userId String
     User   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+    Items ItemInstance[]
+
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }
@@ -240,6 +243,8 @@ model Character {
 
     Classes CharacterClass[]
     Animals Animal[]
+
+    Items ItemInstance[]
 
     populationId String
     Population   Population @relation(fields: [populationId], references: [id])
@@ -285,9 +290,9 @@ model Class {
 model CharacterClass {
     id          String    @id @default(cuid())
     characterId String
-    character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+    Character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
     classId     String
-    class       Class     @relation(fields: [classId], references: [id], onDelete: Cascade)
+    Class       Class     @relation(fields: [classId], references: [id], onDelete: Cascade)
 
     level Int
 
@@ -412,6 +417,57 @@ model PopulationModifier {
 enum ModifierType {
     ATTRIBUTE
     SKILL
+}
+
+model Item {
+    id           String   @id @default(cuid())
+    name         String
+    description  String?  @db.LongText
+    sprite       String? // URL de l'image ou du sprite associé à l'item
+    type         ItemType
+    weight       Float?
+    value        Int? // valeur monétaire
+    isConsumable Boolean  @default(false)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    public Boolean @default(false) // Indique si l'item est public (accessible à tous les joueurs) ou privé (seulement pour le MJ). Le MJ pourra cependant créer une instance privée pour un joueur durant une partie.s
+
+    Universe   Universe @relation(fields: [universeId], references: [id], onDelete: Cascade)
+    universeId String
+
+    ItemInstances ItemInstance[]
+}
+
+model ItemInstance {
+    id         String @id @default(cuid())
+    baseItemId String
+    BaseItem   Item   @relation(fields: [baseItemId], references: [id], onDelete: Cascade)
+
+    characterId String?
+    Character   Character? @relation(fields: [characterId], references: [id], onDelete: Cascade)
+
+    animalId String?
+    Animal   Animal? @relation(fields: [animalId], references: [id], onDelete: Cascade)
+
+    quantity Int     @default(1)
+    equipped Boolean @default(false)
+
+    notes String? @db.LongText
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+enum ItemType {
+    WEAPON
+    ARMOR
+    CONSUMABLE
+    TOOL
+    MISC
+    FOOD
+    POTION
 }
 
 //Unity part

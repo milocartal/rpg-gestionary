@@ -6,6 +6,30 @@ import { db } from "~/server/db";
 import { can, canInUniverse, UniversRolesEnum } from "~/utils/accesscontrol";
 
 export const universeRouter = createTRPCRouter({
+  getAllFromSession: protectedProcedure.query(async ({ ctx }) => {
+    if (!ctx.session?.user) {
+      return [];
+    }
+
+    const universes = await db.universe.findMany({
+      where: {
+        Users: {
+          some: {
+            userId: ctx.session.user.id,
+          },
+        },
+      },
+      orderBy: {
+        name: "asc",
+      },
+      include: {
+        Users: true,
+      },
+    });
+
+    return universes;
+  }),
+
   create: protectedProcedure
     .input(z.object({ name: z.string(), description: z.string() }))
     .mutation(async ({ ctx, input }) => {

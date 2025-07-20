@@ -6,6 +6,7 @@ import { baseSkillRouter } from "./routers/base_skill";
 import { characterRouter } from "./routers/character";
 import { populationRouter } from "./routers/population";
 import { genderRouter } from "./routers/gender";
+import { itemRouter } from "./routers/item";
 import { skillRouter } from "./routers/skill";
 import { speciesRouter } from "./routers/species";
 import { storyRouter } from "./routers/story";
@@ -25,6 +26,7 @@ export const appRouter = createTRPCRouter({
   character: characterRouter,
   population: populationRouter,
   gender: genderRouter,
+  item: itemRouter,
   skill: skillRouter,
   species: speciesRouter,
   story: storyRouter,

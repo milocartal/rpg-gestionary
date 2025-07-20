@@ -19,7 +19,7 @@ import {
 } from "~/app/_components/ui/form";
 
 import { Input } from "~/app/_components/ui/input";
-import { Separator } from "../ui/separator";
+import { Separator } from "~/app/_components/ui/separator";
 
 const SignInSchema = z.object({
   email: z
@@ -46,7 +46,7 @@ export const SignIn: React.FC = () => {
           toast.error(result.error);
         } else {
           toast.success("Connexion réussie !");
-          router.push("/"); // Redirect to the home page or a specific page after successful sign-in
+          router.refresh(); // Redirect to the home page or a specific page after successful sign-in
         }
       })
       .catch((error) => {

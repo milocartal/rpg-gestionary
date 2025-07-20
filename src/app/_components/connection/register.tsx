@@ -18,7 +18,7 @@ import {
 
 import { Input } from "~/app/_components/ui/input";
 import { api } from "~/trpc/react";
-import { Separator } from "../ui/separator";
+import { Separator } from "~/app/_components/ui/separator";
 import { signIn } from "next-auth/react";
 
 const RegisterSchema = z
@@ -53,7 +53,7 @@ export const Register: React.FC = () => {
   const createUser = api.user.create.useMutation({
     onSuccess: () => {
       toast.success("Compte créé avec succès !");
-      router.push("/login"); // Redirect to the login page after successful sign-up
+      router.push("/connection"); // Redirect to the connection page after successful sign-up
     },
     onError: (error) => {
       console.error("Error creating user:", error);

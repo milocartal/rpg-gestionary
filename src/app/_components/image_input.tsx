@@ -148,17 +148,18 @@ export const ImageInput: React.FC<ImageInputProps> = ({ dref, image }) => {
         />
         <div
           onClick={handleClick}
-          className="border-muted flex h-full w-full flex-col items-center justify-center rounded-md border border-dashed p-4 hover:cursor-pointer"
+          className="border-primary flex h-full w-full flex-col items-center justify-center rounded-md border border-dashed p-4 hover:cursor-pointer"
         >
           {fileName && <p className="font-bold">{fileName}</p>}
           <p>Déposer ou cliquez pour ajouter une image</p>
         </div>
         <div
           hidden={!isActive}
-          className={`bg-secondary border-primary absolute top-0 right-0 bottom-0 left-0 z-10 flex items-center justify-center rounded-md border p-2`}
+          className={`border-accent absolute top-0 right-0 bottom-0 left-0 z-10 flex flex-col items-center justify-center rounded-md border bg-gray-100 p-2`}
           style={isActive ? style : hiddenStyle}
         >
           <FilePlus className="text-text h-8 w-8" />
+          <p className="text-text ml-2">Déposer l&apos;image ici</p>
         </div>
       </div>
     </div>

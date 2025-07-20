@@ -43,7 +43,7 @@ export default async function Univers() {
       <main className="relative flex min-h-screen flex-col items-center bg-[url('/assets/images/bg.webp')] bg-cover bg-fixed px-4 pt-24 pb-10">
         <div className="bg-background flex h-full w-full flex-col rounded-lg px-6 py-4 shadow">
           <DataTableUnivers data={univers}>
-            <Link href="/univers/new" className="w-full lg:w-auto">
+            <Link href="/universes/new" className="w-full lg:w-auto">
               Créer un univers
             </Link>
           </DataTableUnivers>

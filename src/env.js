@@ -17,6 +17,10 @@ export const env = createEnv({
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
+    // Email configuration
+    // https://nodemailer.com/about/
+    GOOGLE_APP_USER: z.string().email(),
+    GOOGLE_APP_PASSWORD: z.string(),
   },
 
   /**
@@ -38,6 +42,9 @@ export const env = createEnv({
     AUTH_DISCORD_SECRET: process.env.AUTH_DISCORD_SECRET,
     DATABASE_URL: process.env.DATABASE_URL,
     NODE_ENV: process.env.NODE_ENV,
+    // Email configuration
+    GOOGLE_APP_USER: process.env.GOOGLE_APP_USER,
+    GOOGLE_APP_PASSWORD: process.env.GOOGLE_APP_PASSWORD,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

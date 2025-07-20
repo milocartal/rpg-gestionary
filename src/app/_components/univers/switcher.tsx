@@ -25,13 +25,7 @@ import {
   CommandList,
   CommandSeparator,
 } from "~/app/_components/ui/command";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from "~/app/_components/ui/dropdown-menu";
+
 import {
   Popover,
   PopoverContent,
@@ -48,26 +42,38 @@ import {
   TooltipTrigger,
 } from "~/app/_components/ui/tooltip";
 import type { UniverseWithUsers } from "~/lib/models/Univers";
-import { cn, formatUniversRole, SwitchBorderColor } from "~/lib/utils";
+import { cn, formatUniverseRole, SwitchBorderColor } from "~/lib/utils";
+import { api } from "~/trpc/react";
 
 interface UniversSwitcherProps {
-  readonly univers: UniverseWithUsers[];
+  readonly universes: UniverseWithUsers[];
   readonly className?: string;
   readonly session: Session | null;
 }
 
 export const UniversSwitcher: React.FC<UniversSwitcherProps> = ({
-  univers,
   session,
 }) => {
   const { update } = useSession();
   const router = useRouter();
 
-  const [selectedUnivers, setSelectedUnivers] = React.useState<
+  const { data, isLoading } = api.universe.getAllFromSession.useQuery();
+
+  React.useEffect(() => {
+    if (data) {
+      setUniverses(data);
+    }
+  }, [data]);
+
+  const [universes, setUniverses] = React.useState<UniverseWithUsers[]>(
+    data ?? [],
+  );
+
+  const [selectedUniverse, setSelectedUniverse] = React.useState<
     UniverseWithUsers | undefined
   >(() => {
     if (session?.universeId) {
-      return univers.find((c) =>
+      return universes.find((c) =>
         c.Users.find((user) => user.id === session?.universeId),
       );
     }
@@ -77,25 +83,25 @@ export const UniversSwitcher: React.FC<UniversSwitcherProps> = ({
 
   React.useEffect(() => {
     if (session?.universeId) {
-      setSelectedUnivers(
-        univers.find((c) =>
+      setSelectedUniverse(
+        universes.find((c) =>
           c.Users.find((user) => user.id === session?.universeId),
         ),
       );
     }
-  }, [session?.universeId, univers]);
+  }, [session?.universeId, universes]);
 
   const [open, setOpen] = React.useState(false);
 
   async function onSelect(universeId: string) {
     await update({ ...session, universeId: universeId })
       .then(() => {
-        setSelectedUnivers(univers.find((c) => c.id === universeId));
+        setSelectedUniverse(universes.find((c) => c.id === universeId));
         setOpen(false);
         router.refresh();
       })
       .catch(() => {
-        console.error("Error updating univers");
+        console.error("Error updating universes");
       });
   }
 
@@ -105,30 +111,43 @@ export const UniversSwitcher: React.FC<UniversSwitcherProps> = ({
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <SidebarMenuButton
-              tooltip={"Changer d'univers"}
+              tooltip={"Changer d'universes"}
               variant="outline"
               role="combobox"
               aria-expanded={open}
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              {selectedUnivers ? (
+              {isLoading ? (
+                <React.Fragment>
+                  <Avatar className="h-8 w-8 rounded-lg">
+                    <AvatarImage src={"/monogramme.svg"} alt={"monogramme"} />
+                    <AvatarFallback>SG</AvatarFallback>
+                  </Avatar>
+                  <div className="grid flex-1 text-left text-sm leading-tight">
+                    <span className="truncate font-semibold">
+                      Chargement des universes...
+                    </span>
+                    <span className="truncate text-xs">Veuillez patienter</span>
+                  </div>
+                </React.Fragment>
+              ) : selectedUniverse ? (
                 <React.Fragment>
                   <Avatar className="h-8 w-8 rounded-lg">
                     <AvatarImage
                       src={"/monogramme.svg"}
-                      alt={selectedUnivers.name.replace("_", " ")}
+                      alt={selectedUniverse.name.replace("_", " ")}
                     />
                     <AvatarFallback>
-                      {selectedUnivers.name.slice(0, 2).toUpperCase()}
+                      {selectedUniverse.name.slice(0, 2).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
                     <span className="truncate font-semibold">
-                      {selectedUnivers.name}
+                      {selectedUniverse.name}
                     </span>
                     <span className="truncate text-xs">
-                      {formatUniversRole(selectedUnivers, session?.user.id)}
+                      {formatUniverseRole(selectedUniverse, session?.user.id)}
                     </span>
                   </div>
                 </React.Fragment>
@@ -160,19 +179,28 @@ export const UniversSwitcher: React.FC<UniversSwitcherProps> = ({
               <CommandList className="">
                 <CommandEmpty>Aucun profil trouvé.</CommandEmpty>
 
-                <CommandGroup heading={"Mes univers"}>
-                  {univers.length === 0 && (
-                    <CommandItem disabled>
-                      Vous n&apos;avez pas d&apos;univers
+                <CommandGroup heading={"Mes universes"}>
+                  {isLoading ? (
+                    <CommandItem
+                      disabled
+                      className="animate-pulse cursor-not-allowed"
+                    >
+                      Chargement des universes...
                     </CommandItem>
+                  ) : (
+                    universes.length === 0 && (
+                      <CommandItem disabled>
+                        Vous n&apos;avez pas d&apos;universes
+                      </CommandItem>
+                    )
                   )}
-                  {univers.map((univers) => (
-                    <Tooltip key={univers.id}>
+                  {universes.map((universe) => (
+                    <Tooltip key={universe.id}>
                       <CommandItem
-                        onSelect={() => void onSelect(univers.id)}
+                        onSelect={() => void onSelect(universe.id)}
                         className={cn(
                           "rounded-l-none border-l-4 text-sm transition-all duration-150 hover:border-l-8",
-                          SwitchBorderColor(univers, session?.user.id),
+                          SwitchBorderColor(universe, session?.user.id),
                         )}
                       >
                         <TooltipTrigger asChild>
@@ -180,22 +208,22 @@ export const UniversSwitcher: React.FC<UniversSwitcherProps> = ({
                             <Avatar className="mr-2 h-5 w-5">
                               <AvatarImage
                                 src={"/monogramme.svg"}
-                                alt={univers.name.replace("_", " ")}
+                                alt={universe.name.replace("_", " ")}
                               />
                               <AvatarFallback>
-                                {univers.name?.slice(0, 2).toUpperCase()}
+                                {universe.name?.slice(0, 2).toUpperCase()}
                               </AvatarFallback>
                             </Avatar>
                             <div>
-                              <p>{univers.name}</p>
+                              <p>{universe.name}</p>
                               <p className="text-muted text-xs lowercase italic">
-                                {formatUniversRole(univers, session?.user.id)}
+                                {formatUniverseRole(universe, session?.user.id)}
                               </p>
                             </div>
                             <CheckIcon
                               className={cn(
                                 "ml-auto h-4 w-4",
-                                selectedUnivers?.id === univers.id
+                                selectedUniverse?.id === universe.id
                                   ? "opacity-100"
                                   : "opacity-0",
                               )}
@@ -205,8 +233,8 @@ export const UniversSwitcher: React.FC<UniversSwitcherProps> = ({
                       </CommandItem>
                       <TooltipContent>
                         <p>
-                          {univers.name} |{" "}
-                          {formatUniversRole(univers, session?.user.id)}
+                          {universe.name} |{" "}
+                          {formatUniverseRole(universe, session?.user.id)}
                         </p>
                       </TooltipContent>
                     </Tooltip>
@@ -219,7 +247,7 @@ export const UniversSwitcher: React.FC<UniversSwitcherProps> = ({
                   <CommandItem
                     onSelect={() => {
                       setOpen(false);
-                      router.push("/univers/new");
+                      router.push("/universes/new");
                     }}
                   >
                     <PlusCircledIcon className="mr-2 h-5 w-5" />
@@ -228,7 +256,7 @@ export const UniversSwitcher: React.FC<UniversSwitcherProps> = ({
                   <CommandItem
                     onSelect={() => {
                       setOpen(false);
-                      router.push("/univers");
+                      router.push("/universes");
                     }}
                   >
                     <List className="mr-2 h-5 w-5" />
@@ -239,118 +267,6 @@ export const UniversSwitcher: React.FC<UniversSwitcherProps> = ({
             </Command>
           </PopoverContent>
         </Popover>
-      </SidebarMenuItem>
-    </SidebarMenu>
-  );
-};
-
-export const UniversDropdownSwitcher: React.FC<UniversSwitcherProps> = ({
-  univers,
-}) => {
-  const { data: session, update } = useSession();
-  const router = useRouter();
-
-  const [open, setOpen] = React.useState(false);
-  const [selectedUnivers, setSelectedUnivers] = React.useState<
-    UniverseWithUsers | undefined
-  >(() => {
-    if (session?.universeId) {
-      return univers.find((c) => c.id === session?.universeId);
-    }
-    return undefined;
-  });
-
-  async function onSelect(universeId: string) {
-    await update({ univers: { id: universeId } })
-      .then(() => {
-        setSelectedUnivers(univers.find((c) => c.id === universeId));
-        setOpen(false);
-        router.refresh();
-      })
-      .catch(() => {
-        console.error("Error updating univers");
-      });
-  }
-
-  return (
-    <SidebarMenu>
-      <SidebarMenuItem>
-        <DropdownMenu open={open} onOpenChange={setOpen}>
-          <DropdownMenuTrigger asChild>
-            <SidebarMenuButton
-              tooltip={"Choisissez une entreprise"}
-              variant={"outline"}
-              aria-expanded={open}
-              size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-            >
-              {selectedUnivers ? (
-                <React.Fragment>
-                  <Avatar className="h-8 w-8 rounded-lg">
-                    <AvatarImage
-                      src={"/monogramme.svg"}
-                      alt={selectedUnivers.name.replace("_", " ")}
-                    />
-                    <AvatarFallback>
-                      {selectedUnivers.name.slice(0, 2).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">
-                      {selectedUnivers.name}
-                    </span>
-                    <span className="truncate text-xs">
-                      {formatUniversRole(selectedUnivers, session?.user.id)}
-                    </span>
-                  </div>
-                </React.Fragment>
-              ) : (
-                <React.Fragment>
-                  <Avatar className="h-8 w-8 rounded-lg">
-                    <AvatarImage src={"/monogramme.svg"} alt={"monogramme"} />
-                    <AvatarFallback>SG</AvatarFallback>
-                  </Avatar>
-                  <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">
-                      Sélectionnez un univers
-                    </span>
-                    <span className="truncate text-xs">ou créez-en un</span>
-                  </div>
-                </React.Fragment>
-              )}
-              <CaretSortIcon className="ml-auto h-4 w-4 shrink-0 opacity-50" />
-            </SidebarMenuButton>
-          </DropdownMenuTrigger>
-
-          <DropdownMenuContent
-            className="max-h-[30vh] w-[--radix-dropdown-menu-trigger-width] min-w-56 overflow-y-auto rounded-lg"
-            align="start"
-            sideOffset={4}
-          >
-            <DropdownMenuLabel>Choisissez un univers</DropdownMenuLabel>
-            {univers.map((univers) => (
-              <DropdownMenuItem
-                key={univers.id}
-                onClick={async () => {
-                  await onSelect(univers.id);
-                }}
-                className="gap-2 p-2"
-              >
-                <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage
-                    src={undefined}
-                    alt={univers.name.replace("_", " ")}
-                  />
-                  <AvatarFallback>{univers.name?.slice(0, 2)}</AvatarFallback>
-                </Avatar>
-                {univers.name}
-                {selectedUnivers?.id === univers.id && (
-                  <CheckIcon className="ml-auto h-4 w-4" />
-                )}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
   );

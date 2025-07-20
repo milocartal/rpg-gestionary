@@ -37,13 +37,38 @@ export const userRouter = createTRPCRouter({
         type: argon2id,
       });
 
-      const user = await db.user.create({
-        data: {
-          name: input.name,
-          email: input.email,
-          password: hashed,
-        },
-      });
+      const user = await db.user
+        .create({
+          data: {
+            name: input.name,
+            email: input.email,
+            password: hashed,
+          },
+        })
+        .catch((error) => {
+          console.error("Error creating user:", error);
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Failed to create user",
+          });
+        });
+
+      await db.account
+        .create({
+          data: {
+            userId: user.id,
+            provider: "credentials",
+            providerAccountId: user.email!,
+            type: "credentials",
+          },
+        })
+        .catch((error) => {
+          console.error("Error creating account:", error);
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Failed to create account",
+          });
+        });
 
       return user;
     }),

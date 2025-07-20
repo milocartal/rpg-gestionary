@@ -48,7 +48,7 @@ import {
   TooltipTrigger,
 } from "~/app/_components/ui/tooltip";
 import type { UniverseWithUsers } from "~/lib/models/Univers";
-import { cn, formatUniversRole, SwitchBorderColor } from "~/lib/utils";
+import { cn, formatUniverseRole, SwitchBorderColor } from "~/lib/utils";
 
 interface UniversSwitcherProps {
   readonly univers: UniverseWithUsers[];
@@ -128,7 +128,7 @@ export const UniversSwitcher: React.FC<UniversSwitcherProps> = ({
                       {selectedUnivers.name}
                     </span>
                     <span className="truncate text-xs">
-                      {formatUniversRole(selectedUnivers, session?.user.id)}
+                      {formatUniverseRole(selectedUnivers, session?.user.id)}
                     </span>
                   </div>
                 </React.Fragment>
@@ -189,7 +189,7 @@ export const UniversSwitcher: React.FC<UniversSwitcherProps> = ({
                             <div>
                               <p>{univers.name}</p>
                               <p className="text-muted text-xs lowercase italic">
-                                {formatUniversRole(univers, session?.user.id)}
+                                {formatUniverseRole(univers, session?.user.id)}
                               </p>
                             </div>
                             <CheckIcon
@@ -206,7 +206,7 @@ export const UniversSwitcher: React.FC<UniversSwitcherProps> = ({
                       <TooltipContent>
                         <p>
                           {univers.name} |{" "}
-                          {formatUniversRole(univers, session?.user.id)}
+                          {formatUniverseRole(univers, session?.user.id)}
                         </p>
                       </TooltipContent>
                     </Tooltip>
@@ -219,7 +219,7 @@ export const UniversSwitcher: React.FC<UniversSwitcherProps> = ({
                   <CommandItem
                     onSelect={() => {
                       setOpen(false);
-                      router.push("/univers/new");
+                      router.push("/universes/new");
                     }}
                   >
                     <PlusCircledIcon className="mr-2 h-5 w-5" />
@@ -300,7 +300,7 @@ export const UniversDropdownSwitcher: React.FC<UniversSwitcherProps> = ({
                       {selectedUnivers.name}
                     </span>
                     <span className="truncate text-xs">
-                      {formatUniversRole(selectedUnivers, session?.user.id)}
+                      {formatUniverseRole(selectedUnivers, session?.user.id)}
                     </span>
                   </div>
                 </React.Fragment>

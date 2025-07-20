@@ -3,13 +3,13 @@
 import {
   ArrowDownIcon,
   CaretSortIcon,
-  PlusCircledIcon
+  PlusCircledIcon,
 } from "@radix-ui/react-icons";
 import {
   type Column,
   type ColumnDef,
   type Table as DataTable,
-  flexRender
+  flexRender,
 } from "@tanstack/react-table";
 import { ArrowUpIcon, CheckIcon, ChevronDown } from "lucide-react";
 import React, { Fragment } from "react";
@@ -23,25 +23,25 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-  CommandSeparator
+  CommandSeparator,
 } from "~/app/_components/ui/command";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuTrigger
+  DropdownMenuTrigger,
 } from "~/app/_components/ui/dropdown-menu";
 import {
   Popover,
   PopoverContent,
-  PopoverTrigger
+  PopoverTrigger,
 } from "~/app/_components/ui/popover";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue
+  SelectValue,
 } from "~/app/_components/ui/select";
 import { Separator } from "~/app/_components/ui/separator";
 import { Skeleton } from "~/app/_components/ui/skeleton";
@@ -51,13 +51,13 @@ import {
   TableCell,
   TableHead,
   TableHeader,
-  TableRow
+  TableRow,
 } from "~/app/_components/ui/table";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
-  TooltipTrigger
+  TooltipTrigger,
 } from "~/app/_components/ui/tooltip";
 import { cn } from "~/lib/utils";
 
@@ -72,7 +72,7 @@ export function DataTableColumnHeader<TData, TValue>({
   column,
   title,
   className,
-  tooltip
+  tooltip,
 }: DataTableColumnHeaderProps<TData, TValue>) {
   if (!column.getCanSort()) {
     return (
@@ -92,7 +92,7 @@ export function DataTableColumnHeader<TData, TValue>({
           <Button
             variant="ghost"
             size="sm"
-            className="-ml-3 h-8 text-sm data-[state=open]:bg-accent"
+            className="data-[state=open]:bg-accent -ml-3 h-8 text-sm"
             onClick={() => column.toggleSorting(undefined, true)}
           >
             <span>{title}</span>
@@ -128,12 +128,12 @@ export function DataTableBase<TData>({
   children,
   pagination = true,
   selection,
-  onPageSizeChange
+  onPageSizeChange,
 }: DataTableProps<TData>) {
   return (
     <TooltipProvider>
       <div className="w-full pb-4">
-        <div className="flex flex-col xl:flex-row items-center gap-4 py-4">
+        <div className="flex flex-col items-center gap-4 py-4 xl:flex-row">
           {children}
 
           <DropdownMenu>
@@ -179,7 +179,7 @@ export function DataTableBase<TData>({
                             ? null
                             : flexRender(
                                 header.column.columnDef.header,
-                                header.getContext()
+                                header.getContext(),
                               )}
                         </TableHead>
                       );
@@ -206,7 +206,7 @@ export function DataTableBase<TData>({
                         >
                           {flexRender(
                             cell.column.columnDef.cell,
-                            cell.getContext()
+                            cell.getContext(),
                           )}
                         </TableCell>
                       ))}
@@ -227,11 +227,12 @@ export function DataTableBase<TData>({
           </div>
         </React.Suspense>
 
-        <div className="flex flex-col gap-2 xl:flex-row items-center justify-end space-x-2 py-4">
+        <div className="flex flex-col items-center justify-end gap-2 space-x-2 py-4 xl:flex-row">
           {selection && (
-            <div className="flex-1 text-sm text-muted-foreground">
-              {table.getFilteredSelectedRowModel().rows.length} of{" "}
-              {table.getFilteredRowModel().rows.length} row(s) selected.
+            <div className="text-muted-foreground flex-1 text-sm">
+              {table.getFilteredSelectedRowModel().rows.length} sur{" "}
+              {table.getFilteredRowModel().rows.length} ligne(s)
+              sélectionnée(s).
             </div>
           )}
           {pagination && (
@@ -265,7 +266,7 @@ export function DataTableBase<TData>({
                 Page {table.getState().pagination.pageIndex + 1} sur{" "}
                 {table.getPageCount()}
               </div>
-              <div className="flex space-x-2 w-full lg:w-auto">
+              <div className="flex w-full space-x-2 lg:w-auto">
                 <Button
                   variant="outline"
                   size="sm"
@@ -306,7 +307,7 @@ interface DataTableFacetedFilterProps<TData, TValue> {
 export function DataTableFacetedFilter<TData, TValue>({
   column,
   title,
-  options
+  options,
 }: DataTableFacetedFilterProps<TData, TValue>) {
   const facets = column?.getFacetedUniqueValues();
   const selectedValues = new Set(column?.getFilterValue() as string[]);
@@ -317,7 +318,7 @@ export function DataTableFacetedFilter<TData, TValue>({
         <Button
           variant="outline"
           size="sm"
-          className="h-8 border-dashed w-full xl:w-auto"
+          className="h-8 w-full border-dashed xl:w-auto"
         >
           <PlusCircledIcon className="mr-2 h-4 w-4" />
           {title}
@@ -375,22 +376,22 @@ export function DataTableFacetedFilter<TData, TValue>({
                       }
                       const filterValues = Array.from(selectedValues);
                       column?.setFilterValue(
-                        filterValues.length ? filterValues : undefined
+                        filterValues.length ? filterValues : undefined,
                       );
                     }}
                   >
                     <div
                       className={cn(
-                        "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
+                        "border-primary mr-2 flex h-4 w-4 items-center justify-center rounded-sm border",
                         isSelected
                           ? "bg-primary text-primary-foreground"
-                          : "opacity-50 [&_svg]:invisible"
+                          : "opacity-50 [&_svg]:invisible",
                       )}
                     >
                       <CheckIcon className={cn("h-4 w-4")} />
                     </div>
                     {option.icon && (
-                      <option.icon className="mr-2 h-4 w-4 text-muted-foreground" />
+                      <option.icon className="text-muted-foreground mr-2 h-4 w-4" />
                     )}
                     <span>{option.label}</span>
                     {facets?.get(option.value) && (

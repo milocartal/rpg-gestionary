@@ -156,6 +156,16 @@ function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
   );
 }
 
+function Fieldset({ className, ...props }: React.ComponentProps<"fieldset">) {
+  return (
+    <fieldset
+      data-slot="form-fieldset"
+      className={cn("flex w-full flex-col gap-4 xl:flex-row", className)}
+      {...props}
+    />
+  );
+}
+
 export {
   useFormField,
   Form,
@@ -165,4 +175,5 @@ export {
   FormDescription,
   FormMessage,
   FormField,
+  Fieldset,
 };

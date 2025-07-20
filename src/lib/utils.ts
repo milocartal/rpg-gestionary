@@ -6,7 +6,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function formatUniversRole(
+export function formatUniverseRole(
   univers: UniverseWithUsers,
   userId: string | null | undefined,
 ): string {
@@ -27,7 +27,7 @@ export function SwitchBorderColor(
   univers: UniverseWithUsers,
   userId: string | null | undefined,
 ): string {
-  const role = formatUniversRole(univers, userId);
+  const role = formatUniverseRole(univers, userId);
 
   switch (role) {
     case "maitre-du-jeu":

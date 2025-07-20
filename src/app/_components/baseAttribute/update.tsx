@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import * as z from "zod";
+import type * as z from "zod";
 
 import { Button } from "~/app/_components/ui/button";
 import {
@@ -17,21 +17,12 @@ import {
 } from "~/app/_components/ui/form";
 import { api } from "~/trpc/react";
 import { Input } from "~/app/_components/ui/input";
-import type { BaseAttribute } from "@prisma/client";
+
 import { Textarea } from "~/app/_components/ui/textarea";
-
-const UpdateBaseAttributeSchema = z.object({
-  name: z
-    .string({ required_error: "Le nom est requis" })
-    .min(1, "Le nom est requis"),
-  description: z
-    .string({ required_error: "La description est requise" })
-    .min(1, "La description est requise"),
-});
-
-interface UpdateBaseAttributeProps {
-  baseAttribute: BaseAttribute;
-}
+import {
+  type UpdateBaseAttributeProps,
+  UpdateBaseAttributeSchema,
+} from "./type";
 
 export const UpdateBaseAttribute: React.FC<UpdateBaseAttributeProps> = ({
   baseAttribute,
@@ -61,6 +52,7 @@ export const UpdateBaseAttribute: React.FC<UpdateBaseAttributeProps> = ({
   const form = useForm<z.infer<typeof UpdateBaseAttributeSchema>>({
     resolver: zodResolver(UpdateBaseAttributeSchema),
     defaultValues: {
+      id: baseAttribute.id,
       name: baseAttribute.name,
       description: baseAttribute.description,
     },

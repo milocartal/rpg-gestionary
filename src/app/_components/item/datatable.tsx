@@ -11,15 +11,13 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { Eye, FilePen, Trash2 } from "lucide-react";
+import { Ban, FilePen, Trash2 } from "lucide-react";
+
 import { useRouter } from "next/navigation";
 import * as React from "react";
 import { toast } from "sonner";
 
-import {
-  DataTableBase,
-  DataTableColumnHeader,
-} from "~/app/_components/data-table";
+import { DataTableBase } from "~/app/_components/data-table";
 
 import { Button } from "~/app/_components/ui/button";
 import { Input } from "~/app/_components/ui/input";
@@ -29,17 +27,24 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "~/app/_components/ui/tooltip";
-import { type UniverseWithAll } from "~/lib/models/Univers";
 import { api } from "~/trpc/react";
 import { withSessionProvider } from "~/utils/withSessionProvider";
 import { Checkbox } from "~/app/_components/ui/checkbox";
+import type { Item } from "@prisma/client";
+import { ItemTypeDisplay } from "~/lib/models/Item";
+import { ItemBadge } from "./badge";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "~/app/_components/ui/avatar";
 
-interface UniversDataTableProps {
-  data: UniverseWithAll[];
+interface ItemDataTableProps {
+  data: Item[];
   children?: React.ReactNode;
 }
 
-const columns: ColumnDef<UniverseWithAll>[] = [
+const columns: ColumnDef<Item>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -65,6 +70,26 @@ const columns: ColumnDef<UniverseWithAll>[] = [
     enableHiding: false,
   },
   {
+    accessorFn: (row) => row,
+    header: "Sprite",
+    cell: (data) => {
+      const item = data.getValue() as Item;
+      const sprite = item.sprite;
+      return (
+        <div className="flex items-center">
+          {sprite ? (
+            <Avatar>
+              <AvatarImage src={sprite} alt={item.name} />
+              <AvatarFallback>OBJ</AvatarFallback>
+            </Avatar>
+          ) : (
+            <Ban className="h-6 w-6" />
+          )}
+        </div>
+      );
+    },
+  },
+  {
     accessorFn: (row) => row.name,
     header: "Nom",
     cell: (data) => {
@@ -74,97 +99,82 @@ const columns: ColumnDef<UniverseWithAll>[] = [
     },
   },
   {
-    accessorFn: (originalRow) => {
-      return originalRow.Users.length;
+    accessorFn: (row) => row.description,
+    header: "Description",
+    cell: (data) => {
+      return <div className="text-xs">{data.getValue() as string}</div>;
     },
-    id: "Utilisateurs",
-    header: ({ column }) => {
-      return <DataTableColumnHeader column={column} title="Utilisateurs" />;
-    },
-    cell: (info) => {
-      const nb = info.getValue() as number;
-      return <div className="text-xs">{nb}</div>;
+  },
+
+  {
+    accessorFn: (row) => row.weight,
+    header: "Poids",
+    cell: (data) => {
+      if (data.getValue() === null || data.getValue() === undefined) {
+        return <div className="text-xs">N/A</div>;
+      }
+      if (typeof data.getValue() !== "number") {
+        return <div className="text-xs">Invalid weight</div>;
+      }
+      return <div className="text-xs">{data.getValue() as number} kg</div>;
     },
   },
   {
-    accessorFn: (originalRow) => {
-      return originalRow.Stories.length;
-    },
-    id: "Histoires",
-    header: ({ column }) => {
-      return <DataTableColumnHeader column={column} title="Histoires" />;
-    },
-    cell: (info) => {
-      const nb = info.getValue() as number;
-      return <div className="text-xs">{nb}</div>;
-    },
-  },
-  {
-    accessorFn: (originalRow) => {
-      return originalRow.Genders.length;
-    },
-    id: "Genders",
-    header: ({ column }) => {
-      return <DataTableColumnHeader column={column} title="Genders" />;
-    },
-    cell: (info) => {
-      const nb = info.getValue() as number;
-      return <div className="text-xs">{nb}</div>;
+    accessorFn: (row) => row.value,
+    header: "Valeur",
+    cell: (data) => {
+      if (data.getValue() === null || data.getValue() === undefined) {
+        return <div className="text-xs">N/A</div>;
+      }
+      if (typeof data.getValue() !== "number") {
+        return <div className="text-xs">Invalid value</div>;
+      }
+      const value = data.getValue() as number;
+      if (value < 0) {
+        return <div className="text-xs text-red-500">Valeur invalide</div>;
+      }
+      if (value === 0) {
+        return <div className="text-xs">Gratuit</div>;
+      }
+      if (value > 1000000) {
+        return <div className="text-xs text-red-500">Valeur trop élevée</div>;
+      }
+      return <div className="text-xs">{value} €</div>;
     },
   },
   {
-    accessorFn: (originalRow) => {
-      return originalRow.Species.length;
-    },
-    id: "Espèces",
-    header: ({ column }) => {
-      return <DataTableColumnHeader column={column} title="Espèces" />;
-    },
-    cell: (info) => {
-      const nb = info.getValue() as number;
-      return <div className="text-xs">{nb}</div>;
-    },
-  },
-  {
-    accessorFn: (originalRow) => {
-      return originalRow.Populations.length;
-    },
-    id: "Populations",
-    header: ({ column }) => {
-      return <DataTableColumnHeader column={column} title="Populations" />;
-    },
-    cell: (info) => {
-      const nb = info.getValue() as number;
-      return <div className="text-xs">{nb}</div>;
-    },
-  },
-  {
-    accessorFn: (originalRow) => {
-      return originalRow.BaseSkills.length;
-    },
-    id: "Compétences de base",
-    header: ({ column }) => {
+    accessorFn: (row) => row.isConsumable,
+    header: "Consommable",
+    cell: ({ getValue }) => {
+      const isConsumable = getValue() as boolean;
       return (
-        <DataTableColumnHeader column={column} title="Compétences de base" />
+        <Checkbox
+          checked={isConsumable}
+          disabled
+          className="translate-y-[2px]"
+        />
       );
     },
-    cell: (info) => {
-      const nb = info.getValue() as number;
-      return <div className="text-xs">{nb}</div>;
+  },
+  {
+    accessorFn: (row) => ItemTypeDisplay[row.type],
+    header: "Type",
+    cell: (data) => {
+      return <ItemBadge item={data.row.original} />;
     },
   },
   {
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
-      const UniversDataTableCell = () => {
+      const ItemDataTableCell = () => {
         const router = useRouter();
-        const univers = row.original;
+        const item = row.original;
 
-        const deleteUnivers = api.universe.delete.useMutation({
+        const deleteItem = api.item.delete.useMutation({
           onSuccess: () => {
             router.refresh();
-            toast.success("Univers supprimé");
+            toast.success("Compétence de base supprimée");
           },
           onError: () => {
             toast.error("Une erreur est survenue");
@@ -173,9 +183,9 @@ const columns: ColumnDef<UniverseWithAll>[] = [
 
         async function handleDelete() {
           try {
-            await deleteUnivers.mutateAsync({ id: univers.id });
+            await deleteItem.mutateAsync({ id: item.id });
           } catch (error) {
-            console.error("Delete univers error:", error);
+            console.error("Delete item error:", error);
             toast.error(
               error instanceof Error
                 ? error.message
@@ -189,21 +199,7 @@ const columns: ColumnDef<UniverseWithAll>[] = [
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
-                  href={`/universes/${univers.id}`}
-                  variant={"icon"}
-                  size={"icon"}
-                  className="text-succes p-0"
-                >
-                  <Eye className="h-4 w-4" />
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent>Aperçu</TooltipContent>
-            </Tooltip>
-
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link
-                  href={`/universes/${univers.id}/edit`}
+                  href={`/items/${item.id}`}
                   variant={"icon"}
                   size={"icon"}
                   className="text-primary p-0"
@@ -211,7 +207,7 @@ const columns: ColumnDef<UniverseWithAll>[] = [
                   <FilePen className="h-4 w-4" />
                 </Link>
               </TooltipTrigger>
-              <TooltipContent>Modifier</TooltipContent>
+              <TooltipContent className="text-white">Modifier</TooltipContent>
             </Tooltip>
 
             <Tooltip>
@@ -233,15 +229,12 @@ const columns: ColumnDef<UniverseWithAll>[] = [
         );
       };
 
-      return <UniversDataTableCell />;
+      return <ItemDataTableCell />;
     },
   },
 ];
 
-const DataTableUniversOne: React.FC<UniversDataTableProps> = ({
-  data,
-  children,
-}) => {
+const DataTableItemOne: React.FC<ItemDataTableProps> = ({ data, children }) => {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -272,15 +265,15 @@ const DataTableUniversOne: React.FC<UniversDataTableProps> = ({
     getRowId: (row) => row.id,
   });
 
-  /* const selectedRows = table.getFilteredSelectedRowModel().rows.map((row) => {
+  /*  const selectedRows = table.getFilteredSelectedRowModel().rows.map((row) => {
     return row.original.id;
-  });
- */
+  }); */
+
   return (
     <DataTableBase table={table} columns={columns} selection>
       {children}
       <Input
-        placeholder="Chercher un univers..."
+        placeholder="Chercher une compétence..."
         value={(table.getColumn("Nom")?.getFilterValue() as string) ?? ""}
         onChange={(event) =>
           table.getColumn("Nom")?.setFilterValue(event.target.value)
@@ -291,4 +284,4 @@ const DataTableUniversOne: React.FC<UniversDataTableProps> = ({
   );
 };
 
-export const DataTableUnivers = withSessionProvider(DataTableUniversOne);
+export const DataTableItem = withSessionProvider(DataTableItemOne);
