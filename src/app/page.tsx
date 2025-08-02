@@ -2,8 +2,7 @@ import { auth } from "~/server/auth";
 import { HydrateClient } from "~/trpc/server";
 import { Header } from "~/app/_components/header/header";
 
-import { SignIn } from "~/app/_components/connection/login";
-import { Register } from "~/app/_components/connection/register";
+import { Fragment } from "react";
 
 export default async function Home() {
   const session = await auth();
@@ -13,12 +12,13 @@ export default async function Home() {
       <Header title={`Bienvenue ${session ? session.user.name : ""}`} />
       <main className="relative flex min-h-screen flex-col items-center justify-center gap-12 pt-24">
         {session ? (
-          <p className="">Connecté en tant que {session.user.name}</p>
+          <Fragment>
+            <p className="">Connecté en tant que {session.user.name}</p>
+          </Fragment>
         ) : (
-          <section className="flex w-full items-center justify-center gap-4">
-            <SignIn />
-            <Register />
-          </section>
+          <Fragment>
+            <h1>Veuillez vous connecter ou vous inscrire</h1>
+          </Fragment>
         )}
       </main>
     </HydrateClient>

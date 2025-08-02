@@ -29,7 +29,8 @@ ac.grant("administrateur")
   .readAny("univers")
   .createAny("univers")
   .updateAny("univers")
-  .deleteAny("univers");
+  .deleteAny("univers")
+  .createAny("mail");
 
 //Spectateur
 acUnivers

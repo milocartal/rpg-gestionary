@@ -11,6 +11,7 @@ import {
 import { Button } from "~/app/_components/ui/button";
 import { cn } from "~/lib/utils";
 import type { Session } from "next-auth";
+import CustomImage from "../image";
 
 export const ConnectionButton: React.FC<{
   readonly session: Session | null;
@@ -58,5 +59,51 @@ export const ConnectionButton: React.FC<{
         </Tooltip>
       )}
     </Fragment>
+  );
+};
+
+export const DiscordButton: React.FC = () => {
+  return (
+    <Button
+      variant="discord"
+      className="w-auto"
+      type="button"
+      size={"lg"}
+      onClick={() => {
+        void signIn("discord");
+      }}
+    >
+      <CustomImage
+        src="/discord-avatar-light-blurple.svg"
+        alt="Discord"
+        width={32}
+        height={32}
+        className="mr-1"
+      />
+      Discord
+    </Button>
+  );
+};
+
+export const GitHubButton: React.FC = () => {
+  return (
+    <Button
+      variant="github"
+      className="w-auto"
+      type="button"
+      size={"lg"}
+      onClick={() => {
+        void signIn("github");
+      }}
+    >
+      <CustomImage
+        src="/github-mark-white.svg"
+        alt="GitHub"
+        width={32}
+        height={32}
+        className="mr-1"
+      />
+      GitHub
+    </Button>
   );
 };

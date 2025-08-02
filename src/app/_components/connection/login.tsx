@@ -18,10 +18,22 @@ import {
   FormMessage,
 } from "~/app/_components/ui/form";
 
-import { Input } from "~/app/_components/ui/input";
-import { Separator } from "~/app/_components/ui/separator";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "~/app/_components/ui/card";
 
-const SignInSchema = z.object({
+import { Input } from "~/app/_components/ui/input";
+
+import { DiscordButton, GitHubButton } from "./button";
+import { Separator } from "~/app/_components/ui/separator";
+import { useRef } from "react";
+
+const LoginSchema = z.object({
   email: z
     .string({ required_error: "Le nom est requis" })
     .email({ message: "L'email doit être valide" })
@@ -32,10 +44,20 @@ const SignInSchema = z.object({
     .max(64, "Le mot de passe doit faire entre 8 et 64 caractères"),
 });
 
-export const SignIn: React.FC = () => {
+export const LoginForm: React.FC = () => {
   const router = useRouter();
 
-  async function onSubmit(values: z.infer<typeof SignInSchema>) {
+  const passwordRef = useRef<HTMLInputElement>(null);
+
+  function togglePasswordVisibility() {
+    if (passwordRef.current) {
+      const type =
+        passwordRef.current.type === "password" ? "text" : "password";
+      passwordRef.current.type = type;
+    }
+  }
+
+  async function onSubmit(values: z.infer<typeof LoginSchema>) {
     await signIn("credentials", {
       redirect: false,
       email: values.email,
@@ -55,8 +77,8 @@ export const SignIn: React.FC = () => {
       });
   }
 
-  const form = useForm<z.infer<typeof SignInSchema>>({
-    resolver: zodResolver(SignInSchema),
+  const form = useForm<z.infer<typeof LoginSchema>>({
+    resolver: zodResolver(LoginSchema),
     defaultValues: {
       email: "",
       password: "",
@@ -64,71 +86,94 @@ export const SignIn: React.FC = () => {
   });
 
   return (
-    <section className="flex w-full flex-col items-center justify-center gap-4">
-      <h1 className="text-2xl font-bold">Connexion</h1>
-      <p className="text-muted-foreground text-sm">
-        Veuillez entrer vos identifiants pour vous connecter à votre compte.
-      </p>
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="flex w-full flex-col items-start gap-4 rounded-md bg-white p-4"
+    <Card className="w-full max-w-md">
+      <CardHeader>
+        <CardTitle>Connexion</CardTitle>
+        <CardDescription>
+          Veuillez vous connecter pour accéder à votre compte.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="flex w-full flex-col items-start gap-4"
+          >
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormLabel>
+                    Email <span className="text-red-500">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input placeholder="john@doe.io" type="email" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              name="password"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem className="flex w-full flex-col">
+                  <div className="flex w-full items-center justify-between">
+                    <FormLabel>Mot de passe</FormLabel>
+                    <Button
+                      variant="link"
+                      type="button"
+                      onClick={() => router.push("/forgot-password")}
+                    >
+                      Mot de passe oublié ?
+                    </Button>
+                  </div>
+                  <FormControl>
+                    <Input
+                      placeholder="******"
+                      type="password"
+                      {...field}
+                      ref={passwordRef}
+                    />
+                  </FormControl>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <Button
+              type="button"
+              className="w-full"
+              variant="outline"
+              onClick={togglePasswordVisibility}
+            >
+              Voir le mot de passe
+            </Button>
+
+            <Button type="submit" className="w-full">
+              Se connecter
+            </Button>
+          </form>
+        </Form>
+      </CardContent>
+      <CardFooter className="flex w-full flex-col items-center justify-center gap-2">
+        <DiscordButton />
+        <GitHubButton />
+
+        <Separator className="my-1 w-full" />
+
+        <span className="text-sm">Pas encore de compte ?</span>
+        <Button
+          variant="accent"
+          size="lg"
+          onClick={() => router.push("/register")}
         >
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem className="w-full">
-                <FormLabel>
-                  Email <span className="text-red-500">*</span>
-                </FormLabel>
-                <FormControl>
-                  <Input placeholder="john@doe.io" type="email" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            name="password"
-            control={form.control}
-            render={({ field }) => (
-              <FormItem className="flex w-full flex-col">
-                <FormLabel>Mot de passe</FormLabel>
-                <FormControl>
-                  <Input placeholder="******" type="password" {...field} />
-                </FormControl>
-
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <Button type="submit" className="mt-4 self-end">
-            Se connecter
-          </Button>
-        </form>
-      </Form>
-      <Separator className="my-4 w-full" />
-      <Button
-        variant="outline"
-        className="w-full"
-        onClick={() => {
-          void signIn("discord");
-        }}
-      >
-        Discord
-      </Button>
-      <Button
-        variant="outline"
-        className="w-full"
-        onClick={() => {
-          void signIn("github");
-        }}
-      >
-        GitHub
-      </Button>
-    </section>
+          S&apos;inscrire
+        </Button>
+      </CardFooter>
+    </Card>
   );
 };

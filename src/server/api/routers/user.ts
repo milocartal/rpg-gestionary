@@ -1,6 +1,8 @@
 import { TRPCError } from "@trpc/server";
 import { argon2id, hash } from "argon2";
 
+import { sendMail } from "~/lib/mailer";
+
 import { z } from "zod";
 
 import {
@@ -11,6 +13,7 @@ import {
 import { db } from "~/server/db";
 
 import { can } from "~/utils/accesscontrol";
+import { env } from "~/env";
 
 const createUserSchema = z.object({
   name: z.string(),
@@ -52,23 +55,21 @@ export const userRouter = createTRPCRouter({
             message: "Failed to create user",
           });
         });
-
-      await db.account
-        .create({
-          data: {
-            userId: user.id,
-            provider: "credentials",
-            providerAccountId: user.email!,
-            type: "credentials",
-          },
-        })
-        .catch((error) => {
-          console.error("Error creating account:", error);
-          throw new TRPCError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: "Failed to create account",
-          });
+      if (!user) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to create user",
         });
+      }
+
+      const emailDetail = {
+        subject: "Bienvenue sur notre plateforme",
+        to: input.email,
+        html: `<p>Bonjour ${input.name},</p><p>Merci de vous être inscrit sur notre plateforme. Nous sommes ravis de vous accueillir !</p>`,
+        text: `Bonjour ${input.name},\n\nMerci de vous être inscrit sur notre plateforme. Nous sommes ravis de vous accueillir !`,
+      };
+
+      await sendMail(emailDetail);
 
       return user;
     }),
@@ -140,4 +141,107 @@ export const userRouter = createTRPCRouter({
   getSession: protectedProcedure.query(({ ctx }) => {
     return ctx.session;
   }),
+
+  forgotPassword: publicProcedure
+    .input(z.object({ email: z.string().email() }))
+    .mutation(async ({ input }) => {
+      const user = await db.user.findUnique({
+        where: { email: input.email },
+      });
+
+      if (!user) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "User not found",
+        });
+      }
+
+      if (!user.password) {
+        const account = await db.account.findFirst({
+          where: { userId: user.id, type: "oauth" },
+        });
+
+        if (!account) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "No account found for this user",
+          });
+        }
+
+        return {
+          status: 500,
+          code: "ACCOUNT_LINKED",
+          cause: "Account linked to OAuth provider",
+          message: `Votre compte est lié à un compte ${account.provider}. Connectez-vous avec cette méthode pour accéder à votre compte.`,
+        };
+      }
+
+      // Here you would typically send a password reset email
+
+      const resetLink = `${env.NEXT_PUBLIC_URL}/reset-password?email=${encodeURIComponent(input.email)}`;
+
+      const emailDetails = {
+        subject: "Réinitialisation de votre mot de passe",
+        to: input.email,
+        html: `<p>Bonjour,</p><p>Pour réinitialiser votre mot de passe, veuillez cliquer sur le lien suivant :</p><p><a href="${resetLink}">Réinitialiser mon mot de passe</a></p><p>Si vous n'avez pas demandé cette réinitialisation, ignorez cet email.</p>`,
+        text: `Bonjour,\n\nPour réinitialiser votre mot de passe, veuillez cliquer sur le lien suivant :\n${resetLink}\n\nSi vous n'avez pas demandé cette réinitialisation, ignorez cet email.`,
+      };
+      await sendMail(emailDetails);
+
+      return {
+        status: 200,
+        code: "RESET_LINK_SENT",
+        cause: "Password reset link sent",
+        message: "Un lien de réinitialisation a été envoyé à votre email.",
+      };
+    }),
+
+  resetPassword: publicProcedure
+    .input(
+      z.object({
+        email: z.string().email(),
+        newPassword: z
+          .string()
+          .min(8, "Password must be at least 8 characters"),
+      }),
+    )
+    .mutation(async ({ input }) => {
+      const user = await db.user.findUnique({
+        where: { email: input.email },
+      });
+
+      if (!user) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "User not found",
+        });
+      }
+
+      const hashedPassword = await hash(input.newPassword, {
+        type: argon2id,
+      });
+
+      const newUser = await db.user.update({
+        where: { id: user.id },
+        data: { password: hashedPassword },
+      });
+
+      if (!newUser) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to reset password",
+        });
+      }
+
+      const emailDetails = {
+        subject: "Votre mot de passe a été réinitialisé",
+        to: input.email,
+        html: `<p>Bonjour,</p><p>Votre mot de passe a été réinitialisé avec succès.</p>`,
+        text: `Bonjour,\n\nVotre mot de passe a été réinitialisé avec succès.`,
+      };
+
+      await sendMail(emailDetails);
+
+      return newUser;
+    }),
 });

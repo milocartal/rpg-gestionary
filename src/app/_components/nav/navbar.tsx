@@ -152,18 +152,24 @@ interface NavbarProps {
 }
 
 const NavbarOne: React.FC<NavbarProps> = ({ session, univers }) => {
+  const path = usePathname();
+
   const { open } = useSidebar();
+
+  if (
+    path.includes("/forgot-password") ||
+    path.includes("/reset-password") ||
+    path.includes("/register") ||
+    path.includes("/login")
+  ) {
+    return null;
+  }
 
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader className="bg-primary border-b px-0 py-2">
         <Link href="/" className="cursor-pointer">
           <div className="flex h-16 items-center justify-center">
-            {/* open ? (
-              <h1 className="text-secondary text-2xl font-bold">SAGA</h1>
-            ) : (
-              <h1 className="text-secondary text-lg font-bold">S</h1>
-            ) */}
             <Image
               src={!open ? "/monogramme.svg" : "/text.svg"}
               alt="logo"

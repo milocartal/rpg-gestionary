@@ -16,10 +16,21 @@ import {
   FormMessage,
 } from "~/app/_components/ui/form";
 
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "~/app/_components/ui/card";
+
 import { Input } from "~/app/_components/ui/input";
 import { api } from "~/trpc/react";
+
+import { DiscordButton, GitHubButton } from "./button";
 import { Separator } from "~/app/_components/ui/separator";
-import { signIn } from "next-auth/react";
+import { useRef } from "react";
 
 const RegisterSchema = z
   .object({
@@ -28,16 +39,19 @@ const RegisterSchema = z
       .min(1, "Le nom est requis")
       .max(64, "Le nom doit faire entre 1 et 64 caractères"),
     email: z
-      .string({ required_error: "Le nom est requis" })
-      .email({ message: "L'email doit être valide" })
-      .min(1, "Le nom est requis"),
+      .string({ required_error: "L'email est requis" })
+      .email({ message: "L'email n'est pas valide" })
+      .min(1, "L'email est requis"),
     password: z
-      .string({ required_error: "La description est requise" })
-      .min(8, "La description est requise")
+      .string({ required_error: "Le mot de passe est requis" })
+      .min(8, "Le mot de passe doit faire au moins 8 caractères")
       .max(64, "Le mot de passe doit faire entre 8 et 64 caractères"),
     confirmPassword: z
       .string({ required_error: "La confirmation du mot de passe est requise" })
-      .min(8, "La confirmation du mot de passe est requise")
+      .min(
+        8,
+        "La confirmation du mot de passe doit faire au moins 8 caractères",
+      )
       .max(
         64,
         "La confirmation du mot de passe doit faire entre 8 et 64 caractères",
@@ -47,13 +61,13 @@ const RegisterSchema = z
     message: "Les mots de passe ne correspondent pas",
   });
 
-export const Register: React.FC = () => {
+export const RegisterForm: React.FC = () => {
   const router = useRouter();
 
   const createUser = api.user.create.useMutation({
     onSuccess: () => {
       toast.success("Compte créé avec succès !");
-      router.push("/connection"); // Redirect to the connection page after successful sign-up
+      router.push("/login"); // Redirect to the login page after successful sign-up
     },
     onError: (error) => {
       console.error("Error creating user:", error);
@@ -69,6 +83,18 @@ export const Register: React.FC = () => {
     });
   }
 
+  const passwordRef = useRef<HTMLInputElement>(null);
+  const confirmPasswordRef = useRef<HTMLInputElement>(null);
+
+  function togglePasswordVisibility() {
+    if (passwordRef.current && confirmPasswordRef.current) {
+      const type =
+        passwordRef.current.type === "password" ? "text" : "password";
+      passwordRef.current.type = type;
+      confirmPasswordRef.current.type = type;
+    }
+  }
+
   const form = useForm<z.infer<typeof RegisterSchema>>({
     resolver: zodResolver(RegisterSchema),
     defaultValues: {
@@ -80,103 +106,122 @@ export const Register: React.FC = () => {
   });
 
   return (
-    <section className="flex w-full flex-col items-center justify-center gap-4">
-      <h1 className="text-2xl font-bold">Créer un compte</h1>
-      <p className="text-muted-foreground text-sm">
-        Veuillez remplir les informations ci-dessous pour créer un compte.
-      </p>
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="flex w-full flex-col items-start gap-4 rounded-md bg-white p-4"
+    <Card className="w-full max-w-md">
+      <CardHeader>
+        <CardTitle>Inscription</CardTitle>
+        <CardDescription>
+          Créez un compte pour accéder à toutes les fonctionnalités.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="flex w-full flex-col items-start gap-4"
+          >
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormLabel>
+                    Nom d&apos;utilisateur{" "}
+                    <span className="text-red-500">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input placeholder="Milo" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormLabel>
+                    Email <span className="text-red-500">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input placeholder="john@doe.io" type="email" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              name="password"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem className="flex w-full flex-col">
+                  <FormLabel>Mot de passe</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="******"
+                      type="password"
+                      {...field}
+                      ref={passwordRef}
+                    />
+                  </FormControl>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <Button
+              type="button"
+              className="w-full"
+              variant="outline"
+              onClick={togglePasswordVisibility}
+            >
+              Voir le mot de passe
+            </Button>
+
+            <FormField
+              name="confirmPassword"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem className="flex w-full flex-col">
+                  <FormLabel>Confirmer le mot de passe</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="******"
+                      type="password"
+                      {...field}
+                      ref={confirmPasswordRef}
+                    />
+                  </FormControl>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <Button type="submit" className="w-full">
+              Créer un compte
+            </Button>
+          </form>
+        </Form>
+      </CardContent>
+      <CardFooter className="flex flex-col items-center justify-center gap-2">
+        <DiscordButton />
+        <GitHubButton />
+
+        <Separator className="my-1 w-full" />
+
+        <span className="text-sm">Déjà un compte ?</span>
+        <Button
+          variant="accent"
+          size="lg"
+          onClick={() => router.push("/login")}
         >
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem className="w-full">
-                <FormLabel>
-                  Nom d&apos;utilisateur <span className="text-red-500">*</span>
-                </FormLabel>
-                <FormControl>
-                  <Input placeholder="Milo" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem className="w-full">
-                <FormLabel>
-                  Email <span className="text-red-500">*</span>
-                </FormLabel>
-                <FormControl>
-                  <Input placeholder="john@doe.io" type="email" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            name="password"
-            control={form.control}
-            render={({ field }) => (
-              <FormItem className="flex w-full flex-col">
-                <FormLabel>Mot de passe</FormLabel>
-                <FormControl>
-                  <Input placeholder="******" type="password" {...field} />
-                </FormControl>
-
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            name="confirmPassword"
-            control={form.control}
-            render={({ field }) => (
-              <FormItem className="flex w-full flex-col">
-                <FormLabel>Confirmer le mot de passe</FormLabel>
-                <FormControl>
-                  <Input placeholder="******" type="password" {...field} />
-                </FormControl>
-
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <Button type="submit" className="mt-4 self-end">
-            Créer un compte
-          </Button>
-        </form>
-      </Form>
-      <Separator className="my-4 w-full" />
-      <p className="text-muted-foreground text-sm">Ou avec</p>
-      <Button
-        variant="outline"
-        className="w-full"
-        onClick={() => {
-          void signIn("discord");
-        }}
-      >
-        Discord
-      </Button>
-      <Button
-        variant="outline"
-        className="w-full"
-        onClick={() => {
-          void signIn("github");
-        }}
-      >
-        GitHub
-      </Button>
-    </section>
+          Se connecter
+        </Button>
+      </CardFooter>
+    </Card>
   );
 };

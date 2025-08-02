@@ -30,6 +30,7 @@ export const env = createEnv({
    */
   client: {
     // NEXT_PUBLIC_CLIENTVAR: z.string(),
+    NEXT_PUBLIC_URL: z.string().url().default("http://localhost:3000"),
   },
 
   /**
@@ -45,6 +46,7 @@ export const env = createEnv({
     // Email configuration
     GOOGLE_APP_USER: process.env.GOOGLE_APP_USER,
     GOOGLE_APP_PASSWORD: process.env.GOOGLE_APP_PASSWORD,
+    NEXT_PUBLIC_URL: process.env.NEXT_PUBLIC_URL,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

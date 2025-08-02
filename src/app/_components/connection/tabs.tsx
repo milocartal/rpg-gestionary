@@ -1,12 +1,11 @@
-import React from "react";
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from "~/app/_components/ui/tabs";
-import { SignIn } from "./login";
-import { Register } from "./register";
+import { LoginForm } from "./login";
+import { RegisterForm } from "./register";
 export const ConnectionTab: React.FC<{ defaultTab?: string }> = ({
   defaultTab = "login",
 }) => {
@@ -22,10 +21,10 @@ export const ConnectionTab: React.FC<{ defaultTab?: string }> = ({
       </TabsList>
 
       <TabsContent value="login" className="w-full">
-        <SignIn />
+        <LoginForm />
       </TabsContent>
       <TabsContent value="register" className="w-full">
-        <Register />
+        <RegisterForm />
       </TabsContent>
     </Tabs>
   );

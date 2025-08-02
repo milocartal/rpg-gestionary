@@ -11,6 +11,7 @@ import { db } from "~/server/db";
 
 import { verify } from "argon2";
 import { z } from "zod";
+import { sendMail } from "~/lib/mailer";
 
 const sessionSchema = z.object({
   universeId: z.string().optional(),
@@ -212,6 +213,23 @@ export const authConfig = {
       }
 
       return token;
+    },
+  },
+  events: {
+    createUser: async ({ user }) => {
+      if (!user.email) {
+        console.warn("User email is not set, cannot send welcome email");
+      } else {
+        console.log("Sending welcome email to:", user.email);
+        const emailDetail = {
+          to: user.email,
+          subject: "Bienvenue sur RPG Gestionary !",
+          text: `Bonjour ${user.name ?? user.email},\n\nBienvenue sur RPG Gestionary !\n\nNous sommes ravis de vous accueillir. N'hésitez pas à explorer les fonctionnalités de la plateforme.\n\nCordialement,\nL'équipe RPG Gestionary`,
+          html: `<p>Bonjour ${user.name ?? user.email},</p><p>Bienvenue sur RPG Gestionary !</p><p>Nous sommes ravis de vous accueillir. N'hésitez pas à explorer les fonctionnalités de la plateforme.</p><p>Cordialement,<br />L'équipe RPG Gestionary</p>`,
+        };
+
+        await sendMail(emailDetail);
+      }
     },
   },
 } satisfies NextAuthConfig;

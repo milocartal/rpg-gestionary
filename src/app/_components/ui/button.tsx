@@ -9,6 +9,10 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
+        discord:
+          "bg-[#5865F2] text-[#E0E3FF] shadow-xs hover:bg-[#5865F2]/90 font-semibold",
+        github:
+          "bg-[#171515] text-[#F0F0F0] shadow-xs hover:bg-[#171515]/90 mona-sans-600",
         default:
           "bg-primary text-primary-foreground shadow-xs hover:bg-primary/90",
         destructive:

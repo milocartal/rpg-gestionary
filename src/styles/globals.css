@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Mona+Sans:wght@600&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -7,6 +8,7 @@
   --font-sans:
     var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-mona-sans: "Mona Sans", sans-serif;
 }
 
 :root {
@@ -125,6 +127,10 @@
   }
 }
 
-.caca {
-  color: oklch(0.21 0.006 285.885);
+.mona-sans-600 {
+  font-family: "Mona Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-style: normal;
+  font-variation-settings: "wdth" 100;
 }

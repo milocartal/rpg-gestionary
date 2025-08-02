@@ -37,6 +37,7 @@ export default async function RootLayout({
       Users: true,
     },
   });
+
   return (
     <html lang="fr" className={`${geist.variable}`}>
       <body>
