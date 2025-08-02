@@ -53,7 +53,9 @@ const ResetPasswordSchema = z
     message: "Les mots de passe ne correspondent pas",
   });
 
-export const ResetPassword: React.FC<{ email: string }> = ({ email }) => {
+export const ResetPassword: React.FC<{ email: string | undefined }> = ({
+  email,
+}) => {
   const passwordRef = useRef<HTMLInputElement>(null);
   const confirmPasswordRef = useRef<HTMLInputElement>(null);
 
@@ -81,7 +83,7 @@ export const ResetPassword: React.FC<{ email: string }> = ({ email }) => {
   const form = useForm<z.infer<typeof ResetPasswordSchema>>({
     resolver: zodResolver(ResetPasswordSchema),
     defaultValues: {
-      email: email,
+      email: email ?? "",
       newPassword: "",
       confirmPassword: "",
     },

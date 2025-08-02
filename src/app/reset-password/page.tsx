@@ -8,19 +8,21 @@ export const dynamic = "force-dynamic";
 
 export default async function ResetPasswordPage({
   searchParams,
-}: {
-  searchParams: { email: string };
-}) {
+}: Readonly<{
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}>) {
   const session = await auth();
 
   if (session) {
     redirect("/");
   }
 
+  const email = (await searchParams)?.email as string | undefined;
+
   return (
     <HydrateClient>
       <main className="relative flex min-h-screen flex-col items-center justify-center gap-12 p-4">
-        <ResetPassword email={searchParams.email} />
+        <ResetPassword email={email} />
       </main>
     </HydrateClient>
   );
