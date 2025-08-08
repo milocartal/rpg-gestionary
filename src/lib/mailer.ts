@@ -40,6 +40,7 @@ export const sendMail = async (emailDetails: EmailDetails) => {
   return new Promise<void>((resolve, reject) => {
     transporter.sendMail(opts, (err) => {
       if (err) {
+        console.error(`Failed to send email to ${to}:`, err);
         reject(err);
       } else {
         console.log(`Email sent to ${to}`);
