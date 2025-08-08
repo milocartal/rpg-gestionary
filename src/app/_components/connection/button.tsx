@@ -12,6 +12,7 @@ import { Button } from "~/app/_components/ui/button";
 import { cn } from "~/lib/utils";
 import type { Session } from "next-auth";
 import CustomImage from "../image";
+import { Link } from "../ui/link";
 
 export const ConnectionButton: React.FC<{
   readonly session: Session | null;
@@ -52,6 +53,55 @@ export const ConnectionButton: React.FC<{
                 Se connecter
               </span>
             </Button>
+          </TooltipTrigger>
+          <TooltipContent side="right" className={!open ? "" : "hidden"}>
+            Se connecter
+          </TooltipContent>
+        </Tooltip>
+      )}
+    </Fragment>
+  );
+};
+
+export const NormalConnectionButton: React.FC<{
+  readonly session: Session | null;
+  open?: boolean;
+}> = ({ session, open = true }) => {
+  return (
+    <Fragment>
+      {session ? (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              className="w-full"
+              variant={"secondary"}
+              onClick={() => signOut({ callbackUrl: "/" })}
+              size={!open ? "icon" : "default"}
+            >
+              <PowerOff className={"h-4 w-4"} />
+              <span className={cn("ml-2", !open && "sr-only")}>
+                Se déconnecter
+              </span>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="right" className={!open ? "" : "hidden"}>
+            Se déconnecter
+          </TooltipContent>
+        </Tooltip>
+      ) : (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Link
+              className="w-full"
+              variant={"accent"}
+              href="/login"
+              size={!open ? "icon" : "default"}
+            >
+              <Power className={"h-4 w-4"} />
+              <span className={cn("ml-2", !open && "sr-only")}>
+                Se connecter
+              </span>
+            </Link>
           </TooltipTrigger>
           <TooltipContent side="right" className={!open ? "" : "hidden"}>
             Se connecter

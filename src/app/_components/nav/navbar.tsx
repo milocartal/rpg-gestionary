@@ -52,7 +52,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "~/app/_components/ui/collapsible";
-import { ConnectionButton } from "~/app/_components/connection/button";
+import { NormalConnectionButton } from "~/app/_components/connection/button";
 
 interface NavLink {
   title: string;
@@ -204,7 +204,7 @@ const NavbarOne: React.FC<NavbarProps> = ({ session, univers }) => {
       </SidebarContent>
 
       <SidebarFooter>
-        <ConnectionButton session={session} open={open} />
+        <NormalConnectionButton session={session} open={open} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

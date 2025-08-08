@@ -15,20 +15,20 @@ const CreateSpeciesSchema = z.object({
   image: z.string().optional(),
   name: z.string().min(1, { message: "The name of the species is required" }),
   description: z.string().min(1, { message: "The description is required" }),
-  averageAge: z
+  averageAge: z.coerce
     .number({ required_error: "The average lifespan is required" })
     .min(1, { message: "The average lifespan must be greater than 1" }),
-  maxHeight: z
+  maxHeight: z.coerce
     .number({ required_error: "The maximum height is required" })
     .min(0, { message: "The maximum height must be greater than 0" }),
-  minHeight: z
+  minHeight: z.coerce
     .number({ required_error: "The minimum height is required" })
     .min(0, { message: "The minimum height must be greater than 0" }),
-  maxWeight: z
-    .number({ message: "The maximum weight is required" })
+  maxWeight: z.coerce
+    .number({ required_error: "The maximum weight is required" })
     .min(0, { message: "The maximum weight must be greater than 0" }),
-  minWeight: z
-    .number({ message: "The minimum weight is required" })
+  minWeight: z.coerce
+    .number({ required_error: "The minimum weight is required" })
     .min(0, { message: "The minimum weight must be greater than 0" }),
   universeId: z.string({ required_error: "The universeId is required" }),
 });

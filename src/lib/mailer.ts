@@ -29,6 +29,10 @@ export const sendMail = async (emailDetails: EmailDetails) => {
     attachments: emailDetails.attachments,
   };
 
+  const to = Array.isArray(emailDetails.to)
+    ? emailDetails.to.join(", ")
+    : emailDetails.to;
+
   if (emailDetails.to.length === 0) {
     return;
   }
@@ -38,6 +42,7 @@ export const sendMail = async (emailDetails: EmailDetails) => {
       if (err) {
         reject(err);
       } else {
+        console.log(`Email sent to ${to}`);
         resolve();
       }
     });

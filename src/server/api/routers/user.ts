@@ -62,14 +62,16 @@ export const userRouter = createTRPCRouter({
         });
       }
 
+      console.log(`User created: ${user.name} (${user.email})`);
+
       const emailDetail = {
-        subject: "Bienvenue sur notre plateforme",
         to: input.email,
-        html: `<p>Bonjour ${input.name},</p><p>Merci de vous être inscrit sur notre plateforme. Nous sommes ravis de vous accueillir !</p>`,
-        text: `Bonjour ${input.name},\n\nMerci de vous être inscrit sur notre plateforme. Nous sommes ravis de vous accueillir !`,
+        subject: "Bienvenue sur RPG Gestionary !",
+        text: `Bonjour ${input.name},\n\nBienvenue sur RPG Gestionary !\n\nNous sommes ravis de vous accueillir. N'hésitez pas à explorer les fonctionnalités de la plateforme.\n\nCordialement,\nL'équipe RPG Gestionary`,
+        html: `<p>Bonjour ${input.name},</p><p>Bienvenue sur RPG Gestionary !</p><p>Nous sommes ravis de vous accueillir. N'hésitez pas à explorer les fonctionnalités de la plateforme.</p><p>Cordialement,<br />L'équipe RPG Gestionary</p>`,
       };
 
-      await sendMail(emailDetail);
+      void sendMail(emailDetail);
 
       return user;
     }),

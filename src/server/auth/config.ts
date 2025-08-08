@@ -155,7 +155,7 @@ export const authConfig = {
                 role: univers.role,
               };
             } else {
-              console.warn("No universe found for user");
+              console.warn(`No universe found for ${user.name}`);
             }
           }
         }
@@ -228,7 +228,7 @@ export const authConfig = {
           html: `<p>Bonjour ${user.name ?? user.email},</p><p>Bienvenue sur RPG Gestionary !</p><p>Nous sommes ravis de vous accueillir. N'hésitez pas à explorer les fonctionnalités de la plateforme.</p><p>Cordialement,<br />L'équipe RPG Gestionary</p>`,
         };
 
-        await sendMail(emailDetail);
+        void sendMail(emailDetail);
       }
     },
   },
