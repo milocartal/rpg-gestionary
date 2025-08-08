@@ -71,7 +71,13 @@ export const userRouter = createTRPCRouter({
         html: `<p>Bonjour ${input.name},</p><p>Bienvenue sur RPG Gestionary !</p><p>Nous sommes ravis de vous accueillir. N'hésitez pas à explorer les fonctionnalités de la plateforme.</p><p>Cordialement,<br />L'équipe RPG Gestionary</p>`,
       };
 
-      void sendMail(emailDetail);
+      sendMail(emailDetail)
+        .then(() => {
+          console.log(`Email sent to ${input.email}`);
+        })
+        .catch((error) => {
+          console.error(`Failed to send email to ${input.email}:`, error);
+        });
 
       return user;
     }),

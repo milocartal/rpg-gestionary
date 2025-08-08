@@ -228,7 +228,13 @@ export const authConfig = {
           html: `<p>Bonjour ${user.name ?? user.email},</p><p>Bienvenue sur RPG Gestionary !</p><p>Nous sommes ravis de vous accueillir. N'hésitez pas à explorer les fonctionnalités de la plateforme.</p><p>Cordialement,<br />L'équipe RPG Gestionary</p>`,
         };
 
-        void sendMail(emailDetail);
+        sendMail(emailDetail)
+          .then(() => {
+            console.log(`Email sent to ${user.email}`);
+          })
+          .catch((error) => {
+            console.error(`Failed to send email to ${user.email}:`, error);
+          });
       }
     },
   },

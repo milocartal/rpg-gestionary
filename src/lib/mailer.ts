@@ -22,6 +22,12 @@ const transporter = nodemailer.createTransport({
 });
 
 export const sendMail = async (emailDetails: EmailDetails) => {
+  const to = Array.isArray(emailDetails.to)
+    ? emailDetails.to.join(", ")
+    : emailDetails.to;
+
+  console.log(`Sending email to: ${to}`);
+
   const opts: MailOptions = {
     from: `SAGA <${env.GOOGLE_APP_USER}>`,
     to: emailDetails.to,
@@ -30,10 +36,6 @@ export const sendMail = async (emailDetails: EmailDetails) => {
     text: emailDetails.text,
     attachments: emailDetails.attachments,
   };
-
-  const to = Array.isArray(emailDetails.to)
-    ? emailDetails.to.join(", ")
-    : emailDetails.to;
 
   if (emailDetails.to.length === 0) {
     return;
