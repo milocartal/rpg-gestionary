@@ -2,7 +2,7 @@
 import { type Metadata } from "next/types";
 
 import { Link } from "~/app/_components/ui/link";
-import { Header } from "./_components/header/header";
+import { Header } from "~/app/_components/header/header";
 import { HydrateClient } from "~/trpc/server";
 
 export const metadata: Metadata = {

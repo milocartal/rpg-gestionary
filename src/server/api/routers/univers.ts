@@ -31,7 +31,13 @@ export const universeRouter = createTRPCRouter({
   }),
 
   create: protectedProcedure
-    .input(z.object({ name: z.string(), description: z.string() }))
+    .input(
+      z.object({
+        name: z.string(),
+        description: z.string(),
+        banner: z.string().optional(),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       if (!can(ctx.session).createOwn("univers").granted) {
         throw new TRPCError({
@@ -42,6 +48,7 @@ export const universeRouter = createTRPCRouter({
       const univers = await db.universe.create({
         data: {
           name: input.name,
+          banner: input.banner,
           description: input.description,
           createdById: ctx.session.user.id,
         },
@@ -59,7 +66,12 @@ export const universeRouter = createTRPCRouter({
 
   update: protectedProcedure
     .input(
-      z.object({ id: z.string(), name: z.string(), description: z.string() }),
+      z.object({
+        id: z.string(),
+        name: z.string(),
+        description: z.string(),
+        banner: z.string().optional(),
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       if (
@@ -75,6 +87,7 @@ export const universeRouter = createTRPCRouter({
       const univers = await db.universe.update({
         where: { id: input.id },
         data: {
+          banner: input.banner,
           name: input.name,
           description: input.description,
         },

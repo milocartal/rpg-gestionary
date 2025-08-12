@@ -11,12 +11,15 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { Eye, FilePen, Trash2 } from "lucide-react";
+import { FilePen, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import * as React from "react";
 import { toast } from "sonner";
 
-import { DataTableBase } from "~/app/_components/data-table";
+import {
+  DataTableBase,
+  DataTableColumnHeader,
+} from "~/app/_components/data-table";
 
 import { Button } from "~/app/_components/ui/button";
 import { Input } from "~/app/_components/ui/input";
@@ -63,12 +66,16 @@ const columns: ColumnDef<Gender>[] = [
   },
   {
     accessorFn: (row) => row.name,
-    header: "Nom",
+    id: "Nom",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Nom" />
+    ),
     cell: (data) => {
       return (
         <div className="text-xs capitalize">{data.getValue() as string}</div>
       );
     },
+    enableHiding: false,
   },
 
   {
@@ -108,20 +115,6 @@ const columns: ColumnDef<Gender>[] = [
               <TooltipTrigger asChild>
                 <Link
                   href={`/gender/${gender.id}`}
-                  variant={"icon"}
-                  size={"icon"}
-                  className="text-succes p-0"
-                >
-                  <Eye className="h-4 w-4" />
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent className="text-primary">Aperçu</TooltipContent>
-            </Tooltip>
-
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link
-                  href={`/gender/${gender.id}/edit`}
                   variant={"icon"}
                   size={"icon"}
                   className="text-primary p-0"
@@ -198,7 +191,7 @@ const DataTableGenderOne: React.FC<GenderDataTableProps> = ({
     <DataTableBase table={table} columns={columns} selection>
       {children}
       <Input
-        placeholder="Chercher un gender..."
+        placeholder="Chercher un genre..."
         value={(table.getColumn("Nom")?.getFilterValue() as string) ?? ""}
         onChange={(event) =>
           table.getColumn("Nom")?.setFilterValue(event.target.value)

@@ -8,9 +8,12 @@ import {
 } from "~/server/api/trpc";
 import { db } from "~/server/db";
 import { canInUniverse } from "~/utils/accesscontrol";
+import { toSlug } from "~/lib/utils";
+import { Prisma } from "@prisma/client";
 
 const populationSchema = z.object({
   name: z.string(),
+  image: z.string().optional(),
   description: z.string(),
   averageAge: z.number(),
   averageHeight: z.number(),
@@ -56,26 +59,52 @@ export const populationRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       if (!canInUniverse(ctx.session).createAny("population").granted) {
         throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "You are not allowed to create this population",
+          code: "FORBIDDEN",
+          message: "You do not have permission to create a population",
         });
       }
 
-      const population = await db.population.create({
-        data: {
-          name: input.name,
-          description: input.description,
-          averageAge: input.averageAge,
-          averageHeight: input.averageHeight,
-          averageWeight: input.averageWeight,
-          Universe: {
-            connect: {
-              id: input.universeId,
+      const baseSlug = toSlug(input.name);
+      const MAX = 25;
+
+      for (let i = 0; i < MAX; i++) {
+        const candidate = i === 0 ? baseSlug : `${baseSlug}-${i + 1}`;
+        try {
+          return await db.population.create({
+            data: {
+              name: input.name,
+              image: input.image,
+              description: input.description,
+              averageAge: input.averageAge,
+              averageHeight: input.averageHeight,
+              averageWeight: input.averageWeight,
+              Universe: {
+                connect: {
+                  id: input.universeId,
+                },
+              },
+              slug: candidate,
             },
-          },
-        },
+          });
+        } catch (e) {
+          if (
+            e instanceof Prisma.PrismaClientKnownRequestError &&
+            e.code === "P2002"
+          ) {
+            continue; // slug déjà pris -> on essaie le suivant
+          }
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message:
+              "Une erreur est survenue lors de la création de la population.",
+          });
+        }
+      }
+
+      throw new TRPCError({
+        code: "CONFLICT",
+        message: "Impossible de générer un slug unique.",
       });
-      return population;
     }),
 
   update: protectedProcedure
@@ -96,6 +125,7 @@ export const populationRouter = createTRPCRouter({
         where: { id: input.id },
         data: {
           name: input.name,
+          image: input.image,
           description: input.description,
           averageAge: input.averageAge,
           averageHeight: input.averageHeight,

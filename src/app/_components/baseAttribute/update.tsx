@@ -31,7 +31,7 @@ export const UpdateBaseAttribute: React.FC<UpdateBaseAttributeProps> = ({
 
   const updateBaseAttribute = api.baseAttribute.update.useMutation({
     onSuccess: () => {
-      toast.success("Compétence de base créée mise à jour avec succès");
+      toast.success("Attribut de base mis à jour avec succès");
       router.push("/baseAttribute");
     },
     onError: (error) => {
@@ -70,7 +70,7 @@ export const UpdateBaseAttribute: React.FC<UpdateBaseAttributeProps> = ({
           render={({ field }) => (
             <FormItem className="w-full">
               <FormLabel>
-                Nom de la compétence de base{" "}
+                Nom de l&apos;attribut de base{" "}
                 <span className="text-red-500">*</span>
               </FormLabel>
               <FormControl>

@@ -1,5 +1,5 @@
 import { type Metadata } from "next";
-import { notFound } from "next/navigation";
+import { forbidden, notFound, unauthorized } from "next/navigation";
 
 import { UpdatePopulation } from "~/app/_components/population";
 import { Header } from "~/app/_components/header/header";
@@ -38,11 +38,11 @@ export default async function PopulationDetail({ params }: Props) {
   const session = await auth();
 
   if (!session) {
-    notFound();
+    unauthorized();
   }
 
   if (!canInUniverse(session).updateOwn("population").granted) {
-    notFound();
+    forbidden();
   }
 
   const univers = await db.universe

@@ -8,6 +8,8 @@ import {
   publicProcedure,
 } from "~/server/api/trpc";
 import { canInUniverse } from "~/utils/accesscontrol";
+import { toSlug } from "~/lib/utils";
+import { Prisma } from "@prisma/client";
 
 const baseSkillSchema = z.object({
   name: z.string(),
@@ -47,6 +49,7 @@ export const baseSkillRouter = createTRPCRouter({
 
       return baseSkills;
     }),
+
   create: protectedProcedure
     .input(baseSkillSchema)
     .mutation(async ({ ctx, input }) => {
@@ -57,15 +60,40 @@ export const baseSkillRouter = createTRPCRouter({
         });
       }
 
-      const baseSkills = await db.baseSkill.create({
-        data: {
-          name: input.name,
-          description: input.description,
-          BaseAttribute: { connect: { id: input.attributeId } },
-          Universe: { connect: { id: input.universeId } },
-        },
+      const baseSlug = toSlug(input.name);
+      const MAX = 25;
+
+      for (let i = 0; i < MAX; i++) {
+        const candidate = i === 0 ? baseSlug : `${baseSlug}-${i + 1}`;
+        try {
+          return await db.baseSkill.create({
+            data: {
+              Universe: { connect: { id: input.universeId } },
+              name: input.name,
+              description: input.description,
+              BaseAttribute: { connect: { id: input.attributeId } },
+              slug: candidate,
+            },
+          });
+        } catch (e) {
+          if (
+            e instanceof Prisma.PrismaClientKnownRequestError &&
+            e.code === "P2002"
+          ) {
+            continue; // slug déjà pris -> on essaie le suivant
+          }
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message:
+              "Une erreur est survenue lors de la création de la compétence de base.",
+          });
+        }
+      }
+
+      throw new TRPCError({
+        code: "CONFLICT",
+        message: "Impossible de générer un slug unique.",
       });
-      return baseSkills;
     }),
 
   update: protectedProcedure

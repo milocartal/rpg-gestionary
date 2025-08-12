@@ -8,6 +8,8 @@ import {
   publicProcedure,
 } from "~/server/api/trpc";
 import { canInUniverse } from "~/utils/accesscontrol";
+import { toSlug } from "~/lib/utils";
+import { Prisma } from "@prisma/client";
 
 export const genderRouter = createTRPCRouter({
   get: publicProcedure
@@ -51,18 +53,43 @@ export const genderRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       if (!canInUniverse(ctx.session).createAny("gender").granted) {
         throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "You are not allowed to create this gender",
+          code: "FORBIDDEN",
+          message: "You do not have permission to create a gender",
         });
       }
 
-      const gender = await db.gender.create({
-        data: {
-          name: input.name,
-          Universe: { connect: { id: input.universeId } },
-        },
+      const baseSlug = toSlug(input.name);
+      const MAX = 25;
+
+      for (let i = 0; i < MAX; i++) {
+        const candidate = i === 0 ? baseSlug : `${baseSlug}-${i + 1}`;
+        try {
+          return await db.gender.create({
+            data: {
+              Universe: { connect: { id: input.universeId } },
+              name: input.name,
+
+              slug: candidate,
+            },
+          });
+        } catch (e) {
+          if (
+            e instanceof Prisma.PrismaClientKnownRequestError &&
+            e.code === "P2002"
+          ) {
+            continue; // slug déjà pris -> on essaie le suivant
+          }
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Une erreur est survenue lors de la création du genre.",
+          });
+        }
+      }
+
+      throw new TRPCError({
+        code: "CONFLICT",
+        message: "Impossible de générer un slug unique.",
       });
-      return gender;
     }),
 
   update: protectedProcedure

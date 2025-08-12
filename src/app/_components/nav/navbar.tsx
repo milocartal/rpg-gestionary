@@ -12,12 +12,15 @@ import {
   Blocks,
   BookMarked,
   Box,
+  FileKey,
   Landmark,
   type LucideIcon,
+  Mouse,
   Newspaper,
   Origami,
   PawPrint,
   ReceiptText,
+  Scale,
   ScrollText,
   Transgender,
   UsersRound,
@@ -146,6 +149,27 @@ const links: ExclusiveNavLink[][] = [
   ],
 ];
 
+const legalsLinks: NavLink[] = [
+  {
+    title: "Mentions légales",
+    label: "",
+    icon: Scale,
+    href: "/mentions-legales",
+  },
+  {
+    title: "CGU",
+    label: "",
+    icon: Mouse,
+    href: "/cgu",
+  },
+  {
+    title: "Politique de confidentialité",
+    label: "",
+    icon: FileKey,
+    href: "/politique-confidentialite",
+  },
+];
+
 interface NavbarProps {
   readonly session: Session | null;
   readonly univers: UniverseWithUsers[];
@@ -204,6 +228,11 @@ const NavbarOne: React.FC<NavbarProps> = ({ session, univers }) => {
       </SidebarContent>
 
       <SidebarFooter>
+        <SidebarGroup>
+          {legalsLinks.map((link) => {
+            return <NavItem key={link.href} link={link} />;
+          })}
+        </SidebarGroup>
         <NormalConnectionButton session={session} open={open} />
       </SidebarFooter>
       <SidebarRail />

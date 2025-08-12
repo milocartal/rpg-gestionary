@@ -80,6 +80,8 @@ model Universe {
     name        String
     description String @db.LongText
 
+    banner String? // URL de l'image de la bannière
+
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
@@ -116,7 +118,10 @@ model UserToUniverse {
 model Species {
     id          String @id @default(cuid())
     name        String
+    slug        String
     description String @db.LongText
+
+    image String? // URL de l'image
 
     averageAge Int
 
@@ -133,12 +138,18 @@ model Species {
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+
+    @@unique([universeId, slug])
+    @@index([universeId])
 }
 
 model Population {
     id          String @id @default(cuid())
     name        String
+    slug        String
     description String @db.LongText
+
+    image String? // URL de l'image
 
     averageAge    Int
     averageWeight Float // kg
@@ -153,12 +164,18 @@ model Population {
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+
+    @@unique([universeId, slug])
+    @@index([universeId])
 }
 
 model Story {
     id          String @id @default(cuid())
     name        String
+    slug        String
     description String @db.LongText
+
+    banner String? // URL de l'image de la bannière
 
     // Relations
     universeId String
@@ -174,11 +191,16 @@ model Story {
     Characters Character[]
 
     SessionsUnity SessionUnity[]
+
+    @@unique([universeId, slug])
+    @@index([universeId])
 }
 
 model Animal {
     id   String @id @default(cuid())
     name String
+
+    image String? // URL de l'image
 
     age    Int // year
     weight Float // kg
@@ -214,6 +236,11 @@ model Animal {
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+
+    @@index([userId])
+    @@index([storyId])
+    @@index([speciesId])
+    @@index([characterId])
 }
 
 model Character {
@@ -221,6 +248,8 @@ model Character {
 
     name      String
     firstName String
+
+    image String? // URL de l'image
 
     age    Int // year
     weight Float // kg
@@ -257,11 +286,16 @@ model Character {
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+
+    @@index([userId])
+    @@index([storyId])
+    @@index([populationId])
 }
 
 model Gender {
     id   String @id @default(cuid())
     name String
+    slug String
 
     Characters Character[]
     Animals    Animal[]
@@ -271,11 +305,15 @@ model Gender {
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+
+    @@unique([universeId, slug])
+    @@index([universeId])
 }
 
 model Class {
     id          String @id @default(cuid())
     name        String
+    slug        String
     description String @db.LongText
 
     Characters CharacterClass[]
@@ -285,6 +323,9 @@ model Class {
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+
+    @@unique([universeId, slug])
+    @@index([universeId])
 }
 
 model CharacterClass {
@@ -302,6 +343,7 @@ model CharacterClass {
 model BaseAttribute {
     id          String   @id @default(cuid())
     name        String
+    slug        String
     description String   @db.LongText
     universeId  String
     Universe    Universe @relation(fields: [universeId], references: [id], onDelete: Cascade)
@@ -312,6 +354,9 @@ model BaseAttribute {
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+
+    @@unique([universeId, slug])
+    @@index([universeId])
 }
 
 model Attribute {
@@ -330,11 +375,15 @@ model Attribute {
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+
+    @@unique([characterId, baseAttributeId])
+    @@unique([animalId, baseAttributeId])
 }
 
 model BaseSkill {
     id            String        @id @default(cuid())
     name          String
+    slug          String
     description   String        @db.LongText
     attributeId   String // clé étrangère vers BaseAttribute
     BaseAttribute BaseAttribute @relation(fields: [attributeId], references: [id])
@@ -346,6 +395,9 @@ model BaseSkill {
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+
+    @@unique([universeId, slug])
+    @@index([universeId])
 }
 
 model Skill {
@@ -365,6 +417,9 @@ model Skill {
 
     // Polymorphic relations
     Modifiers Modifier[]
+
+    @@unique([characterId, baseSkillId])
+    @@unique([animalId, baseSkillId])
 }
 
 model Modifier {
@@ -422,6 +477,7 @@ enum ModifierType {
 model Item {
     id           String   @id @default(cuid())
     name         String
+    slug         String
     description  String?  @db.LongText
     sprite       String? // URL de l'image ou du sprite associé à l'item
     type         ItemType
@@ -438,6 +494,9 @@ model Item {
     universeId String
 
     ItemInstances ItemInstance[]
+
+    @@unique([universeId, slug])
+    @@index([universeId])
 }
 
 model ItemInstance {
@@ -499,6 +558,7 @@ model SessionUnity {
 model Map {
     id          String @id @default(cuid())
     name        String
+    slug        String @unique
     description String @db.LongText
 
     Tiles     MapTile[]
@@ -526,6 +586,7 @@ model MapInstance {
 model TileDefinition {
     id          String @id @default(cuid())
     name        String
+    slug        String @unique
     description String @db.LongText
 
     spriteUrl  String // URL de l'image ou du sprite associé à la tuile
@@ -561,6 +622,8 @@ model MapTile {
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+
+    @@unique([mapId, q, r, Z])
 }
 
 model TileInstance {
@@ -579,6 +642,8 @@ model TileInstance {
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+
+    @@unique([mapInstanceId, q, r, Z])
 }
 
 enum TileType {

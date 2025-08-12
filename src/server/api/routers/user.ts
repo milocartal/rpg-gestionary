@@ -19,6 +19,7 @@ const createUserSchema = z.object({
   name: z.string(),
   email: z.string().email(),
   password: z.string(),
+  image: z.string().optional(),
 });
 
 export const userRouter = createTRPCRouter({
@@ -46,6 +47,7 @@ export const userRouter = createTRPCRouter({
             name: input.name,
             email: input.email,
             password: hashed,
+            image: input.image,
           },
         })
         .catch((error) => {
@@ -71,13 +73,7 @@ export const userRouter = createTRPCRouter({
         html: `<p>Bonjour ${input.name},</p><p>Bienvenue sur RPG Gestionary !</p><p>Nous sommes ravis de vous accueillir. N'hésitez pas à explorer les fonctionnalités de la plateforme.</p><p>Cordialement,<br />L'équipe RPG Gestionary</p>`,
       };
 
-      sendMail(emailDetail)
-        .then(() => {
-          console.log(`Email sent to ${input.email}`);
-        })
-        .catch((error) => {
-          console.error(`Failed to send email to ${input.email}:`, error);
-        });
+      await sendMail(emailDetail);
 
       return user;
     }),

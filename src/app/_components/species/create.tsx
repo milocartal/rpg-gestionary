@@ -26,6 +26,7 @@ import { api } from "~/trpc/react";
 
 import { type CreateSpeciesProps, CreateSpeciesSchema } from "./type";
 import { Dnd } from "~/app/_components/dnd";
+import { ImageType } from "~/lib/minio";
 
 export const CreateSpecies: React.FC<CreateSpeciesProps> = ({
   redirectionSuccess,
@@ -46,7 +47,7 @@ export const CreateSpecies: React.FC<CreateSpeciesProps> = ({
       if (redirectionSuccess) {
         router.push(redirectionSuccess);
       } else {
-        router.push("/speciess");
+        router.push("/species");
       }
     },
     onError: (error) => {
@@ -57,18 +58,19 @@ export const CreateSpecies: React.FC<CreateSpeciesProps> = ({
 
   async function onSubmit(values: z.infer<typeof CreateSpeciesSchema>) {
     try {
-      /* if (ref.current?.files?.[0]) {
+      if (ref.current?.files?.[0]) {
         const file = ref.current?.files?.[0];
 
         const formData = new FormData();
         formData.append("image", file);
+        formData.append("type", ImageType.species);
         const tempImg = await fetch(`/api/image/create`, {
           method: "POST",
           body: formData,
         });
         const img = (await tempImg.json()) as { url: string };
         values.image = img.url;
-      } */
+      }
 
       await createSpecies.mutateAsync({
         ...values,
@@ -84,11 +86,11 @@ export const CreateSpecies: React.FC<CreateSpeciesProps> = ({
       image: undefined,
       universeId: univers.id,
       description: "",
-      averageAge: 0,
-      maxHeight: 0,
-      minHeight: 0,
-      maxWeight: 0,
-      minWeight: 0,
+      averageAge: undefined,
+      maxHeight: undefined,
+      minHeight: undefined,
+      maxWeight: undefined,
+      minWeight: undefined,
     },
     resolver: zodResolver(CreateSpeciesSchema),
   });
@@ -120,10 +122,10 @@ export const CreateSpecies: React.FC<CreateSpeciesProps> = ({
             render={({ field }) => (
               <FormItem className="w-full xl:w-1/2">
                 <FormLabel>
-                  Nom de la species <span className="text-red-500">*</span>
+                  Nom de l&apos;espèce <span className="text-red-500">*</span>
                 </FormLabel>
                 <FormControl>
-                  <Input placeholder="Entretien ménager" {...field} />
+                  <Input placeholder="Raton laveur" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -136,15 +138,15 @@ export const CreateSpecies: React.FC<CreateSpeciesProps> = ({
             render={({ field }) => (
               <FormItem className="w-full xl:w-1/2">
                 <FormLabel>
-                  Éspérance de vie moyenne{" "}
+                  Éspérance de vie moyenne (ans){" "}
                   <span className="text-red-500">*</span>
                 </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="300"
+                    placeholder="40"
                     type="number"
                     min={0}
-                    step={0.01}
+                    step={1}
                     {...field}
                   />
                 </FormControl>
@@ -159,13 +161,13 @@ export const CreateSpecies: React.FC<CreateSpeciesProps> = ({
             control={form.control}
             name="minHeight"
             render={({ field }) => (
-              <FormItem className="w-full xl:w-1/4">
+              <FormItem className="w-full xl:w-1/2">
                 <FormLabel>
                   Taille minimum (m) <span className="text-red-500">*</span>
                 </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="1.5"
+                    placeholder="1.75"
                     type="number"
                     min={0}
                     step={0.1}
@@ -181,13 +183,13 @@ export const CreateSpecies: React.FC<CreateSpeciesProps> = ({
             control={form.control}
             name="maxHeight"
             render={({ field }) => (
-              <FormItem className="w-full xl:w-1/4">
+              <FormItem className="w-full xl:w-1/2">
                 <FormLabel>
                   Taille maximum (m) <span className="text-red-500">*</span>
                 </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="100"
+                    placeholder="3"
                     {...field}
                     type="number"
                     step={0.1}
@@ -205,13 +207,13 @@ export const CreateSpecies: React.FC<CreateSpeciesProps> = ({
             control={form.control}
             name="minWeight"
             render={({ field }) => (
-              <FormItem className="w-full xl:w-1/4">
+              <FormItem className="w-full xl:w-1/2">
                 <FormLabel>
-                  Taille moyenne (m) <span className="text-red-500">*</span>
+                  Masse minimum (kg) <span className="text-red-500">*</span>
                 </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="1.5"
+                    placeholder="5"
                     type="number"
                     min={0}
                     step={0.01}
@@ -227,9 +229,9 @@ export const CreateSpecies: React.FC<CreateSpeciesProps> = ({
             control={form.control}
             name="maxWeight"
             render={({ field }) => (
-              <FormItem className="w-full xl:w-1/4">
+              <FormItem className="w-full xl:w-1/2">
                 <FormLabel>
-                  Masse moyenne (kg) <span className="text-red-500">*</span>
+                  Masse maximum (kg) <span className="text-red-500">*</span>
                 </FormLabel>
                 <FormControl>
                   <Input
@@ -253,7 +255,10 @@ export const CreateSpecies: React.FC<CreateSpeciesProps> = ({
             <FormItem className="w-full">
               <FormLabel>Description</FormLabel>
               <FormControl>
-                <Textarea placeholder="Description de la species" {...field} />
+                <Textarea
+                  placeholder="Caractéristiques et histoire de l'espèce"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

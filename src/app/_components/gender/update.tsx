@@ -70,7 +70,7 @@ export const UpdateGender: React.FC<UpdateGenderProps> = ({ gender }) => {
           render={({ field }) => (
             <FormItem className="w-full">
               <FormLabel>
-                Nom du gender <span className="text-red-500">*</span>
+                Nom du genre <span className="text-red-500">*</span>
               </FormLabel>
               <FormControl>
                 <Input placeholder="Nom" {...field} />

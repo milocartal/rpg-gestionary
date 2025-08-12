@@ -26,6 +26,7 @@ import { api } from "~/trpc/react";
 
 import { type UpdatePopulationProps, UpdatePopulationSchema } from "./type";
 import { Dnd } from "~/app/_components/dnd";
+import { ImageType } from "~/lib/minio";
 
 export const UpdatePopulation: React.FC<UpdatePopulationProps> = ({
   redirectionSuccess,
@@ -57,18 +58,31 @@ export const UpdatePopulation: React.FC<UpdatePopulationProps> = ({
 
   async function onSubmit(values: z.infer<typeof UpdatePopulationSchema>) {
     try {
-      /* if (ref.current?.files?.[0]) {
+      if (ref.current?.files?.[0]) {
+        if (
+          population.image?.includes("rpg") &&
+          !population.image?.includes("placeholder")
+        ) {
+          const DelFormData = new FormData();
+          DelFormData.append("imageUrl", population.image);
+          await fetch(`/api/image/delete`, {
+            method: "POST",
+            body: DelFormData,
+          });
+        }
+
         const file = ref.current?.files?.[0];
 
         const formData = new FormData();
         formData.append("image", file);
+        formData.append("type", ImageType.population);
         const tempImg = await fetch(`/api/image/create`, {
           method: "POST",
           body: formData,
         });
         const img = (await tempImg.json()) as { url: string };
         values.image = img.url;
-      } */
+      }
 
       await createPopulation.mutateAsync({
         ...values,
@@ -81,7 +95,7 @@ export const UpdatePopulation: React.FC<UpdatePopulationProps> = ({
   const form = useForm<z.infer<typeof UpdatePopulationSchema>>({
     defaultValues: {
       name: population.name,
-      image: undefined,
+      image: population.image ?? undefined,
       universeId: population.universeId,
       description: population.description,
       averageAge: population.averageAge,
@@ -120,7 +134,7 @@ export const UpdatePopulation: React.FC<UpdatePopulationProps> = ({
                   Nom de la population <span className="text-red-500">*</span>
                 </FormLabel>
                 <FormControl>
-                  <Input placeholder="Entretien ménager" {...field} />
+                  <Input placeholder="Humain" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -133,15 +147,15 @@ export const UpdatePopulation: React.FC<UpdatePopulationProps> = ({
             render={({ field }) => (
               <FormItem className="w-full xl:w-1/4">
                 <FormLabel>
-                  Éspérance de vie moyenne{" "}
+                  Éspérance de vie moyenne (ans){" "}
                   <span className="text-red-500">*</span>
                 </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="300"
+                    placeholder="150"
                     type="number"
                     min={0}
-                    step={0.01}
+                    step={1}
                     {...field}
                   />
                 </FormControl>
@@ -160,7 +174,7 @@ export const UpdatePopulation: React.FC<UpdatePopulationProps> = ({
                 </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="19.99"
+                    placeholder="1.75"
                     type="number"
                     min={0}
                     step={0.01}
@@ -182,11 +196,11 @@ export const UpdatePopulation: React.FC<UpdatePopulationProps> = ({
                 </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="1"
+                    placeholder="75"
                     {...field}
                     type="number"
-                    step={1}
-                    min={1}
+                    step={0.1}
+                    min={0}
                   />
                 </FormControl>
                 <FormMessage />

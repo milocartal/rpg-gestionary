@@ -109,9 +109,15 @@ pnpm db:push
 # Mode développement
 pnpm dev
 
+#Mode développement avec turbo
+pnpm turbo
+
 # Ou en mode build
 pnpm build
 pnpm start
+
+#Ou plus simplement
+pnpm preview
 ```
 
 L'application sera disponible sur `http://localhost:3000`.
@@ -141,8 +147,10 @@ prisma/
 ```bash
 # Développement
 pnpm dev              # Démarrer en mode développement
+pnpm turbo            # Démarrer en mode développement avec turbo
 pnpm build            # Build de production
 pnpm start            # Démarrer en mode production
+pnpm preview          # Démarrer une preview directement
 
 # Base de données
 pnpm db:generate      # Générer le client Prisma

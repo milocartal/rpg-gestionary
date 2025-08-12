@@ -16,7 +16,10 @@ import { useRouter } from "next/navigation";
 import * as React from "react";
 import { toast } from "sonner";
 
-import { DataTableBase } from "~/app/_components/data-table";
+import {
+  DataTableBase,
+  DataTableColumnHeader,
+} from "~/app/_components/data-table";
 
 import { Button } from "~/app/_components/ui/button";
 import { Input } from "~/app/_components/ui/input";
@@ -69,8 +72,103 @@ const columns: ColumnDef<Species>[] = [
         <div className="text-xs capitalize">{data.getValue() as string}</div>
       );
     },
+    enableHiding: false,
   },
-
+  {
+    accessorFn: (row) => row.averageAge,
+    id: "Espérance de vie",
+    header: ({ column }) => {
+      return (
+        <DataTableColumnHeader column={column} title="Espérance de vie (ans)" />
+      );
+    },
+    enableMultiSort: true,
+    cell: (data) => {
+      return (
+        <div className="text-xs capitalize">{data.getValue() as number}</div>
+      );
+    },
+  },
+  {
+    accessorFn: (row) => row.minHeight,
+    id: "Taille minimale",
+    header: ({ column }) => {
+      return (
+        <DataTableColumnHeader column={column} title="Taille minimale (m)" />
+      );
+    },
+    enableMultiSort: true,
+    cell: (data) => {
+      return (
+        <div className="text-xs capitalize">{data.getValue() as number}</div>
+      );
+    },
+  },
+  {
+    accessorFn: (row) => row.maxHeight,
+    id: "Taille maximale",
+    header: ({ column }) => {
+      return (
+        <DataTableColumnHeader column={column} title="Taille maximale (m)" />
+      );
+    },
+    enableMultiSort: true,
+    cell: (data) => {
+      return (
+        <div className="text-xs capitalize">{data.getValue() as number}</div>
+      );
+    },
+  },
+  {
+    accessorFn: (row) => row.minWeight,
+    id: "Masse minimale",
+    header: ({ column }) => {
+      return (
+        <DataTableColumnHeader column={column} title="Masse minimale (kg)" />
+      );
+    },
+    enableMultiSort: true,
+    cell: (data) => {
+      return (
+        <div className="text-xs capitalize">{data.getValue() as number}</div>
+      );
+    },
+  },
+  {
+    accessorFn: (row) => row.maxWeight,
+    id: "Masse maximale",
+    header: ({ column }) => {
+      return (
+        <DataTableColumnHeader column={column} title="Masse maximale (kg)" />
+      );
+    },
+    enableMultiSort: true,
+    cell: (data) => {
+      return (
+        <div className="text-xs capitalize">{data.getValue() as number}</div>
+      );
+    },
+  },
+  {
+    accessorFn: (row) => row.createdAt,
+    id: "createdAt",
+    header: ({ column }) => {
+      return <DataTableColumnHeader column={column} title="Créé le" />;
+    },
+    cell: (data) => {
+      const date = new Date(data.getValue() as string);
+      return (
+        <div className="text-xs">
+          {date.toLocaleDateString("fr-FR", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          })}
+        </div>
+      );
+    },
+    enableHiding: false,
+  },
   {
     id: "actions",
     enableHiding: false,
