@@ -3,7 +3,7 @@ import { notFound, redirect } from "next/navigation";
 
 import { UniversResume } from "~/app/_components/univers";
 import { Header } from "~/app/_components/header/header";
-// import { Link } from "~/app/_components/ui/link";
+
 import { auth } from "~/server/auth";
 import { db } from "~/server/db";
 import "~/styles/globals.css";
@@ -93,16 +93,6 @@ export default async function UniversDetail({ params }: Props) {
           stories={stories}
           session={session}
         />
-        {/* <section className="bg-background flex h-full w-full flex-col rounded-lg px-6 py-4 shadow">
-          <h2 className="text-text mt-2 text-2xl font-bold">
-            Services de la univers
-          </h2>
-          <DataTableService data={services}>
-            <Link href={`/services/new?categoryId=${univers.id}`}>
-              Créer un service
-            </Link>
-          </DataTableService>
-        </section> */}
       </main>
     </HydrateClient>
   );

@@ -17,13 +17,14 @@ import {
 } from "~/app/_components/ui/form";
 import { api } from "~/trpc/react";
 import { Input } from "~/app/_components/ui/input";
+import type { Story } from "@prisma/client";
 import { Textarea } from "~/app/_components/ui/textarea";
-import { ImageInput } from "../image_input";
-import { Dnd } from "../dnd";
-import { useRef } from "react";
 import { ImageType } from "~/lib/minio";
+import { useRef } from "react";
+import { Dnd } from "~/app/_components/dnd";
+import { ImageInput } from "~/app/_components/image_input";
 
-const CreateUniversSchema = z.object({
+const UpdateStorySchema = z.object({
   name: z
     .string({ required_error: "Le nom est requis" })
     .min(1, "Le nom est requis"),
@@ -33,14 +34,18 @@ const CreateUniversSchema = z.object({
   banner: z.string().optional(),
 });
 
-export const CreateUniverse: React.FC = () => {
+interface UpdateStoryProps {
+  story: Story;
+}
+
+export const UpdateStory: React.FC<UpdateStoryProps> = ({ story }) => {
   const router = useRouter();
   const ref = useRef<HTMLInputElement | null>(null);
 
-  const createUnivers = api.universe.create.useMutation({
+  const updateStory = api.story.update.useMutation({
     onSuccess: () => {
-      toast.success("Univers créé avec succès");
-      router.push("/univers");
+      toast.success("Story mis à jour avec succès");
+      router.push("/story");
     },
     onError: (error) => {
       console.error(error);
@@ -48,37 +53,33 @@ export const CreateUniverse: React.FC = () => {
     },
   });
 
-  async function onSubmit(values: z.infer<typeof CreateUniversSchema>) {
-    try {
-      if (ref.current?.files?.[0]) {
-        const file = ref.current?.files?.[0];
+  async function onSubmit(values: z.infer<typeof UpdateStorySchema>) {
+    if (ref.current?.files?.[0]) {
+      const file = ref.current?.files?.[0];
 
-        const formData = new FormData();
-        formData.append("image", file);
-        formData.append("type", ImageType.universe);
-        const tempImg = await fetch(`/api/image/create`, {
-          method: "POST",
-          body: formData,
-        });
-        const img = (await tempImg.json()) as { url: string };
-        values.banner = img.url;
-      }
-
-      await createUnivers.mutateAsync({
-        name: values.name,
-        description: values.description,
-        banner: values.banner,
+      const formData = new FormData();
+      formData.append("image", file);
+      formData.append("type", ImageType.story);
+      const tempImg = await fetch(`/api/image/create`, {
+        method: "POST",
+        body: formData,
       });
-    } catch (error) {
-      console.error(error);
+      const img = (await tempImg.json()) as { url: string };
+      values.banner = img.url;
     }
+    await updateStory.mutateAsync({
+      id: story.id,
+      name: values.name,
+      description: values.description,
+      banner: values.banner,
+    });
   }
 
-  const form = useForm<z.infer<typeof CreateUniversSchema>>({
-    resolver: zodResolver(CreateUniversSchema),
+  const form = useForm<z.infer<typeof UpdateStorySchema>>({
+    resolver: zodResolver(UpdateStorySchema),
     defaultValues: {
-      name: "",
-      description: "",
+      name: story.name,
+      description: story.description,
     },
   });
 
@@ -107,7 +108,7 @@ export const CreateUniverse: React.FC = () => {
           render={({ field }) => (
             <FormItem className="w-full">
               <FormLabel>
-                Nom de l&apos;univers <span className="text-red-500">*</span>
+                Nom de l&apos;story <span className="text-red-500">*</span>
               </FormLabel>
               <FormControl>
                 <Input placeholder="Nom" {...field} />
@@ -116,7 +117,6 @@ export const CreateUniverse: React.FC = () => {
             </FormItem>
           )}
         />
-
         <FormField
           name="description"
           control={form.control}
@@ -139,10 +139,12 @@ export const CreateUniverse: React.FC = () => {
 
         <Button
           type="submit"
-          disabled={createUnivers.isPending}
+          disabled={updateStory.isPending}
           className="mt-4 self-end"
         >
-          {createUnivers.isPending ? "Création..." : "Créer l'univers"}
+          {updateStory.isPending
+            ? "Enregistrement..."
+            : "Enregistrer les modifications"}
         </Button>
       </form>
     </Form>

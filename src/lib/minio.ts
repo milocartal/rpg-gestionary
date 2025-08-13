@@ -93,4 +93,12 @@ export enum ImageType {
    * Représente une image d'une tuile.
    */
   tile = "tile",
+  /**
+   * Représente une image d'un univers.
+   */
+  universe = "universe",
+  /**
+   * Représente une image d'une histoire.
+   */
+  story = "story",
 }

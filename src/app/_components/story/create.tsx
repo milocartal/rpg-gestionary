@@ -23,7 +23,7 @@ import { Dnd } from "../dnd";
 import { useRef } from "react";
 import { ImageType } from "~/lib/minio";
 
-const CreateUniversSchema = z.object({
+const CreateStorySchema = z.object({
   name: z
     .string({ required_error: "Le nom est requis" })
     .min(1, "Le nom est requis"),
@@ -31,16 +31,19 @@ const CreateUniversSchema = z.object({
     .string({ required_error: "La description est requise" })
     .min(1, "La description est requise"),
   banner: z.string().optional(),
+  universeId: z.string(),
 });
 
-export const CreateUniverse: React.FC = () => {
+export const CreateStory: React.FC<{ universeId: string }> = ({
+  universeId,
+}) => {
   const router = useRouter();
   const ref = useRef<HTMLInputElement | null>(null);
 
-  const createUnivers = api.universe.create.useMutation({
+  const createStory = api.story.create.useMutation({
     onSuccess: () => {
-      toast.success("Univers créé avec succès");
-      router.push("/univers");
+      toast.success("Histoire créé avec succès");
+      router.push("/stories");
     },
     onError: (error) => {
       console.error(error);
@@ -48,14 +51,14 @@ export const CreateUniverse: React.FC = () => {
     },
   });
 
-  async function onSubmit(values: z.infer<typeof CreateUniversSchema>) {
+  async function onSubmit(values: z.infer<typeof CreateStorySchema>) {
     try {
       if (ref.current?.files?.[0]) {
         const file = ref.current?.files?.[0];
 
         const formData = new FormData();
         formData.append("image", file);
-        formData.append("type", ImageType.universe);
+        formData.append("type", ImageType.story);
         const tempImg = await fetch(`/api/image/create`, {
           method: "POST",
           body: formData,
@@ -64,21 +67,23 @@ export const CreateUniverse: React.FC = () => {
         values.banner = img.url;
       }
 
-      await createUnivers.mutateAsync({
+      await createStory.mutateAsync({
         name: values.name,
         description: values.description,
         banner: values.banner,
+        universeId: values.universeId,
       });
     } catch (error) {
       console.error(error);
     }
   }
 
-  const form = useForm<z.infer<typeof CreateUniversSchema>>({
-    resolver: zodResolver(CreateUniversSchema),
+  const form = useForm<z.infer<typeof CreateStorySchema>>({
+    resolver: zodResolver(CreateStorySchema),
     defaultValues: {
       name: "",
       description: "",
+      universeId: universeId,
     },
   });
 
@@ -107,7 +112,7 @@ export const CreateUniverse: React.FC = () => {
           render={({ field }) => (
             <FormItem className="w-full">
               <FormLabel>
-                Nom de l&apos;univers <span className="text-red-500">*</span>
+                Nom de l&apos;histoire <span className="text-red-500">*</span>
               </FormLabel>
               <FormControl>
                 <Input placeholder="Nom" {...field} />
@@ -139,10 +144,10 @@ export const CreateUniverse: React.FC = () => {
 
         <Button
           type="submit"
-          disabled={createUnivers.isPending}
+          disabled={createStory.isPending}
           className="mt-4 self-end"
         >
-          {createUnivers.isPending ? "Création..." : "Créer l'univers"}
+          {createStory.isPending ? "Création..." : "Créer l'univers"}
         </Button>
       </form>
     </Form>
