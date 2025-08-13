@@ -130,11 +130,11 @@ export default async function PolitiqueConfidentialite() {
                   <li>Portabilité des données</li>
                 </ul>
                 <p className="mt-3">
-                  Pour exercer vos droits, contactez :
+                  Pour exercer vos droits, contactez :{" "}
                   <Link
                     href="mailto:agence.cart.all@gmail.com"
                     variant="link"
-                    className="ml-1"
+                    className="p-0"
                   >
                     agence.cart.all@gmail.com
                   </Link>

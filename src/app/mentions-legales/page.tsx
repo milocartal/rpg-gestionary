@@ -18,7 +18,12 @@ export default async function MentionsLegales() {
               </p>
               <p>
                 <span className="font-semibold">Contact :</span>{" "}
-                <Link href="mailto:agence.cart.all@gmail.com" variant="link">
+                <Link
+                  href="mailto:agence.cart.all@gmail.com"
+                  variant="link"
+                  size={"sm"}
+                  className="p-0"
+                >
                   agence.cart.all@gmail.com
                 </Link>
               </p>
@@ -30,7 +35,7 @@ export default async function MentionsLegales() {
           </article>
 
           <article>
-            <h2>Hébergement</h2>
+            <h2 className="text-2xl font-bold">Hébergement</h2>
             <div className="space-y-2">
               <p>
                 <span className="font-semibold">Hébergeur :</span> Hetzner
@@ -46,7 +51,12 @@ export default async function MentionsLegales() {
               </p>
               <p>
                 <span className="font-semibold">Site web :</span>{" "}
-                <Link href="https://www.hetzner.com/" variant="link">
+                <Link
+                  href="https://www.hetzner.com/"
+                  variant="link"
+                  size={"sm"}
+                  className="p-0"
+                >
                   https://www.hetzner.com/
                 </Link>
               </p>

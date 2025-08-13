@@ -100,11 +100,11 @@ export default async function ConditionsGeneralesUtilisation() {
               <div className="space-y-2">
                 <p>
                   Pour toute question concernant ces conditions
-                  d&apos;utilisation, vous pouvez nous contacter à :
+                  d&apos;utilisation, vous pouvez nous contacter à :{" "}
                   <Link
                     href="mailto:agence.cart.all@gmail.com"
                     variant="link"
-                    className="ml-1"
+                    className="p-0"
                   >
                     agence.cart.all@gmail.com
                   </Link>
