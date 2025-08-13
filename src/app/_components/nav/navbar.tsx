@@ -178,7 +178,7 @@ interface NavbarProps {
 const NavbarOne: React.FC<NavbarProps> = ({ session, univers }) => {
   const path = usePathname();
 
-  const { open } = useSidebar();
+  const { open, isMobile, setOpenMobile } = useSidebar();
 
   if (
     path.includes("/forgot-password") ||
@@ -192,7 +192,13 @@ const NavbarOne: React.FC<NavbarProps> = ({ session, univers }) => {
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader className="bg-primary border-b px-0 py-2">
-        <Link href="/" className="cursor-pointer">
+        <Link
+          href="/"
+          className="cursor-pointer"
+          onClick={() => {
+            if (isMobile) setOpenMobile(false);
+          }}
+        >
           <div className="flex h-16 items-center justify-center">
             <Image
               src={!open ? "/monogramme.svg" : "/text.svg"}
