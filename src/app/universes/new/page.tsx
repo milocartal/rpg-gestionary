@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { unauthorized } from "next/navigation";
 
 import { Header } from "~/app/_components/header/header";
 import { CreateUniverse } from "~/app/_components/univers/create";
@@ -15,7 +15,7 @@ export default async function NewUnivers() {
   const session = await auth();
 
   if (!session) {
-    notFound();
+    unauthorized();
   }
 
   return (

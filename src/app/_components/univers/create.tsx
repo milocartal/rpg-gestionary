@@ -18,6 +18,10 @@ import {
 import { api } from "~/trpc/react";
 import { Input } from "~/app/_components/ui/input";
 import { Textarea } from "~/app/_components/ui/textarea";
+import { ImageInput } from "../image_input";
+import { Dnd } from "../dnd";
+import { useRef } from "react";
+import { ImageType } from "~/lib/minio";
 
 const CreateUniversSchema = z.object({
   name: z
@@ -26,10 +30,12 @@ const CreateUniversSchema = z.object({
   description: z
     .string({ required_error: "La description est requise" })
     .min(1, "La description est requise"),
+  banner: z.string().optional(),
 });
 
 export const CreateUniverse: React.FC = () => {
   const router = useRouter();
+  const ref = useRef<HTMLInputElement | null>(null);
 
   const createUnivers = api.universe.create.useMutation({
     onSuccess: () => {
@@ -43,10 +49,29 @@ export const CreateUniverse: React.FC = () => {
   });
 
   async function onSubmit(values: z.infer<typeof CreateUniversSchema>) {
-    await createUnivers.mutateAsync({
-      name: values.name,
-      description: values.description,
-    });
+    try {
+      if (ref.current?.files?.[0]) {
+        const file = ref.current?.files?.[0];
+
+        const formData = new FormData();
+        formData.append("image", file);
+        formData.append("type", ImageType.universe);
+        const tempImg = await fetch(`/api/image/create`, {
+          method: "POST",
+          body: formData,
+        });
+        const img = (await tempImg.json()) as { url: string };
+        values.banner = img.url;
+      }
+
+      await createUnivers.mutateAsync({
+        name: values.name,
+        description: values.description,
+        banner: values.banner,
+      });
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   const form = useForm<z.infer<typeof CreateUniversSchema>>({
@@ -63,6 +88,19 @@ export const CreateUniverse: React.FC = () => {
         onSubmit={form.handleSubmit(onSubmit)}
         className="flex w-full flex-col items-start gap-4 rounded-md bg-white p-4"
       >
+        <FormField
+          control={form.control}
+          name="banner"
+          render={() => (
+            <FormItem className="flex flex-col">
+              <FormLabel className="mt-2 mb-1">Image</FormLabel>
+              <Dnd>
+                <ImageInput dref={ref} />
+              </Dnd>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <FormField
           control={form.control}
           name="name"

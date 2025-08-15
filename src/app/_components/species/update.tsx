@@ -26,6 +26,7 @@ import { api } from "~/trpc/react";
 
 import { type UpdateSpeciesProps, UpdateSpeciesSchema } from "./type";
 import { Dnd } from "~/app/_components/dnd";
+import { ImageType } from "~/lib/minio";
 
 export const UpdateSpecies: React.FC<UpdateSpeciesProps> = ({
   redirectionSuccess,
@@ -46,7 +47,7 @@ export const UpdateSpecies: React.FC<UpdateSpeciesProps> = ({
       if (redirectionSuccess) {
         router.push(redirectionSuccess);
       } else {
-        router.push("/speciess");
+        router.push("/species");
       }
     },
     onError: (error) => {
@@ -57,18 +58,31 @@ export const UpdateSpecies: React.FC<UpdateSpeciesProps> = ({
 
   async function onSubmit(values: z.infer<typeof UpdateSpeciesSchema>) {
     try {
-      /* if (ref.current?.files?.[0]) {
+      if (ref.current?.files?.[0]) {
+        if (
+          species.image?.includes("rpg") &&
+          !species.image?.includes("placeholder")
+        ) {
+          const DelFormData = new FormData();
+          DelFormData.append("imageUrl", species.image);
+          await fetch(`/api/image/delete`, {
+            method: "POST",
+            body: DelFormData,
+          });
+        }
+
         const file = ref.current?.files?.[0];
 
         const formData = new FormData();
         formData.append("image", file);
-        const tempImg = await fetch(`/api/image/update`, {
+        formData.append("type", ImageType.species);
+        const tempImg = await fetch(`/api/image/create`, {
           method: "POST",
           body: formData,
         });
         const img = (await tempImg.json()) as { url: string };
         values.image = img.url;
-      } */
+      }
 
       await updateSpecies.mutateAsync({
         ...values,
@@ -81,7 +95,7 @@ export const UpdateSpecies: React.FC<UpdateSpeciesProps> = ({
   const form = useForm<z.infer<typeof UpdateSpeciesSchema>>({
     defaultValues: {
       name: species.name,
-      image: undefined,
+      image: species.image ?? undefined,
       universeId: species.universeId,
       description: species.description,
       averageAge: species.averageAge,
@@ -120,7 +134,7 @@ export const UpdateSpecies: React.FC<UpdateSpeciesProps> = ({
             render={({ field }) => (
               <FormItem className="w-full xl:w-1/2">
                 <FormLabel>
-                  Nom de la species <span className="text-red-500">*</span>
+                  Nom de l&apos;espèce <span className="text-red-500">*</span>
                 </FormLabel>
                 <FormControl>
                   <Input placeholder="Entretien ménager" {...field} />
@@ -141,7 +155,7 @@ export const UpdateSpecies: React.FC<UpdateSpeciesProps> = ({
                 </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="300"
+                    placeholder="40"
                     type="number"
                     min={0}
                     step={0.01}
@@ -159,7 +173,7 @@ export const UpdateSpecies: React.FC<UpdateSpeciesProps> = ({
             control={form.control}
             name="minHeight"
             render={({ field }) => (
-              <FormItem className="w-full xl:w-1/4">
+              <FormItem className="w-full xl:w-1/2">
                 <FormLabel>
                   Taille minimum (m) <span className="text-red-500">*</span>
                 </FormLabel>
@@ -181,13 +195,13 @@ export const UpdateSpecies: React.FC<UpdateSpeciesProps> = ({
             control={form.control}
             name="maxHeight"
             render={({ field }) => (
-              <FormItem className="w-full xl:w-1/4">
+              <FormItem className="w-full xl:w-1/2">
                 <FormLabel>
                   Taille maximum (m) <span className="text-red-500">*</span>
                 </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="100"
+                    placeholder="3"
                     {...field}
                     type="number"
                     step={0.1}
@@ -205,13 +219,13 @@ export const UpdateSpecies: React.FC<UpdateSpeciesProps> = ({
             control={form.control}
             name="minWeight"
             render={({ field }) => (
-              <FormItem className="w-full xl:w-1/4">
+              <FormItem className="w-full xl:w-1/2">
                 <FormLabel>
-                  Taille moyenne (m) <span className="text-red-500">*</span>
+                  Masse minimum (kg) <span className="text-red-500">*</span>
                 </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="1.5"
+                    placeholder="5"
                     type="number"
                     min={0}
                     step={0.01}
@@ -227,16 +241,16 @@ export const UpdateSpecies: React.FC<UpdateSpeciesProps> = ({
             control={form.control}
             name="maxWeight"
             render={({ field }) => (
-              <FormItem className="w-full xl:w-1/4">
+              <FormItem className="w-full xl:w-1/2">
                 <FormLabel>
-                  Masse moyenne (kg) <span className="text-red-500">*</span>
+                  Masse maximum (kg) <span className="text-red-500">*</span>
                 </FormLabel>
                 <FormControl>
                   <Input
                     placeholder="1OO"
                     {...field}
                     type="number"
-                    step={0.1}
+                    step={0.01}
                     min={0}
                   />
                 </FormControl>

@@ -73,3 +73,12 @@ export function sommeDesAvecModificateur(
   const result = lancerDes(nbDe, nbFaces);
   return result.reduce((acc, val) => acc + val, modificateur);
 }
+
+export function toSlug(name: string) {
+  return name
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}

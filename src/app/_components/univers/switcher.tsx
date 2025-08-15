@@ -35,6 +35,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "~/app/_components/ui/sidebar";
 import {
   Tooltip,
@@ -56,6 +57,7 @@ export const UniversSwitcher: React.FC<UniversSwitcherProps> = ({
 }) => {
   const { update } = useSession();
   const router = useRouter();
+  const sidebar = useSidebar();
 
   const { data, isLoading } = api.universe.getAllFromSession.useQuery();
 
@@ -98,6 +100,9 @@ export const UniversSwitcher: React.FC<UniversSwitcherProps> = ({
       .then(() => {
         setSelectedUniverse(universes.find((c) => c.id === universeId));
         setOpen(false);
+        if (sidebar.isMobile) {
+          sidebar.setOpenMobile(false);
+        }
         router.refresh();
       })
       .catch(() => {
@@ -175,9 +180,9 @@ export const UniversSwitcher: React.FC<UniversSwitcherProps> = ({
             sideOffset={4}
           >
             <Command className="overflow-y-auto">
-              <CommandInput placeholder="Cherchez un profil..." />
+              <CommandInput placeholder="Cherchez un univers..." />
               <CommandList className="">
-                <CommandEmpty>Aucun profil trouvé.</CommandEmpty>
+                <CommandEmpty>Aucun univers trouvé.</CommandEmpty>
 
                 <CommandGroup heading={"Mes universes"}>
                   {isLoading ? (
@@ -248,6 +253,9 @@ export const UniversSwitcher: React.FC<UniversSwitcherProps> = ({
                     onSelect={() => {
                       setOpen(false);
                       router.push("/universes/new");
+                      if (sidebar.isMobile) {
+                        sidebar.setOpenMobile(false);
+                      }
                     }}
                   >
                     <PlusCircledIcon className="mr-2 h-5 w-5" />
@@ -257,6 +265,9 @@ export const UniversSwitcher: React.FC<UniversSwitcherProps> = ({
                     onSelect={() => {
                       setOpen(false);
                       router.push("/universes");
+                      if (sidebar.isMobile) {
+                        sidebar.setOpenMobile(false);
+                      }
                     }}
                   >
                     <List className="mr-2 h-5 w-5" />

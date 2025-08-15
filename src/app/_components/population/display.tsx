@@ -29,7 +29,7 @@ const PopulationResumeOne: React.FC<PopulationResumeProps> = ({
 
         {canInUniverse(session).updateOwn("population").granted && (
           <ShadLink
-            href={`/population/${population.id}/edit`}
+            href={`/populations/${population.id}/edit`}
             size={isMobile ? "icon" : "default"}
           >
             {isMobile ? <Pencil className="h-6 w-6" /> : "Modifier"}

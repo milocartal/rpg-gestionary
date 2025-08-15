@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { unauthorized } from "next/navigation";
 
 import { Header } from "~/app/_components/header/header";
 import { Link } from "~/app/_components/ui/link";
@@ -16,7 +16,7 @@ export default async function Univers() {
   const session = await auth();
 
   if (!session) {
-    notFound();
+    unauthorized();
   }
 
   const univers = await db.universe.findMany({

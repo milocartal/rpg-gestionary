@@ -69,6 +69,7 @@ const columns: ColumnDef<BaseAttribute>[] = [
         <div className="text-xs capitalize">{data.getValue() as string}</div>
       );
     },
+    enableHiding: false,
   },
   {
     accessorFn: (row) => row.description,
@@ -192,7 +193,7 @@ const DataTableBaseAttributeOne: React.FC<BaseAttributeDataTableProps> = ({
     <DataTableBase table={table} columns={columns} selection>
       {children}
       <Input
-        placeholder="Chercher une compétence..."
+        placeholder="Chercher un attribut..."
         value={(table.getColumn("Nom")?.getFilterValue() as string) ?? ""}
         onChange={(event) =>
           table.getColumn("Nom")?.setFilterValue(event.target.value)

@@ -20,14 +20,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!gender) {
     return {
-      title: "Gender introuvable | SAGA",
-      description: "La gender de base que vous cherchez n'existe pas",
+      title: "Genre introuvable | SAGA",
+      description: "Le genre que vous cherchez n'existe pas",
     };
   }
 
   return {
     title: `Modifier ${gender.name} | SAGA`,
-    description: `Modifier la compténce de base ${gender.name}`,
+    description: `Modifier le genre ${gender.name}`,
   };
 }
 
@@ -44,7 +44,7 @@ export default async function GenderUpdate({ params }: Props) {
 
   return (
     <HydrateClient>
-      <Header back title={`Mise à jour du gender: ${gender.name}`} />
+      <Header back title={`Mise à jour du genre: ${gender.name}`} />
       <main className="relative flex min-h-screen flex-col items-center bg-[url('/assets/images/bg.webp')] bg-cover bg-fixed px-4 pt-24 pb-10">
         <div className="bg-background flex h-full w-full flex-col rounded-lg px-6 py-4 shadow">
           <UpdateGender gender={gender} />

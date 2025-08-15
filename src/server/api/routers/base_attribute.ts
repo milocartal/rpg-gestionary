@@ -8,6 +8,8 @@ import {
   publicProcedure,
 } from "~/server/api/trpc";
 import { canInUniverse } from "~/utils/accesscontrol";
+import { toSlug } from "~/lib/utils";
+import { Prisma } from "@prisma/client";
 
 const baseAttributeSchema = z.object({
   name: z.string(),
@@ -46,6 +48,7 @@ export const baseAttributeRouter = createTRPCRouter({
 
       return baseAttributes;
     }),
+
   create: protectedProcedure
     .input(baseAttributeSchema)
     .mutation(async ({ ctx, input }) => {
@@ -56,14 +59,39 @@ export const baseAttributeRouter = createTRPCRouter({
         });
       }
 
-      const baseAttributes = await db.baseAttribute.create({
-        data: {
-          name: input.name,
-          description: input.description,
-          Universe: { connect: { id: input.universeId } },
-        },
+      const baseSlug = toSlug(input.name);
+      const MAX = 25;
+
+      for (let i = 0; i < MAX; i++) {
+        const candidate = i === 0 ? baseSlug : `${baseSlug}-${i + 1}`;
+        try {
+          return await db.baseAttribute.create({
+            data: {
+              Universe: { connect: { id: input.universeId } },
+              name: input.name,
+              description: input.description,
+              slug: candidate,
+            },
+          });
+        } catch (e) {
+          if (
+            e instanceof Prisma.PrismaClientKnownRequestError &&
+            e.code === "P2002"
+          ) {
+            continue; // slug déjà pris -> on essaie le suivant
+          }
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message:
+              "Une erreur est survenue lors de la création de l'attribut de base.",
+          });
+        }
+      }
+
+      throw new TRPCError({
+        code: "CONFLICT",
+        message: "Impossible de générer un slug unique.",
       });
-      return baseAttributes;
     }),
 
   update: protectedProcedure

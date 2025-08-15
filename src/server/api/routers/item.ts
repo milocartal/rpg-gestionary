@@ -1,6 +1,8 @@
+import { Prisma } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { ItemTypeZod } from "~/lib/models/Item";
+import { toSlug } from "~/lib/utils";
 
 import {
   createTRPCRouter,
@@ -54,21 +56,45 @@ export const itemRouter = createTRPCRouter({
     }),
 
   create: protectedProcedure
-    .input(CreateItemSchema.strict())
-    .mutation(async ({ input, ctx }) => {
-      if (!canInUniverse(ctx.session).createOwn("item")) {
+    .input(CreateItemSchema)
+    .mutation(async ({ ctx, input }) => {
+      if (!canInUniverse(ctx.session).createAny("item").granted) {
         throw new TRPCError({
           code: "FORBIDDEN",
-          message:
-            "You do not have permission to create items in this universe.",
+          message: "You do not have permission to create an item",
         });
       }
-      const item = await db.item.create({
-        data: {
-          ...input,
-        },
+
+      const baseSlug = toSlug(input.name);
+      const MAX = 25;
+
+      for (let i = 0; i < MAX; i++) {
+        const candidate = i === 0 ? baseSlug : `${baseSlug}-${i + 1}`;
+        try {
+          return await db.item.create({
+            data: {
+              ...input,
+              slug: candidate,
+            },
+          });
+        } catch (e) {
+          if (
+            e instanceof Prisma.PrismaClientKnownRequestError &&
+            e.code === "P2002"
+          ) {
+            continue; // slug déjà pris -> on essaie le suivant
+          }
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Une erreur est survenue lors de la création de l'objet.",
+          });
+        }
+      }
+
+      throw new TRPCError({
+        code: "CONFLICT",
+        message: "Impossible de générer un slug unique.",
       });
-      return item;
     }),
 
   update: protectedProcedure

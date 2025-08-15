@@ -12,12 +12,15 @@ import {
   Blocks,
   BookMarked,
   Box,
+  FileKey,
   Landmark,
   type LucideIcon,
+  Mouse,
   Newspaper,
   Origami,
   PawPrint,
   ReceiptText,
+  Scale,
   ScrollText,
   Transgender,
   UsersRound,
@@ -146,6 +149,27 @@ const links: ExclusiveNavLink[][] = [
   ],
 ];
 
+const legalsLinks: NavLink[] = [
+  {
+    title: "Mentions légales",
+    label: "",
+    icon: Scale,
+    href: "/mentions-legales",
+  },
+  {
+    title: "CGU",
+    label: "",
+    icon: Mouse,
+    href: "/cgu",
+  },
+  {
+    title: "Politique de confidentialité",
+    label: "",
+    icon: FileKey,
+    href: "/politique-confidentialite",
+  },
+];
+
 interface NavbarProps {
   readonly session: Session | null;
   readonly univers: UniverseWithUsers[];
@@ -154,7 +178,7 @@ interface NavbarProps {
 const NavbarOne: React.FC<NavbarProps> = ({ session, univers }) => {
   const path = usePathname();
 
-  const { open } = useSidebar();
+  const { open, isMobile, setOpenMobile } = useSidebar();
 
   if (
     path.includes("/forgot-password") ||
@@ -168,7 +192,13 @@ const NavbarOne: React.FC<NavbarProps> = ({ session, univers }) => {
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader className="bg-primary border-b px-0 py-2">
-        <Link href="/" className="cursor-pointer">
+        <Link
+          href="/"
+          className="cursor-pointer"
+          onClick={() => {
+            if (isMobile) setOpenMobile(false);
+          }}
+        >
           <div className="flex h-16 items-center justify-center">
             <Image
               src={!open ? "/monogramme.svg" : "/text.svg"}
@@ -204,6 +234,11 @@ const NavbarOne: React.FC<NavbarProps> = ({ session, univers }) => {
       </SidebarContent>
 
       <SidebarFooter>
+        <SidebarGroup>
+          {legalsLinks.map((link) => {
+            return <NavItem key={link.href} link={link} />;
+          })}
+        </SidebarGroup>
         <NormalConnectionButton session={session} open={open} />
       </SidebarFooter>
       <SidebarRail />

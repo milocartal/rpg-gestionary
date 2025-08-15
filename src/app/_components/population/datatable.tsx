@@ -16,7 +16,10 @@ import { useRouter } from "next/navigation";
 import * as React from "react";
 import { toast } from "sonner";
 
-import { DataTableBase } from "~/app/_components/data-table";
+import {
+  DataTableBase,
+  DataTableColumnHeader,
+} from "~/app/_components/data-table";
 
 import { Button } from "~/app/_components/ui/button";
 import { Input } from "~/app/_components/ui/input";
@@ -29,14 +32,15 @@ import {
 import { api } from "~/trpc/react";
 import { withSessionProvider } from "~/utils/withSessionProvider";
 import { Checkbox } from "~/app/_components/ui/checkbox";
-import type { Population } from "@prisma/client";
+
+import type { PopulationWithModifiers } from "~/lib/models/Population";
 
 interface PopulationDataTableProps {
-  data: Population[];
+  data: PopulationWithModifiers[];
   children?: React.ReactNode;
 }
 
-const columns: ColumnDef<Population>[] = [
+const columns: ColumnDef<PopulationWithModifiers>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -69,8 +73,86 @@ const columns: ColumnDef<Population>[] = [
         <div className="text-xs capitalize">{data.getValue() as string}</div>
       );
     },
+    enableHiding: false,
   },
-
+  {
+    accessorFn: (row) => row.averageAge,
+    id: "Espérance de vie",
+    header: ({ column }) => {
+      return (
+        <DataTableColumnHeader column={column} title="Espérance de vie (ans)" />
+      );
+    },
+    enableMultiSort: true,
+    cell: (data) => {
+      return (
+        <div className="text-xs capitalize">{data.getValue() as number}</div>
+      );
+    },
+  },
+  {
+    accessorFn: (row) => row.averageHeight,
+    id: "Taille moyenne",
+    header: ({ column }) => {
+      return (
+        <DataTableColumnHeader column={column} title="Taille moyenne (m)" />
+      );
+    },
+    enableMultiSort: true,
+    cell: (data) => {
+      return (
+        <div className="text-xs capitalize">{data.getValue() as number}</div>
+      );
+    },
+  },
+  {
+    accessorFn: (row) => row.averageWeight,
+    id: "Masse moyenne",
+    header: ({ column }) => {
+      return (
+        <DataTableColumnHeader column={column} title="Masse moyenne (kg)" />
+      );
+    },
+    enableMultiSort: true,
+    cell: (data) => {
+      return (
+        <div className="text-xs capitalize">{data.getValue() as number}</div>
+      );
+    },
+  },
+  {
+    accessorFn: (row) => row.Modifiers.length,
+    id: "Bonus",
+    header: ({ column }) => {
+      return <DataTableColumnHeader column={column} title="Bonus" />;
+    },
+    enableMultiSort: true,
+    cell: (data) => {
+      return (
+        <div className="text-xs capitalize">{data.getValue() as number}</div>
+      );
+    },
+  },
+  {
+    accessorFn: (row) => row.createdAt,
+    id: "createdAt",
+    header: ({ column }) => {
+      return <DataTableColumnHeader column={column} title="Créé le" />;
+    },
+    cell: (data) => {
+      const date = new Date(data.getValue() as string);
+      return (
+        <div className="text-xs">
+          {date.toLocaleDateString("fr-FR", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          })}
+        </div>
+      );
+    },
+    enableHiding: false,
+  },
   {
     id: "actions",
     enableHiding: false,

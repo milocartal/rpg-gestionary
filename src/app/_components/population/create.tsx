@@ -26,6 +26,7 @@ import { api } from "~/trpc/react";
 
 import { type CreatePopulationProps, CreatePopulationSchema } from "./type";
 import { Dnd } from "~/app/_components/dnd";
+import { ImageType } from "~/lib/minio";
 
 export const CreatePopulation: React.FC<CreatePopulationProps> = ({
   redirectionSuccess,
@@ -57,18 +58,19 @@ export const CreatePopulation: React.FC<CreatePopulationProps> = ({
 
   async function onSubmit(values: z.infer<typeof CreatePopulationSchema>) {
     try {
-      /* if (ref.current?.files?.[0]) {
+      if (ref.current?.files?.[0]) {
         const file = ref.current?.files?.[0];
 
         const formData = new FormData();
         formData.append("image", file);
+        formData.append("type", ImageType.population);
         const tempImg = await fetch(`/api/image/create`, {
           method: "POST",
           body: formData,
         });
         const img = (await tempImg.json()) as { url: string };
         values.image = img.url;
-      } */
+      }
 
       await createPopulation.mutateAsync({
         ...values,
@@ -84,9 +86,9 @@ export const CreatePopulation: React.FC<CreatePopulationProps> = ({
       image: undefined,
       universeId: univers.id,
       description: "",
-      averageAge: 0,
-      averageHeight: 0,
-      averageWeight: 0,
+      averageAge: undefined,
+      averageHeight: undefined,
+      averageWeight: undefined,
     },
     resolver: zodResolver(CreatePopulationSchema),
   });
@@ -120,7 +122,7 @@ export const CreatePopulation: React.FC<CreatePopulationProps> = ({
                   Nom de la population <span className="text-red-500">*</span>
                 </FormLabel>
                 <FormControl>
-                  <Input placeholder="Entretien ménager" {...field} />
+                  <Input placeholder="Humain" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -133,15 +135,15 @@ export const CreatePopulation: React.FC<CreatePopulationProps> = ({
             render={({ field }) => (
               <FormItem className="w-full xl:w-1/4">
                 <FormLabel>
-                  Éspérance de vie moyenne{" "}
+                  Éspérance de vie moyenne (ans){" "}
                   <span className="text-red-500">*</span>
                 </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="300"
+                    placeholder="150"
                     type="number"
                     min={0}
-                    step={0.01}
+                    step={1}
                     {...field}
                   />
                 </FormControl>
@@ -160,7 +162,7 @@ export const CreatePopulation: React.FC<CreatePopulationProps> = ({
                 </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="1.5"
+                    placeholder="1.75"
                     type="number"
                     min={0}
                     step={0.01}
@@ -182,7 +184,7 @@ export const CreatePopulation: React.FC<CreatePopulationProps> = ({
                 </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="1"
+                    placeholder="75"
                     {...field}
                     type="number"
                     step={0.1}
@@ -203,7 +205,7 @@ export const CreatePopulation: React.FC<CreatePopulationProps> = ({
               <FormLabel>Description</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Description de la population"
+                  placeholder="Caractéristiques et histoire de la population"
                   {...field}
                 />
               </FormControl>

@@ -1,5 +1,5 @@
 import { type Metadata } from "next";
-import { notFound } from "next/navigation";
+import { forbidden, notFound, unauthorized } from "next/navigation";
 
 import { UpdateSpecies } from "~/app/_components/species";
 import { Header } from "~/app/_components/header/header";
@@ -38,14 +38,17 @@ export default async function SpeciesDetail({ params }: Props) {
   const session = await auth();
 
   if (!session) {
-    notFound();
+    unauthorized();
   }
 
-  if (!canInUniverse(session).updateOwn("species").granted) {
-    notFound();
+  if (
+    !canInUniverse(session).updateOwn("species").granted ||
+    !session.universeId
+  ) {
+    forbidden();
   }
 
-  const univers = await db.universe
+  const universe = await db.universe
     .findFirstOrThrow({
       where: {
         Users: {
@@ -70,7 +73,7 @@ export default async function SpeciesDetail({ params }: Props) {
 
   return (
     <HydrateClient>
-      <Header back title={`${species.name} | ${univers.name}`} />
+      <Header back title={`${species.name} | ${universe.name}`} />
       <main className="relative flex min-h-screen flex-col items-center bg-[url('/assets/images/bg.webp')] bg-cover bg-fixed px-4 pt-24 pb-10">
         <div className="bg-background flex h-full w-full flex-col rounded-lg px-6 py-4 shadow">
           <UpdateSpecies species={species} />

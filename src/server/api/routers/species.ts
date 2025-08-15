@@ -1,5 +1,7 @@
+import { Prisma } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import { toSlug } from "~/lib/utils";
 
 import {
   createTRPCRouter,
@@ -11,6 +13,7 @@ import { canInUniverse } from "~/utils/accesscontrol";
 
 const speciesSchema = z.object({
   name: z.string(),
+  image: z.string().optional(),
   description: z.string(),
   averageAge: z.number(),
   maxWeight: z.number(),
@@ -60,31 +63,56 @@ export const speciesRouter = createTRPCRouter({
 
   create: protectedProcedure
     .input(speciesSchema)
-    .mutation(async ({ input, ctx }) => {
+    .mutation(async ({ ctx, input }) => {
       if (!canInUniverse(ctx.session).createAny("species").granted) {
         throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "You are not allowed to create this species",
+          code: "FORBIDDEN",
+          message: "You do not have permission to create a species",
         });
       }
 
-      const species = await db.species.create({
-        data: {
-          name: input.name,
-          description: input.description,
-          averageAge: input.averageAge,
-          maxWeight: input.maxWeight,
-          minWeight: input.minWeight,
-          maxHeight: input.maxHeight,
-          minHeight: input.minHeight,
-          Universe: {
-            connect: {
-              id: input.universeId,
+      const baseSlug = toSlug(input.name);
+      const MAX = 25;
+
+      for (let i = 0; i < MAX; i++) {
+        const candidate = i === 0 ? baseSlug : `${baseSlug}-${i + 1}`;
+        try {
+          return await db.species.create({
+            data: {
+              name: input.name,
+              image: input.image,
+              description: input.description,
+              averageAge: input.averageAge,
+              maxWeight: input.maxWeight,
+              minWeight: input.minWeight,
+              maxHeight: input.maxHeight,
+              minHeight: input.minHeight,
+              Universe: {
+                connect: {
+                  id: input.universeId,
+                },
+              },
+              slug: candidate,
             },
-          },
-        },
+          });
+        } catch (e) {
+          if (
+            e instanceof Prisma.PrismaClientKnownRequestError &&
+            e.code === "P2002"
+          ) {
+            continue; // slug déjà pris -> on essaie le suivant
+          }
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Une erreur est survenue lors de la création de l'espèce.",
+          });
+        }
+      }
+
+      throw new TRPCError({
+        code: "CONFLICT",
+        message: "Impossible de générer un slug unique.",
       });
-      return species;
     }),
 
   update: protectedProcedure
@@ -101,6 +129,7 @@ export const speciesRouter = createTRPCRouter({
         where: { id: input.id },
         data: {
           name: input.name,
+          image: input.image,
           description: input.description,
           averageAge: input.averageAge,
           maxWeight: input.maxWeight,

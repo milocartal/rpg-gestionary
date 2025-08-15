@@ -13,24 +13,24 @@ interface UpdatePopulationProps {
 
 const CreatePopulationSchema = z.object({
   image: z.string().optional(),
-  name: z
-    .string()
-    .min(1, { message: "The name of the population is required" }),
-  description: z.string().min(1, { message: "The description is required" }),
+  name: z.string().min(1, { message: "Le nom de la population est requis" }),
+  description: z.string().min(1, { message: "La description est requise" }),
   averageAge: z.coerce
-    .number({ required_error: "The average lifespan is required" })
-    .min(1, { message: "The average lifespan must be greater than 1" }),
+    .number({ required_error: "L'espérance de vie est requise" })
+    .min(1, { message: "L'espérance de vie doit être supérieure à 1" }),
   averageHeight: z.coerce
-    .number({ required_error: "The average height is required" })
-    .min(0, { message: "The average height must be greater than 0" }),
+    .number({ required_error: "La taille moyenne est requise" })
+    .min(0, { message: "La taille moyenne doit être supérieure à 0" }),
   averageWeight: z.coerce
-    .number({ required_error: "The average weight is required" })
-    .min(1, { message: "The average weight must be greater than 1" }),
-  universeId: z.string({ required_error: "The universeId is required" }),
+    .number({ required_error: "La masse moyenne est requise" })
+    .min(1, { message: "La masse moyenne doit être supérieure à 1" }),
+  universeId: z.string({
+    required_error: "L'identifiant de l'univers est requis",
+  }),
 });
 
 const UpdatePopulationSchema = CreatePopulationSchema.extend({
-  id: z.string({ required_error: "The id is required" }),
+  id: z.string({ required_error: "L'identifiant est requis" }),
 });
 
 export type { CreatePopulationProps, UpdatePopulationProps };

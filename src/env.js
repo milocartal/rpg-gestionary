@@ -21,6 +21,11 @@ export const env = createEnv({
     // https://nodemailer.com/about/
     GOOGLE_APP_USER: z.string().email(),
     GOOGLE_APP_PASSWORD: z.string(),
+    // MinIO configuration
+    MINIO_ACCESS_KEY: z.string(),
+    MINIO_SECRET_KEY: z.string(),
+    MINIO_ENDPOINT: z.string(),
+    MINIO_BUCKET: z.string(),
   },
 
   /**
@@ -29,6 +34,9 @@ export const env = createEnv({
    * `NEXT_PUBLIC_`.
    */
   client: {
+    // Public MinIO
+    NEXT_PUBLIC_MINIO_ENDPOINT: z.string(),
+    NEXT_PUBLIC_MINIO_BUCKET: z.string(),
     // NEXT_PUBLIC_CLIENTVAR: z.string(),
     NEXT_PUBLIC_URL: z.string().url().default("http://localhost:3000"),
   },
@@ -47,6 +55,13 @@ export const env = createEnv({
     GOOGLE_APP_USER: process.env.GOOGLE_APP_USER,
     GOOGLE_APP_PASSWORD: process.env.GOOGLE_APP_PASSWORD,
     NEXT_PUBLIC_URL: process.env.NEXT_PUBLIC_URL,
+    // MinIO configuration
+    MINIO_ACCESS_KEY: process.env.MINIO_ACCESS_KEY,
+    MINIO_SECRET_KEY: process.env.MINIO_SECRET_KEY,
+    MINIO_ENDPOINT: process.env.MINIO_ENDPOINT,
+    MINIO_BUCKET: process.env.MINIO_BUCKET,
+    NEXT_PUBLIC_MINIO_BUCKET: process.env.NEXT_PUBLIC_MINIO_BUCKET,
+    NEXT_PUBLIC_MINIO_ENDPOINT: process.env.NEXT_PUBLIC_MINIO_ENDPOINT,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

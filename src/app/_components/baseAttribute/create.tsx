@@ -31,8 +31,8 @@ export const CreateBaseAttribute: React.FC<CreateBaseAttributeProps> = ({
 
   const createBaseAttribute = api.baseAttribute.create.useMutation({
     onSuccess: () => {
-      toast.success("Compétence de base créée avec succès");
-      router.push("/baseAttribute");
+      toast.success("Attribut de base créé avec succès");
+      router.push("/attributes");
     },
     onError: (error) => {
       console.error(error);
@@ -68,7 +68,7 @@ export const CreateBaseAttribute: React.FC<CreateBaseAttributeProps> = ({
           render={({ field }) => (
             <FormItem className="w-full">
               <FormLabel>
-                Nom de la compétence de base{" "}
+                Nom de l&apos;attribut de base{" "}
                 <span className="text-red-500">*</span>
               </FormLabel>
               <FormControl>
@@ -106,7 +106,7 @@ export const CreateBaseAttribute: React.FC<CreateBaseAttributeProps> = ({
         >
           {createBaseAttribute.isPending
             ? "Création..."
-            : "Créer la compétence de base"}
+            : "Créer l'attribut de base"}
         </Button>
       </form>
     </Form>

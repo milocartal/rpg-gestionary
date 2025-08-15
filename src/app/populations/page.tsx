@@ -34,6 +34,9 @@ export default async function Population() {
     where: {
       universeId: univers.id,
     },
+    include: {
+      Modifiers: true,
+    },
   });
 
   return (
@@ -42,7 +45,7 @@ export default async function Population() {
       <main className="relative flex min-h-screen flex-col items-center bg-[url('/assets/images/bg.webp')] bg-cover bg-fixed px-4 pt-24 pb-10">
         <div className="bg-background flex h-full w-full flex-col rounded-lg px-6 py-4 shadow">
           <DataTablePopulation data={population}>
-            <Link href="/population/new" className="w-full lg:w-auto">
+            <Link href="/populations/new" className="w-full lg:w-auto">
               Créer un population
             </Link>
           </DataTablePopulation>

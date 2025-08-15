@@ -22,6 +22,7 @@ ac.grant("default")
 //Admin
 ac.grant("administrateur")
   .extend("default")
+  .readAny("admin")
   .readAny("user")
   .createAny("user")
   .updateAny("user")
@@ -37,7 +38,8 @@ acUnivers
   .grant("spectateur")
   .readAny("species")
   .readAny("population")
-  .readAny("story");
+  .readAny("story")
+  .readAny("class");
 
 //Roliste
 acUnivers
@@ -93,7 +95,10 @@ acUnivers
   .deleteAny("base-skill")
   .createAny("base-attribute")
   .updateAny("base-attribute")
-  .deleteAny("base-attribute");
+  .deleteAny("base-attribute")
+  .createAny("class")
+  .updateAny("class")
+  .deleteAny("class");
 
 //Maitre du jeu
 acUnivers

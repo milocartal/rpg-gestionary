@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { forbidden, notFound, unauthorized } from "next/navigation";
 
 import { Header } from "~/app/_components/header/header";
 import { CreateSpecies } from "~/app/_components/species/create";
@@ -17,11 +17,11 @@ export default async function NewSpecies() {
   const session = await auth();
 
   if (!session) {
-    notFound();
+    unauthorized();
   }
 
   if (!canInUniverse(session).createOwn("species").granted) {
-    notFound();
+    forbidden();
   }
 
   const univers = await db.universe

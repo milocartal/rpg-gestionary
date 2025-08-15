@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
-import { CreateBaseSkill } from "~/app/_components/baseSkill";
+import { notFound, unauthorized } from "next/navigation";
+import { CreateGender } from "~/app/_components/gender";
 
 import { Header } from "~/app/_components/header/header";
 import { auth } from "~/server/auth";
@@ -16,7 +16,7 @@ export default async function NewGender() {
   const session = await auth();
 
   if (!session) {
-    notFound();
+    unauthorized();
   }
 
   const univers = await db.universe
@@ -36,14 +36,12 @@ export default async function NewGender() {
 
   return (
     <HydrateClient>
-      <Header back title={`Créer une compétence de base | ${univers.name}`} />
+      <Header back title={`Créer une genre | ${univers.name}`} />
       <main className="relative flex min-h-screen flex-col items-center bg-[url('/assets/images/bg.webp')] bg-cover bg-fixed px-4 pt-24 pb-10">
         <div className="bg-background flex h-full w-full flex-col rounded-lg px-6 py-4 shadow">
-          <h1 className="text-text mb-4 text-2xl font-bold">
-            Créer une compétence de base
-          </h1>
+          <h1 className="text-text mb-4 text-2xl font-bold">Créer un genre</h1>
 
-          <CreateBaseSkill univers={univers} />
+          <CreateGender univers={univers} />
         </div>
       </main>
     </HydrateClient>
