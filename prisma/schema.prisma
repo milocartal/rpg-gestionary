@@ -88,6 +88,8 @@ model Universe {
     createdById String
     CreatedBy   User   @relation("CreateBy", fields: [createdById], references: [id], onDelete: Cascade)
 
+    public Boolean @default(false) // Indique si l'univers est public (accessible à tous les joueurs) ou privé. Le MJ / Gestionnaire pourra cependant inviter des joueurs.
+
     // Relations
     BaseAttributes BaseAttribute[]
     BaseSkills     BaseSkill[]

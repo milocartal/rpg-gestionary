@@ -24,11 +24,20 @@ export default async function NewStory() {
     forbidden();
   }
 
-  const universe = await db.universe.findUnique({
-    where: {
-      id: session.universeId,
-    },
-  });
+  const universe = await db.universe
+    .findFirstOrThrow({
+      where: {
+        Users: {
+          some: {
+            id: session.universeId,
+          },
+        },
+      },
+    })
+    .catch(() => {
+      console.log("Univers not found");
+      notFound();
+    });
 
   if (!universe) {
     notFound();

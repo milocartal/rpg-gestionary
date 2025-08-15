@@ -205,7 +205,7 @@ const DataTableStoryOne: React.FC<StoryDataTableProps> = ({
     <DataTableBase table={table} columns={columns} selection>
       {children}
       <Input
-        placeholder="Chercher un story..."
+        placeholder="Chercher une histoire..."
         value={(table.getColumn("Nom")?.getFilterValue() as string) ?? ""}
         onChange={(event) =>
           table.getColumn("Nom")?.setFilterValue(event.target.value)
