@@ -2,17 +2,18 @@
 import { type Metadata } from "next/types";
 
 import { Link } from "~/app/_components/ui/link";
-import { Header } from "./_components/header/header";
+
 import { HydrateClient } from "~/trpc/server";
+import { SimplifiedHeader } from "~/app/_components/navigation";
 
 export const metadata: Metadata = {
-  title: "403 : Accès refusé | SAGA",
+  title: "403 : Accès refusé | RPG Gestionary",
 };
 
 export default function Forbidden() {
   return (
     <HydrateClient>
-      <Header title="Page introuvable" />
+      <SimplifiedHeader title="Accès refusé" />
       <main className="relative flex min-h-screen flex-col items-center justify-center bg-[url('/assets/images/bg.webp')] bg-cover bg-fixed px-4">
         <section className="bg-background flex flex-col items-center gap-6 rounded-md p-12 shadow">
           <h1 className="text-secondary text-4xl font-bold drop-shadow-xl lg:text-8xl">

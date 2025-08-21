@@ -1,4 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Mona+Sans:wght@600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Libertinus+Sans:ital,wght@0,400;0,700;1,400&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -133,4 +134,28 @@
   font-weight: 600;
   font-style: normal;
   font-variation-settings: "wdth" 100;
+}
+
+.libertinus {
+  font-family: "Libertinus Sans", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.libertinus-bold {
+  font-family: "Libertinus Sans", sans-serif;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.libertinus-italic {
+  font-family: "Libertinus Sans", sans-serif;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.bg-castle {
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.4) 100%),
+    url("/fantasy-castle.webp");
 }

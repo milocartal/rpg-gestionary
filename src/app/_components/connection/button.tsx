@@ -11,8 +11,8 @@ import {
 import { Button } from "~/app/_components/ui/button";
 import { cn } from "~/lib/utils";
 import type { Session } from "next-auth";
-import CustomImage from "../image";
-import { Link } from "../ui/link";
+import CustomImage from "~/app/_components/image";
+import { Link } from "~/app/_components/ui/link";
 
 export const ConnectionButton: React.FC<{
   readonly session: Session | null;

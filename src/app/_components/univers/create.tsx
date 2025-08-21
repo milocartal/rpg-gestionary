@@ -18,8 +18,8 @@ import {
 import { api } from "~/trpc/react";
 import { Input } from "~/app/_components/ui/input";
 import { Textarea } from "~/app/_components/ui/textarea";
-import { ImageInput } from "../image_input";
-import { Dnd } from "../dnd";
+import { ImageInput } from "~/app/_components/image_input";
+import { Dnd } from "~/app/_components/dnd";
 import { useRef } from "react";
 import { ImageType } from "~/lib/minio";
 

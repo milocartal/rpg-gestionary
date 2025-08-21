@@ -126,7 +126,7 @@ export const UniversSwitcher: React.FC<UniversSwitcherProps> = ({
               {isLoading ? (
                 <React.Fragment>
                   <Avatar className="h-8 w-8 rounded-lg">
-                    <AvatarImage src={"/monogramme.svg"} alt={"monogramme"} />
+                    <AvatarImage src={"/favicon.png"} alt={"Favicon"} />
                     <AvatarFallback>SG</AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
@@ -140,7 +140,7 @@ export const UniversSwitcher: React.FC<UniversSwitcherProps> = ({
                 <React.Fragment>
                   <Avatar className="h-8 w-8 rounded-lg">
                     <AvatarImage
-                      src={"/monogramme.svg"}
+                      src={"/favicon.png"}
                       alt={selectedUniverse.name.replace("_", " ")}
                     />
                     <AvatarFallback>
@@ -159,7 +159,7 @@ export const UniversSwitcher: React.FC<UniversSwitcherProps> = ({
               ) : (
                 <React.Fragment>
                   <Avatar className="h-8 w-8 rounded-lg">
-                    <AvatarImage src={"/monogramme.svg"} alt={"monogramme"} />
+                    <AvatarImage src={"/favicon.png"} alt={"Favicon"} />
                     <AvatarFallback>SG</AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
@@ -212,7 +212,7 @@ export const UniversSwitcher: React.FC<UniversSwitcherProps> = ({
                           <div className="flex h-full w-full items-center">
                             <Avatar className="mr-2 h-5 w-5">
                               <AvatarImage
-                                src={"/monogramme.svg"}
+                                src={"/favicon.png"}
                                 alt={universe.name.replace("_", " ")}
                               />
                               <AvatarFallback>

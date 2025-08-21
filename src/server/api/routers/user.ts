@@ -14,6 +14,7 @@ import { db } from "~/server/db";
 
 import { can } from "~/utils/accesscontrol";
 import { env } from "~/env";
+import { getPresignedUrl } from "~/utils/minio";
 
 const createUserSchema = z.object({
   name: z.string(),
@@ -23,6 +24,18 @@ const createUserSchema = z.object({
 });
 
 export const userRouter = createTRPCRouter({
+  //Permet de recuperer l'utilisateur actuel
+  getActual: protectedProcedure.query(async ({ ctx }) => {
+    const temp = await db.user.findUniqueOrThrow({
+      where: { id: ctx.session.user.id },
+    });
+
+    if (temp.image) {
+      const user = { ...temp, image: await getPresignedUrl(temp.image) };
+      return user;
+    } else return temp;
+  }),
+
   //Permet de creer un utilisateur simple
   create: publicProcedure
     .input(createUserSchema)
