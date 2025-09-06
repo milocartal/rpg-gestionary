@@ -16,7 +16,7 @@ interface Props {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const classData = await db.class.findUnique({
-    where: { id: slug },
+    where: { slug: slug },
   });
 
   if (!classData) {
@@ -61,7 +61,7 @@ export default async function ClassUpdate({ params }: Props) {
     });
 
   const classData = await db.class.findUnique({
-    where: { id: slug },
+    where: { slug: slug },
   });
 
   if (!classData) {

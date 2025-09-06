@@ -189,7 +189,7 @@ const columns: ColumnDef<UniverseWithAll>[] = [
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
-                  href={`/universes/${univers.id}`}
+                  href={`/universes/${univers.slug}`}
                   variant={"icon"}
                   size={"icon"}
                   className="text-succes p-0"
@@ -203,7 +203,7 @@ const columns: ColumnDef<UniverseWithAll>[] = [
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
-                  href={`/universes/${univers.id}/edit`}
+                  href={`/universes/${univers.slug}/edit`}
                   variant={"icon"}
                   size={"icon"}
                   className="text-primary p-0"

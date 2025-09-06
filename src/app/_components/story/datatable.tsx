@@ -114,7 +114,7 @@ const columns: ColumnDef<Story>[] = [
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
-                  href={`/stories/${story.id}`}
+                  href={`/stories/${story.slug}`}
                   variant={"icon"}
                   size={"icon"}
                   className="text-succes p-0"
@@ -128,7 +128,7 @@ const columns: ColumnDef<Story>[] = [
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
-                  href={`/stories/${story.id}/edit`}
+                  href={`/stories/${story.slug}/edit`}
                   variant={"icon"}
                   size={"icon"}
                   className="text-primary p-0"

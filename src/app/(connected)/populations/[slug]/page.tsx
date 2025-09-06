@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   const population = await db.population.findUnique({
-    where: { id: slug },
+    where: { slug: slug },
   });
 
   if (!population) {
@@ -69,7 +69,7 @@ export default async function PopulationDetail({ params }: Props) {
 
   const population = await db.population
     .findUniqueOrThrow({
-      where: { id: slug },
+      where: { slug: slug },
     })
     .catch(() => {
       console.error("Population not found");

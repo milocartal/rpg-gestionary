@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   const story = await db.story.findUnique({
-    where: { id: slug },
+    where: { slug: slug },
   });
 
   if (!story) {
@@ -55,7 +55,7 @@ export default async function StoryDetail({ params }: Props) {
 
   const story = await db.story
     .findUniqueOrThrow({
-      where: { id: slug },
+      where: { slug: slug },
     })
     .catch(() => {
       console.error("Story not found");

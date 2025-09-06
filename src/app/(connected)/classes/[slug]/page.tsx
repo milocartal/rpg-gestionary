@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   const classData = await db.class.findUnique({
-    where: { id: slug },
+    where: { slug: slug },
   });
 
   if (!classData) {
@@ -69,7 +69,7 @@ export default async function ClassDetail({ params }: Props) {
 
   const classData = await db.class
     .findUniqueOrThrow({
-      where: { id: slug },
+      where: { slug: slug },
     })
     .catch(() => {
       console.error("Class not found");

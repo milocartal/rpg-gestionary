@@ -199,7 +199,7 @@ const columns: ColumnDef<Item>[] = [
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
-                  href={`/items/${item.id}`}
+                  href={`/items/${item.slug}`}
                   variant={"icon"}
                   size={"icon"}
                   className="text-primary p-0"

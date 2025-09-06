@@ -15,7 +15,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
 
   const item = await db.item.findUnique({
-    where: { id: slug },
+    where: { slug: slug },
   });
 
   if (!item) {
@@ -35,7 +35,7 @@ export default async function UniversDetail({ params }: Props) {
   const { slug } = await params;
 
   const item = await db.item.findUnique({
-    where: { id: slug },
+    where: { slug: slug },
   });
 
   if (!item) {

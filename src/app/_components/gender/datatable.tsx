@@ -114,7 +114,7 @@ const columns: ColumnDef<Gender>[] = [
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
-                  href={`/gender/${gender.id}`}
+                  href={`/gender/${gender.slug}`}
                   variant={"icon"}
                   size={"icon"}
                   className="text-primary p-0"

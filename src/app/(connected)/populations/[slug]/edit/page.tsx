@@ -16,7 +16,7 @@ interface Props {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const population = await db.population.findUnique({
-    where: { id: slug },
+    where: { slug: slug },
   });
 
   if (!population) {
@@ -61,7 +61,7 @@ export default async function PopulationDetail({ params }: Props) {
     });
 
   const population = await db.population.findUnique({
-    where: { id: slug },
+    where: { slug: slug },
   });
 
   if (!population) {

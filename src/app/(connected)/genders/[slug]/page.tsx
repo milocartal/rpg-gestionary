@@ -15,7 +15,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
 
   const gender = await db.gender.findUnique({
-    where: { id: slug },
+    where: { slug: slug },
   });
 
   if (!gender) {
@@ -35,7 +35,7 @@ export default async function GenderUpdate({ params }: Props) {
   const { slug } = await params;
 
   const gender = await db.gender.findUnique({
-    where: { id: slug },
+    where: { slug: slug },
   });
 
   if (!gender) {

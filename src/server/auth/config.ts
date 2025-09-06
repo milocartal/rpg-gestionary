@@ -73,7 +73,6 @@ export const authConfig = {
         },
       },
       authorize: async (credentials) => {
-        console.log("credentials", credentials);
         if (!credentials?.email || !credentials.password) {
           console.warn("Missing credentials");
           return null;

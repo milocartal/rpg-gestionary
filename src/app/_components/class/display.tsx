@@ -26,7 +26,7 @@ const ClassResumeOne: React.FC<ClassResumeProps> = ({ classData, session }) => {
 
         {canInUniverse(session).updateOwn("class").granted && (
           <ShadLink
-            href={`/classes/${classData.id}/edit`}
+            href={`/classes/${classData.slug}/edit`}
             size={isMobile ? "icon" : "default"}
           >
             {isMobile ? <Pencil className="h-6 w-6" /> : "Modifier"}

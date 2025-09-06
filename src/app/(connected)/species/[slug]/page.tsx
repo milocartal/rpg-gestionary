@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   const species = await db.species.findUnique({
-    where: { id: slug },
+    where: { slug: slug },
   });
 
   if (!species) {
@@ -69,7 +69,7 @@ export default async function SpeciesDetail({ params }: Props) {
 
   const species = await db.species
     .findUniqueOrThrow({
-      where: { id: slug },
+      where: { slug: slug },
     })
     .catch(() => {
       console.error("Species not found");

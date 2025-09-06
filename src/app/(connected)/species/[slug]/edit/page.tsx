@@ -16,7 +16,7 @@ interface Props {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const species = await db.species.findUnique({
-    where: { id: slug },
+    where: { slug: slug },
   });
 
   if (!species) {
@@ -64,7 +64,7 @@ export default async function SpeciesDetail({ params }: Props) {
     });
 
   const species = await db.species.findUnique({
-    where: { id: slug },
+    where: { slug: slug },
   });
 
   if (!species) {

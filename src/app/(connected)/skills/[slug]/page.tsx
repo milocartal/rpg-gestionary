@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
 
   const baseSkill = await db.baseSkill.findUnique({
-    where: { id: slug },
+    where: { slug: slug },
   });
 
   if (!baseSkill) {
@@ -58,7 +58,7 @@ export default async function BaseSkillUpdate({ params }: Props) {
   const { slug } = await params;
 
   const baseSkill = await db.baseSkill.findUnique({
-    where: { id: slug },
+    where: { slug: slug },
   });
 
   if (!baseSkill) {

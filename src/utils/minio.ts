@@ -21,7 +21,7 @@ const presignedCache = new NodeCache({
 const EXPIRES_SECONDS = 60 * 60 * 24; // 24h (≤ 7 jours en SigV4)
 
 //fabrique/retourne une URL signée et met en cache
-async function signAndCache(bucket: string, key: string) {
+export async function signAndCache(bucket: string, key: string) {
   const cacheKey = `${bucket}:${key}`;
   const cached = presignedCache.get<string>(cacheKey);
   if (cached) return cached;
