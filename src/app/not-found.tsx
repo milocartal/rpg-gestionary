@@ -2,18 +2,18 @@
 import { type Metadata } from "next/types";
 
 import { Link } from "~/app/_components/ui/link";
-import { Header } from "~/app/_components/header/header";
 import { HydrateClient } from "~/trpc/server";
+import { SimplifiedHeader } from "./_components/navigation";
 
 export const metadata: Metadata = {
-  title: "404 : Page introuvable | SAGA",
+  title: "404 : Page introuvable | RPG Gestionary",
 };
 
 export default async function NotFound() {
   return (
     <HydrateClient>
-      <Header title="Page introuvable" />
-      <main className="relative flex min-h-screen flex-col items-center justify-center bg-[url('/assets/images/bg.webp')] bg-cover bg-fixed px-4">
+      <SimplifiedHeader title="Page introuvable" back />
+      <main className="relative flex min-h-screen w-full flex-col items-center justify-center bg-[url('/assets/images/bg.webp')] bg-cover bg-fixed px-4">
         <section className="bg-background flex flex-col items-center gap-6 rounded-md p-12 shadow">
           <h1 className="text-secondary text-4xl font-bold drop-shadow-xl lg:text-8xl">
             Erreur 404

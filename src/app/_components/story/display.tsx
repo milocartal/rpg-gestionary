@@ -28,7 +28,7 @@ const StoryResumeOne: React.FC<StoryResumeProps> = ({ story, session }) => {
 
         {canInUniverse(session).updateOwn("story").granted && (
           <ShadLink
-            href={`/stories/${story.id}/edit`}
+            href={`/stories/${story.slug}/edit`}
             size={isMobile ? "icon" : "default"}
           >
             {isMobile ? <Pencil className="h-6 w-6" /> : "Modifier"}

@@ -117,7 +117,7 @@ export const UpdateSpecies: React.FC<UpdateSpeciesProps> = ({
           control={form.control}
           name="image"
           render={() => (
-            <FormItem className="flex flex-col">
+            <FormItem className="flex w-full flex-col">
               <FormLabel className="mt-2 mb-1">Image</FormLabel>
               <Dnd>
                 <ImageInput dref={ref} />

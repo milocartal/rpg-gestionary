@@ -93,7 +93,7 @@ export const UpdateStory: React.FC<UpdateStoryProps> = ({ story }) => {
           control={form.control}
           name="banner"
           render={() => (
-            <FormItem className="flex flex-col">
+            <FormItem className="flex w-full flex-col">
               <FormLabel className="mt-2 mb-1">Image</FormLabel>
               <Dnd>
                 <ImageInput dref={ref} />

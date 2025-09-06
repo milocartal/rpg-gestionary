@@ -53,6 +53,7 @@ model User {
     password      String?
     image         String?
     role          String    @default("default")
+    accepted_cgu  Boolean   @default(false)
     accounts      Account[]
     sessions      Session[]
 
@@ -78,6 +79,7 @@ model VerificationToken {
 model Universe {
     id          String @id @default(cuid())
     name        String
+    slug        String @unique
     description String @db.LongText
 
     banner String? // URL de l'image de la bannière
@@ -100,6 +102,9 @@ model Universe {
     Species        Species[]
     Stories        Story[]
     Users          UserToUniverse[]
+
+    @@index([slug])
+    @@index([createdById])
 }
 
 model UserToUniverse {
@@ -120,7 +125,7 @@ model UserToUniverse {
 model Species {
     id          String @id @default(cuid())
     name        String
-    slug        String
+    slug        String @unique
     description String @db.LongText
 
     image String? // URL de l'image
@@ -143,12 +148,13 @@ model Species {
 
     @@unique([universeId, slug])
     @@index([universeId])
+    @@index([slug])
 }
 
 model Population {
     id          String @id @default(cuid())
     name        String
-    slug        String
+    slug        String @unique
     description String @db.LongText
 
     image String? // URL de l'image
@@ -169,12 +175,13 @@ model Population {
 
     @@unique([universeId, slug])
     @@index([universeId])
+    @@index([slug])
 }
 
 model Story {
     id          String @id @default(cuid())
     name        String
-    slug        String
+    slug        String @unique
     description String @db.LongText
 
     banner String? // URL de l'image de la bannière
@@ -196,11 +203,13 @@ model Story {
 
     @@unique([universeId, slug])
     @@index([universeId])
+    @@index([slug])
 }
 
 model Animal {
     id   String @id @default(cuid())
     name String
+    slug String @unique
 
     image String? // URL de l'image
 
@@ -239,10 +248,12 @@ model Animal {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
+    @@unique([storyId, slug])
     @@index([userId])
     @@index([storyId])
     @@index([speciesId])
     @@index([characterId])
+    @@index([slug])
 }
 
 model Character {
@@ -250,6 +261,7 @@ model Character {
 
     name      String
     firstName String
+    slug      String @unique
 
     image String? // URL de l'image
 
@@ -289,15 +301,18 @@ model Character {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
+    @@unique([storyId, slug])
     @@index([userId])
     @@index([storyId])
     @@index([populationId])
+    @@index([genderId])
+    @@index([slug])
 }
 
 model Gender {
     id   String @id @default(cuid())
     name String
-    slug String
+    slug String @unique
 
     Characters Character[]
     Animals    Animal[]
@@ -310,12 +325,13 @@ model Gender {
 
     @@unique([universeId, slug])
     @@index([universeId])
+    @@index([slug])
 }
 
 model Class {
     id          String @id @default(cuid())
     name        String
-    slug        String
+    slug        String @unique
     description String @db.LongText
 
     Characters CharacterClass[]
@@ -328,6 +344,7 @@ model Class {
 
     @@unique([universeId, slug])
     @@index([universeId])
+    @@index([slug])
 }
 
 model CharacterClass {
@@ -345,7 +362,7 @@ model CharacterClass {
 model BaseAttribute {
     id          String   @id @default(cuid())
     name        String
-    slug        String
+    slug        String   @unique
     description String   @db.LongText
     universeId  String
     Universe    Universe @relation(fields: [universeId], references: [id], onDelete: Cascade)
@@ -359,6 +376,7 @@ model BaseAttribute {
 
     @@unique([universeId, slug])
     @@index([universeId])
+    @@index([slug])
 }
 
 model Attribute {
@@ -385,7 +403,7 @@ model Attribute {
 model BaseSkill {
     id            String        @id @default(cuid())
     name          String
-    slug          String
+    slug          String        @unique
     description   String        @db.LongText
     attributeId   String // clé étrangère vers BaseAttribute
     BaseAttribute BaseAttribute @relation(fields: [attributeId], references: [id])
@@ -400,6 +418,8 @@ model BaseSkill {
 
     @@unique([universeId, slug])
     @@index([universeId])
+    @@index([attributeId])
+    @@index([slug])
 }
 
 model Skill {
@@ -479,7 +499,7 @@ enum ModifierType {
 model Item {
     id           String   @id @default(cuid())
     name         String
-    slug         String
+    slug         String   @unique
     description  String?  @db.LongText
     sprite       String? // URL de l'image ou du sprite associé à l'item
     type         ItemType

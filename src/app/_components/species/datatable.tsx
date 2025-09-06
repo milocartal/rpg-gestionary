@@ -205,7 +205,7 @@ const columns: ColumnDef<Species>[] = [
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
-                  href={`/species/${species.id}`}
+                  href={`/species/${species.slug}`}
                   variant={"icon"}
                   size={"icon"}
                   className="text-succes p-0"
@@ -219,7 +219,7 @@ const columns: ColumnDef<Species>[] = [
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
-                  href={`/species/${species.id}/edit`}
+                  href={`/species/${species.slug}/edit`}
                   variant={"icon"}
                   size={"icon"}
                   className="text-primary p-0"

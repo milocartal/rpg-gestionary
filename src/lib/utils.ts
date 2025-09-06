@@ -6,6 +6,18 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+/**
+ * Formate et retourne le rôle d'un utilisateur dans un univers.
+ *
+ * Recherche l'utilisateur dans la liste des utilisateurs de l'univers fourni via son ID,
+ * et détermine son rôle en fonction de la chaîne de rôle. La priorité des rôles est la suivante :
+ * "maitre-du-jeu", "gestionnaire", "roliste", "spectateur".
+ * Si l'utilisateur n'est pas trouvé ou n'a aucun rôle correspondant, retourne "anonyme".
+ *
+ * @param univers - L'objet univers contenant les utilisateurs et leurs rôles.
+ * @param userId - L'identifiant de l'utilisateur dont le rôle doit être formaté.
+ * @returns Le rôle formaté sous forme de chaîne.
+ */
 export function formatUniverseRole(
   univers: UniverseWithUsers,
   userId: string | null | undefined,
@@ -23,6 +35,19 @@ export function formatUniverseRole(
   return role;
 }
 
+/**
+ * Retourne une classe Tailwind CSS pour la couleur de bordure selon le rôle de l'utilisateur dans l'univers donné.
+ *
+ * @param univers - L'objet univers contenant les rôles des utilisateurs.
+ * @param userId - L'identifiant de l'utilisateur dont le rôle doit être déterminé.
+ * @returns Une chaîne représentant la classe Tailwind CSS pour la couleur de bordure selon le rôle de l'utilisateur.
+ *
+ * - "maitre-du-jeu" : bordure rouge
+ * - "gestionnaire" : bordure orange
+ * - "roliste" : bordure verte
+ * - "spectateur" : bordure bleue
+ * - tout autre rôle : bordure grise
+ */
 export function SwitchBorderColor(
   univers: UniverseWithUsers,
   userId: string | null | undefined,
@@ -74,6 +99,15 @@ export function sommeDesAvecModificateur(
   return result.reduce((acc, val) => acc + val, modificateur);
 }
 
+/**
+ * Convertit une chaîne de caractères en un slug compatible avec les URLs.
+ *
+ * La fonction normalise la chaîne, supprime les diacritiques, la met en minuscules,
+ * remplace les caractères non alphanumériques par des tirets et retire les tirets en début/fin.
+ *
+ * @param name - La chaîne à convertir en slug.
+ * @returns La version slugifiée de la chaîne d'entrée.
+ */
 export function toSlug(name: string) {
   return name
     .normalize("NFKD")
@@ -81,4 +115,36 @@ export function toSlug(name: string) {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
+}
+
+/**
+ * Génère une valeur de repli ("fallback") à partir d'un nom donné.
+ *
+ * - Si le nom est nul, indéfini ou vide, retourne "RPG".
+ * - Si le nom contient un seul mot, retourne ce mot avec la première lettre en majuscule.
+ * - Si le nom contient plusieurs mots, conserve uniquement le premier et le dernier mot,
+ *   puis retourne ces mots avec la première lettre en majuscule, séparés par un espace.
+ *
+ * @param name Le nom à transformer en valeur de repli.
+ * @returns La valeur de repli formatée.
+ */
+export function toFallback(name: string | null | undefined) {
+  if (!name || name.trim() === "") {
+    return "RPG";
+  }
+
+  const words = name.split(" ");
+  if (words.length === 0) {
+    return "RPG";
+  } else if (words.length === 1) {
+    return name.charAt(0).toUpperCase() + name.slice(1);
+  } else {
+    if (words.length > 2) {
+      words.splice(1, words.length - 2);
+    }
+    const fallbackWords = words.map(
+      (word) => word.charAt(0).toUpperCase() + word.slice(1),
+    );
+    return fallbackWords.join(" ");
+  }
 }

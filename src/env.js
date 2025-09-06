@@ -39,6 +39,9 @@ export const env = createEnv({
     NEXT_PUBLIC_MINIO_BUCKET: z.string(),
     // NEXT_PUBLIC_CLIENTVAR: z.string(),
     NEXT_PUBLIC_URL: z.string().url().default("http://localhost:3000"),
+    NEXT_PUBLIC_NODE_ENV: z
+      .enum(["development", "test", "production"])
+      .default("development"),
   },
 
   /**
@@ -51,6 +54,7 @@ export const env = createEnv({
     AUTH_DISCORD_SECRET: process.env.AUTH_DISCORD_SECRET,
     DATABASE_URL: process.env.DATABASE_URL,
     NODE_ENV: process.env.NODE_ENV,
+    NEXT_PUBLIC_NODE_ENV: process.env.NEXT_PUBLIC_NODE_ENV,
     // Email configuration
     GOOGLE_APP_USER: process.env.GOOGLE_APP_USER,
     GOOGLE_APP_PASSWORD: process.env.GOOGLE_APP_PASSWORD,

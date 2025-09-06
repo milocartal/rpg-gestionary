@@ -1,4 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Mona+Sans:wght@600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Libertinus+Sans:ital,wght@0,400;0,700;1,400&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -8,7 +9,7 @@
   --font-sans:
     var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --font-mona-sans: "Mona Sans", sans-serif;
+  --font-libertinus: "Libertinus Sans", sans-serif;
 }
 
 :root {
@@ -19,14 +20,14 @@
   --card-foreground: oklch(0.141 0.005 285.823);
   --popover: oklch(1 0.0053 106.49);
   --popover-foreground: oklch(0.141 0.005 285.823);
-  --primary: oklch(0.27 0.1135 261.31);
-  --primary-foreground: oklch(1 0.0053 106.49);
-  --secondary: oklch(0.8 0.125 92.31);
-  --secondary-foreground: oklch(0.21 0.006 285.885);
+  --primary: oklch(0.2736 0.0598 248.25); /* #0b2943 */
+  --primary-foreground: oklch(0.9367 0.0367 86.17); /* #F5E9CF */
+  --secondary: oklch(0.7948 0.129 83.16); /* #e4b450 */
+  --secondary-foreground: oklch(0.2736 0.0598 248.25); /* #0b2943 */
   --muted: oklch(0.967 0.001 286.375);
   --muted-foreground: oklch(0.552 0.016 285.938);
-  --accent: oklch(0.38 0.154577 29.2339);
-  --accent-foreground: oklch(1 0.0053 106.49);
+  --accent: oklch(0.4313 0.1128 25.75); /* #83322e */
+  --accent-foreground: oklch(0.9367 0.0367 86.17); /* #F5E9CF */
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.92 0.004 286.32);
   --input: oklch(0.92 0.004 286.32);
@@ -133,4 +134,28 @@
   font-weight: 600;
   font-style: normal;
   font-variation-settings: "wdth" 100;
+}
+
+.libertinus {
+  font-family: "Libertinus Sans", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.libertinus-bold {
+  font-family: "Libertinus Sans", sans-serif;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.libertinus-italic {
+  font-family: "Libertinus Sans", sans-serif;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.bg-castle {
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.4) 100%),
+    url("/fantasy-castle.webp");
 }

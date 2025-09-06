@@ -1,5 +1,7 @@
+import { Prisma } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import { toSlug } from "~/lib/utils";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { db } from "~/server/db";
@@ -45,23 +47,48 @@ export const universeRouter = createTRPCRouter({
           message: "You are not allowed to create this univers",
         });
       }
-      const univers = await db.universe.create({
-        data: {
-          name: input.name,
-          banner: input.banner,
-          description: input.description,
-          createdById: ctx.session.user.id,
-        },
-      });
 
-      await db.userToUniverse.create({
-        data: {
-          userId: ctx.session.user.id,
-          universeId: univers.id,
-          role: UniversRolesEnum.MANAGER,
-        },
+      const baseSlug = toSlug(input.name);
+      const MAX = 25;
+
+      for (let i = 0; i < MAX; i++) {
+        const candidate = i === 0 ? baseSlug : `${baseSlug}-${i + 1}`;
+        try {
+          const univers = await db.universe.create({
+            data: {
+              name: input.name,
+              banner: input.banner,
+              description: input.description,
+              createdById: ctx.session.user.id,
+              slug: candidate,
+            },
+          });
+          await db.userToUniverse.create({
+            data: {
+              userId: ctx.session.user.id,
+              universeId: univers.id,
+              role: UniversRolesEnum.MANAGER,
+            },
+          });
+          return univers;
+        } catch (e) {
+          if (
+            e instanceof Prisma.PrismaClientKnownRequestError &&
+            e.code === "P2002"
+          ) {
+            continue; // slug déjà pris -> on essaie le suivant
+          }
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Une erreur est survenue lors de la création de l'espèce.",
+          });
+        }
+      }
+
+      throw new TRPCError({
+        code: "CONFLICT",
+        message: "Impossible de générer un slug unique.",
       });
-      return univers;
     }),
 
   update: protectedProcedure

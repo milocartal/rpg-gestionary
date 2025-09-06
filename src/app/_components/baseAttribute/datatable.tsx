@@ -116,7 +116,7 @@ const columns: ColumnDef<BaseAttribute>[] = [
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
-                  href={`/baseAttribute/${baseAttribute.id}`}
+                  href={`/baseAttribute/${baseAttribute.slug}`}
                   variant={"icon"}
                   size={"icon"}
                   className="text-primary p-0"

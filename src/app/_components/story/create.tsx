@@ -18,8 +18,8 @@ import {
 import { api } from "~/trpc/react";
 import { Input } from "~/app/_components/ui/input";
 import { Textarea } from "~/app/_components/ui/textarea";
-import { ImageInput } from "../image_input";
-import { Dnd } from "../dnd";
+import { ImageInput } from "~/app/_components/image_input";
+import { Dnd } from "~/app/_components/dnd";
 import { useRef } from "react";
 import { ImageType } from "~/lib/minio";
 
@@ -97,7 +97,7 @@ export const CreateStory: React.FC<{ universeId: string }> = ({
           control={form.control}
           name="banner"
           render={() => (
-            <FormItem className="flex flex-col">
+            <FormItem className="flex w-full flex-col">
               <FormLabel className="mt-2 mb-1">Image</FormLabel>
               <Dnd>
                 <ImageInput dref={ref} />

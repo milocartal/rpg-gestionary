@@ -1,19 +1,19 @@
 // Error components must be Client Components
 import { type Metadata } from "next/types";
 
-import { Header } from "./_components/header/header";
+import { SimplifiedHeader } from "~/app/_components/navigation";
 import { HydrateClient } from "~/trpc/server";
 
 import { ConnectionButton } from "~/app/_components/connection/button";
 
 export const metadata: Metadata = {
-  title: "401 : Vous n'êtes pas autorisé | SAGA",
+  title: "401 : Vous n'êtes pas autorisé | RPG Gestionary",
 };
 
 export default function UnauthorizedPage() {
   return (
     <HydrateClient>
-      <Header title="Page introuvable" />
+      <SimplifiedHeader title="Page non autorisée" />
       <main className="relative flex min-h-screen flex-col items-center justify-center bg-[url('/assets/images/bg.webp')] bg-cover bg-fixed px-4">
         <section className="bg-background flex flex-col items-center gap-6 rounded-md p-12 shadow">
           <h1 className="text-secondary text-4xl font-bold drop-shadow-xl lg:text-8xl">

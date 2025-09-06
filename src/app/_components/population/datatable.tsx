@@ -189,7 +189,7 @@ const columns: ColumnDef<PopulationWithModifiers>[] = [
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
-                  href={`/populations/${population.id}`}
+                  href={`/populations/${population.slug}`}
                   variant={"icon"}
                   size={"icon"}
                   className="text-succes p-0"
@@ -203,7 +203,7 @@ const columns: ColumnDef<PopulationWithModifiers>[] = [
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
-                  href={`/populations/${population.id}/edit`}
+                  href={`/populations/${population.slug}/edit`}
                   variant={"icon"}
                   size={"icon"}
                   className="text-primary p-0"

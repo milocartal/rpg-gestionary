@@ -25,12 +25,15 @@ const buttonVariants = cva(
         ghost:
           "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
         link: "text-primary underline-offset-4 hover:underline hover:text-accent selected:text-accent",
+        clearLink:
+          "text-white underline-offset-4 hover:underline hover:text-secondary selected:text-secondary",
         icon: "bg-transparent p-0",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",
         sm: "h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5",
         lg: "h-10 rounded-md px-6 has-[>svg]:px-4",
+        link: "h-8 px-2 has-[>svg]:px-1",
         icon: "size-9",
       },
     },

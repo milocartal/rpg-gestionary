@@ -115,7 +115,7 @@ const columns: ColumnDef<BaseSkill>[] = [
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
-                  href={`/baseSkill/${baseSkill.id}`}
+                  href={`/baseSkill/${baseSkill.slug}`}
                   variant={"icon"}
                   size={"icon"}
                   className="text-primary p-0"

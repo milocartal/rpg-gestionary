@@ -29,7 +29,7 @@ const SpeciesResumeOne: React.FC<SpeciesResumeProps> = ({
 
         {canInUniverse(session).updateOwn("species").granted && (
           <ShadLink
-            href={`/species/${species.id}/edit`}
+            href={`/species/${species.slug}/edit`}
             size={isMobile ? "icon" : "default"}
           >
             {isMobile ? <Pencil className="h-6 w-6" /> : "Modifier"}
