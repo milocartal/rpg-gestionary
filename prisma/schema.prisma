@@ -6,8 +6,8 @@ generator client {
 }
 
 datasource db {
-    provider = "mysql"
-    // NOTE: When using mysql or sqlserver, uncomment the @db.LongText annotations in model Account below
+    provider = "postgresql"
+    // NOTE: When using mysql or sqlserver, uncomment the //@db.LongText annotations in model Account below
     // Further reading:
     // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
     // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
@@ -21,12 +21,12 @@ model Account {
     type                     String
     provider                 String
     providerAccountId        String
-    refresh_token            String? @db.LongText
-    access_token             String? // @db.LongText
+    refresh_token            String? //@db.LongText
+    access_token             String? // //@db.LongText
     expires_at               Int?
     token_type               String?
     scope                    String?
-    id_token                 String? // @db.LongText
+    id_token                 String? // //@db.LongText
     session_state            String?
     user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
     refresh_token_expires_in Int?
@@ -65,6 +65,8 @@ model User {
     UniversesCreated Universe[]       @relation("CreateBy")
     PasswordTokens   PasswordToken[]
 
+    AuditLogs AuditLog[] @relation("Author")
+
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }
@@ -101,7 +103,7 @@ model Universe {
     id          String @id @default(cuid())
     name        String
     slug        String @unique
-    description String @db.LongText
+    description String //@db.LongText
 
     banner String? // URL de l'image de la bannière
 
@@ -147,7 +149,7 @@ model Species {
     id          String @id @default(cuid())
     name        String
     slug        String @unique
-    description String @db.LongText
+    description String //@db.LongText
 
     image String? // URL de l'image
 
@@ -176,7 +178,7 @@ model Population {
     id          String @id @default(cuid())
     name        String
     slug        String @unique
-    description String @db.LongText
+    description String //@db.LongText
 
     image String? // URL de l'image
 
@@ -203,7 +205,7 @@ model Story {
     id          String @id @default(cuid())
     name        String
     slug        String @unique
-    description String @db.LongText
+    description String //@db.LongText
 
     banner String? // URL de l'image de la bannière
 
@@ -243,9 +245,9 @@ model Animal {
     genderId String
     Gender   Gender @relation(fields: [genderId], references: [id])
 
-    detail      String @db.LongText
-    appearance  String @db.LongText
-    personality String @db.LongText
+    detail      String //@db.LongText
+    appearance  String //@db.LongText
+    personality String //@db.LongText
 
     //Skills
     Attributes Attribute[] @relation("AnimalAttribute")
@@ -295,10 +297,10 @@ model Character {
     genderId String
     Gender   Gender @relation(fields: [genderId], references: [id])
 
-    history     String @db.LongText
-    detail      String @db.LongText
-    appearance  String @db.LongText
-    personality String @db.LongText
+    history     String //@db.LongText
+    detail      String //@db.LongText
+    appearance  String //@db.LongText
+    personality String //@db.LongText
 
     //Skills
     Attributes Attribute[] @relation("CharacterAttribute")
@@ -353,7 +355,7 @@ model Class {
     id          String @id @default(cuid())
     name        String
     slug        String @unique
-    description String @db.LongText
+    description String //@db.LongText
 
     Characters CharacterClass[]
 
@@ -384,7 +386,7 @@ model BaseAttribute {
     id          String   @id @default(cuid())
     name        String
     slug        String   @unique
-    description String   @db.LongText
+    description String //@db.LongText
     universeId  String
     Universe    Universe @relation(fields: [universeId], references: [id], onDelete: Cascade)
 
@@ -425,7 +427,7 @@ model BaseSkill {
     id            String        @id @default(cuid())
     name          String
     slug          String        @unique
-    description   String        @db.LongText
+    description   String //@db.LongText
     attributeId   String // clé étrangère vers BaseAttribute
     BaseAttribute BaseAttribute @relation(fields: [attributeId], references: [id])
     universeId    String
@@ -468,7 +470,7 @@ model Skill {
 model Modifier {
     id          String  @id @default(cuid())
     name        String // Nom du modificateur (ex: Anneau de Force, Bénédiction)
-    description String? @db.LongText
+    description String? //@db.LongText
 
     type ModifierType // ENUM: ATTRIBUTE, SKILL
 
@@ -506,7 +508,7 @@ model PopulationModifier {
     baseSkillId String?
     BaseSkill   BaseSkill? @relation(fields: [baseSkillId], references: [id])
 
-    description String? @db.LongText
+    description String? //@db.LongText
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -521,7 +523,7 @@ model Item {
     id           String   @id @default(cuid())
     name         String
     slug         String   @unique
-    description  String?  @db.LongText
+    description  String? //@db.LongText
     sprite       String? // URL de l'image ou du sprite associé à l'item
     type         ItemType
     weight       Float?
@@ -556,7 +558,7 @@ model ItemInstance {
     quantity Int     @default(1)
     equipped Boolean @default(false)
 
-    notes String? @db.LongText
+    notes String? //@db.LongText
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -586,7 +588,7 @@ model SessionUnity {
     Story   Story  @relation(fields: [storyId], references: [id], onDelete: Cascade)
 
     name        String
-    description String @db.LongText
+    description String //@db.LongText
 
     joinCode String             @unique // Code de session pour rejoindre la partie
     status   SessionUnityStatus @default(WAITING) // Statut de la session
@@ -602,7 +604,7 @@ model Map {
     id          String @id @default(cuid())
     name        String
     slug        String @unique
-    description String @db.LongText
+    description String //@db.LongText
 
     Tiles     MapTile[]
     Instances MapInstance[]
@@ -630,7 +632,7 @@ model TileDefinition {
     id          String @id @default(cuid())
     name        String
     slug        String @unique
-    description String @db.LongText
+    description String //@db.LongText
 
     spriteUrl  String // URL de l'image ou du sprite associé à la tuile
     spritePath String? // Chemin du sprite dans le projet (si applicable)
@@ -702,4 +704,39 @@ enum TileType {
     RIVER
 }
 
-//TODO : add AuditLog model for tracking changes in the system
+// The AuditLog model tracks changes to various entities in the system.
+// It records the action taken, the target entity, and metadata about the change.
+model AuditLog {
+    id String @id @default(cuid())
+
+    action     AuditAction
+    targetType AuditTargetType
+    targetId   String?
+    meta       Json?
+    createdAt  DateTime        @default(now())
+
+    authorId String?
+    Author   User?   @relation("Author", fields: [authorId], references: [id])
+}
+
+enum AuditAction {
+    CREATE
+    READ
+    UPDATE
+    DELETE
+}
+
+// Adapt this enum to include all target types
+enum AuditTargetType {
+    USER
+    UNIVERSE
+    CHARACTER
+    ANIMAL
+    STORY
+    ITEM
+    SESSIONUNITY
+    MAP
+    TILEDEFINITION
+    POPULATION
+    SPECIES
+}
