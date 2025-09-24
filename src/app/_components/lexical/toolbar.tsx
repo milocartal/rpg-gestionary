@@ -118,13 +118,13 @@ export default function Toolbar() {
     );
   }, [editor]);
 
-  const setParagraph = useCallback(() => {
+  /* const setParagraph = useCallback(() => {
     editor.update(() => {
       const selection = $getSelection();
       if (!$isRangeSelection(selection)) return;
       $setBlocksType(selection, () => $createParagraphNode());
     });
-  }, [editor]);
+  }, [editor]); */
 
   const applyBlock = useCallback(
     (tag: BlockType) => {

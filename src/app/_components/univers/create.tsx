@@ -17,11 +17,11 @@ import {
 } from "~/app/_components/ui/form";
 import { api } from "~/trpc/react";
 import { Input } from "~/app/_components/ui/input";
-import { Textarea } from "~/app/_components/ui/textarea";
 import { ImageInput } from "~/app/_components/image_input";
 import { Dnd } from "~/app/_components/dnd";
-import { useRef } from "react";
+import { Suspense, useRef } from "react";
 import { ImageType } from "~/lib/minio";
+import CustomLexicalEditor from "../lexical/editor";
 
 const CreateUniversSchema = z.object({
   name: z
@@ -40,7 +40,7 @@ export const CreateUniverse: React.FC = () => {
   const createUnivers = api.universe.create.useMutation({
     onSuccess: () => {
       toast.success("Univers créé avec succès");
-      router.push("/univers");
+      router.push("/universes");
     },
     onError: (error) => {
       console.error(error);
@@ -92,7 +92,7 @@ export const CreateUniverse: React.FC = () => {
           control={form.control}
           name="banner"
           render={() => (
-            <FormItem className="flex flex-col">
+            <FormItem className="flex w-full flex-col">
               <FormLabel className="mt-2 mb-1">Image</FormLabel>
               <Dnd>
                 <ImageInput dref={ref} />
@@ -118,20 +118,20 @@ export const CreateUniverse: React.FC = () => {
         />
 
         <FormField
-          name="description"
           control={form.control}
+          name="description"
           render={({ field }) => (
-            <FormItem className="flex w-full flex-col">
-              <FormLabel>Description</FormLabel>
-              <FormControl>
-                <Textarea
-                  placeholder="Description"
-                  className="resize-none"
-                  rows={5}
-                  {...field}
+            <FormItem className="w-full">
+              <FormLabel className="gap-1">
+                Contexte de l&apos;univers
+              </FormLabel>
+              <Suspense fallback={<div>Chargement de l&apos;éditeur...</div>}>
+                <CustomLexicalEditor
+                  onChangeJSON={field.onChange}
+                  initialContent={field.value}
+                  placeholder="Quel est le contexte de votre univers ?"
                 />
-              </FormControl>
-
+              </Suspense>
               <FormMessage />
             </FormItem>
           )}

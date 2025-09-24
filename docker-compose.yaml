@@ -1,34 +1,30 @@
 version: "3.8"
 
 services:
-  mysql:
-    image: mysql:latest
+  postgres:
+    image: postgres:latest
     container_name: rpg-bdd
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: dbsql
-      MYSQL_USER: admin
-      MYSQL_PASSWORD: admin
+      POSTGRES_DB: dbsql
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
     ports:
-      - "3307:3306"
+      - "5432:5432"
     volumes:
-      - db-sql:/var/lib/mysql
+      - db-sql:/var/lib/postgresql/data2
     networks:
       - bd-rpg
 
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin:latest
-    container_name: rpg-phpmyadmin
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: rpg-pgadmin
     environment:
-      PMA_HOST: mysql
-      PMA_PORT: 3306
-      MYSQL_ROOT_PASSWORD: root
-      PMA_USER: admin
-      PMA_PASSWORD: admin
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
     ports:
       - "8080:80"
     depends_on:
-      - mysql
+      - postgres
     networks:
       - bd-rpg
 

@@ -7,169 +7,34 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import type { Session } from "next-auth";
 
-import {
-  Binary,
-  Blocks,
-  BookMarked,
-  Box,
-  FileKey,
-  Landmark,
-  type LucideIcon,
-  Mouse,
-  Newspaper,
-  Origami,
-  PawPrint,
-  ReceiptText,
-  Scale,
-  ScrollText,
-  Transgender,
-  UsersRound,
-} from "lucide-react";
-
-import { cn } from "~/lib/utils";
 import { UniversSwitcher } from "~/app/_components/univers/switcher";
 import type { UniverseWithUsers } from "~/lib/models/Univers";
 import { withSessionProvider } from "~/utils/withSessionProvider";
 
-import { Button } from "~/app/_components/ui/button";
-import { Link as ShadLink } from "~/app/_components/ui/link";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
   SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
   SidebarRail,
   SidebarSeparator,
   useSidebar,
 } from "~/app/_components/ui/sidebar";
 
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "~/app/_components/ui/collapsible";
 import { NormalConnectionButton } from "~/app/_components/connection/button";
 import { SidebarUserNav } from "./navbar-footer";
+import type { GroupedNavLink } from "./type";
 
-interface NavLink {
-  title: string;
-  label?: string;
-  href?: string;
-  icon: LucideIcon;
-  children?: NavLinkChildren[];
-}
-
-interface NavLinkChildren {
-  title: string;
-  label?: string;
-  href: string;
-  icon: LucideIcon;
-}
-
-type ExclusiveNavLink =
-  | (NavLink & { href: string; children?: never })
-  | (NavLink & { href?: never; children: NavLinkChildren[] });
-
-const links: ExclusiveNavLink[][] = [
-  [
-    {
-      title: "Univers",
-      icon: Box,
-      children: [
-        {
-          title: "Contexte",
-          href: "/context",
-          icon: ScrollText,
-        },
-        {
-          title: "Histoires",
-          href: "/stories",
-          icon: BookMarked,
-        },
-        {
-          title: "Populations",
-          href: "/populations",
-          icon: UsersRound,
-        },
-        {
-          title: "Espèces",
-          href: "/species",
-          icon: PawPrint,
-        },
-        {
-          title: "Attributs",
-          href: "/attributes",
-          icon: Binary,
-        },
-        {
-          title: "Compétences",
-          href: "/skills",
-          icon: Blocks,
-        },
-        {
-          title: "Classes",
-          href: "/classes",
-          icon: Landmark,
-        },
-        {
-          title: "Genres",
-          href: "/genders",
-          icon: Transgender,
-        },
-        {
-          title: "Objects",
-          href: "/items",
-          icon: Origami,
-        },
-      ],
-    },
-    {
-      title: "Événements",
-      href: "/events",
-      icon: Newspaper,
-    },
-  ],
-  [
-    {
-      title: "Personnages",
-      href: "/characters",
-      icon: ReceiptText,
-    },
-    {
-      title: "Compagnons",
-      href: "/companions",
-      icon: Origami,
-    },
-  ],
-];
-
-const legalsLinks: NavLink[] = [
-  {
-    title: "Mentions légales",
-    label: "",
-    icon: Scale,
-    href: "/mentions-legales",
-  },
-  {
-    title: "CGU",
-    label: "",
-    icon: Mouse,
-    href: "/cgu",
-  },
-  {
-    title: "Politique de confidentialité",
-    label: "",
-    icon: FileKey,
-    href: "/politique-confidentialite",
-  },
-];
+import { NavGroup } from "./group";
+import { can, canInUniverse } from "~/utils/accesscontrol";
+import {
+  adminLinks,
+  legalsLinks,
+  universesDefaultLinks,
+  universesManagerLinks,
+  universesMasterLinks,
+} from "./links";
 
 interface NavbarProps {
   readonly session: Session | null;
@@ -190,6 +55,16 @@ const NavbarOne: React.FC<NavbarProps> = ({ session, univers }) => {
     return null;
   }
 
+  let links: GroupedNavLink[] = [];
+
+  if (canInUniverse(session).readAny("maitre-du-jeu")) {
+    links = universesMasterLinks;
+  } else if (canInUniverse(session).readAny("gestionnaire")) {
+    links = universesManagerLinks;
+  } else if (canInUniverse(session).readAny("default")) {
+    links = universesDefaultLinks;
+  }
+
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader className="bg-primary items-center justify-center border-b px-0 py-2">
@@ -206,6 +81,13 @@ const NavbarOne: React.FC<NavbarProps> = ({ session, univers }) => {
               alt="logo"
               width={!open ? 50 : 60}
               height={40}
+              className={
+                open
+                  ? "-ml-2"
+                  : "" /* TODO refaire l'image pour que ce soir bord à bord */
+              }
+              priority
+              quality={100}
             />
             {open && (
               <h1 className="libertinus text-start text-2xl text-white">
@@ -229,23 +111,21 @@ const NavbarOne: React.FC<NavbarProps> = ({ session, univers }) => {
         {links.map((group, index) => {
           return (
             <Fragment key={index}>
-              <SidebarGroup>
-                {group.map((link, index) => {
-                  return <NavItem key={link.title + index} link={link} />;
-                })}
-              </SidebarGroup>
+              <NavGroup group={group} />
               {index !== links.length - 1 && <SidebarSeparator />}
             </Fragment>
           );
         })}
+        {can(session).readAny("admin") && (
+          <Fragment>
+            <SidebarSeparator />
+            <NavGroup group={adminLinks} />
+          </Fragment>
+        )}
       </SidebarContent>
 
       <SidebarFooter>
-        <SidebarGroup>
-          {legalsLinks.map((link) => {
-            return <NavItem key={link.href} link={link} />;
-          })}
-        </SidebarGroup>
+        <NavGroup group={legalsLinks} />
         {session ? (
           <SidebarUserNav session={session} />
         ) : (
@@ -260,111 +140,3 @@ const NavbarOne: React.FC<NavbarProps> = ({ session, univers }) => {
 const Navbar = withSessionProvider(NavbarOne);
 
 export default Navbar;
-
-function NavItem({ link }: { readonly link: NavLink }) {
-  const pathname = usePathname();
-  if (link.href) {
-    return (
-      <SidebarMenu>
-        <SidebarMenuItem key={link.href}>
-          <SidebarMenuButton asChild tooltip={link.title}>
-            <ShadLink
-              href={link.href}
-              className={cn(
-                "justify-start",
-                !pathname.includes(link.href) && "text-text",
-              )}
-              variant={pathname.includes(link.href) ? "default" : null}
-            >
-              <link.icon
-                className={cn(
-                  "h-4 w-4",
-                  pathname.includes(link.href)
-                    ? "text-secondary"
-                    : "text-accent",
-                )}
-              />
-              <span>{link.title}</span>
-            </ShadLink>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
-      </SidebarMenu>
-    );
-  } else if (link.children) {
-    return (
-      <SidebarMenu>
-        <Collapsible
-          defaultOpen={link.children.some((child) =>
-            pathname.includes(child.href),
-          )}
-          className="group/collapsible"
-        >
-          <SidebarMenuItem>
-            <CollapsibleTrigger asChild>
-              <SidebarMenuButton asChild tooltip={link.label}>
-                <Button
-                  className={cn(
-                    "justify-start",
-                    !link.children.some((child) =>
-                      pathname.includes(child.href),
-                    ) && "text-text",
-                  )}
-                  variant={
-                    link.children.some((child) => pathname.includes(child.href))
-                      ? "default"
-                      : null
-                  }
-                >
-                  <link.icon
-                    className={cn(
-                      "h-4 w-4",
-                      link.children.some((child) =>
-                        pathname.includes(child.href),
-                      )
-                        ? "text-secondary"
-                        : "text-accent",
-                    )}
-                  />
-                  <span>{link.title}</span>
-                </Button>
-              </SidebarMenuButton>
-            </CollapsibleTrigger>
-            <CollapsibleContent>
-              <SidebarMenuSub>
-                {link.children.map((child) => {
-                  return (
-                    <SidebarMenuSubItem key={child.href} className="">
-                      <SidebarMenuSubButton asChild>
-                        <ShadLink
-                          href={child.href}
-                          className={cn(
-                            "justify-start",
-                            !pathname.includes(child.href) && "text-text",
-                          )}
-                          variant={
-                            pathname.includes(child.href) ? "default" : null
-                          }
-                        >
-                          <child.icon
-                            className={cn(
-                              "h-4 w-4",
-                              pathname.includes(child.href)
-                                ? "text-secondary"
-                                : "text-accent",
-                            )}
-                          />
-                          <span>{child.title}</span>
-                        </ShadLink>
-                      </SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                  );
-                })}
-              </SidebarMenuSub>
-            </CollapsibleContent>
-          </SidebarMenuItem>
-        </Collapsible>
-      </SidebarMenu>
-    );
-  }
-  return null;
-}
