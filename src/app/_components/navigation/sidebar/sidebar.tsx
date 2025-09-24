@@ -57,11 +57,11 @@ const NavbarOne: React.FC<NavbarProps> = ({ session, univers }) => {
 
   let links: GroupedNavLink[] = [];
 
-  if (canInUniverse(session).readAny("maitre-du-jeu")) {
+  if (canInUniverse(session).readAny("maitre-du-jeu").granted) {
     links = universesMasterLinks;
-  } else if (canInUniverse(session).readAny("gestionnaire")) {
+  } else if (canInUniverse(session).readAny("gestionnaire").granted) {
     links = universesManagerLinks;
-  } else if (canInUniverse(session).readAny("default")) {
+  } else if (canInUniverse(session).readAny("default").granted) {
     links = universesDefaultLinks;
   }
 
@@ -116,7 +116,7 @@ const NavbarOne: React.FC<NavbarProps> = ({ session, univers }) => {
             </Fragment>
           );
         })}
-        {can(session).readAny("admin") && (
+        {can(session).readAny("admin").granted && (
           <Fragment>
             <SidebarSeparator />
             <NavGroup group={adminLinks} />

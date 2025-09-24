@@ -36,6 +36,7 @@ ac.grant("administrateur")
 //Spectateur
 acUnivers
   .grant("spectateur")
+  .readAny("spectateur")
   .readAny("species")
   .readAny("population")
   .readAny("story")
@@ -45,6 +46,7 @@ acUnivers
 acUnivers
   .grant("roliste")
   .extend("spectateur")
+  .readAny("roliste")
   .readOwn("character")
   .createOwn("character")
   .updateOwn("character")
@@ -62,6 +64,7 @@ acUnivers
 acUnivers
   .grant("gestionnaire")
   .extend("roliste")
+  .readAny("gestionnaire")
   .readAny("character")
   .createAny("character")
   .updateAny("character")
@@ -104,6 +107,7 @@ acUnivers
 acUnivers
   .grant("maitre-du-jeu")
   .extend("gestionnaire")
+  .readAny("maitre-du-jeu")
   .readAny("event")
   .createAny("event")
   .updateAny("event")
