@@ -32,22 +32,44 @@ export const metadata: Metadata = {
     "gestion de jeu",
   ],
   applicationName: APP_NAME,
-  authors: [{ name: APP_NAME }],
+  authors: [
+    { name: APP_NAME },
+    { name: "Milo Cartal", url: "https://milocartal.com" },
+  ],
   creator: "Milo Cartal",
   publisher: "Milo Cartal",
   alternates: {
     canonical: "/",
   },
+  appleWebApp: {
+    title: "RPG-Gestionary",
+    statusBarStyle: "default",
+    capable: true,
+  },
   openGraph: {
-    type: "website",
-    siteName: APP_NAME,
-    url: "/",
+    title: "RPG-Gestionary - Plateforme de gestion de JDR",
+    description:
+      "Un service de gestion de fiches personnages, familiers et bien plus encore pour JDR.",
+    url: new URL(env.NEXT_PUBLIC_URL ?? "http://localhost:3000"),
+    siteName: "RPG-Gestionary",
+    images: [
+      {
+        url: "/icon1.png",
+        width: 1200,
+        height: 630,
+        alt: "RPG-Gestionary - Plateforme de gestion de JDR",
+      },
+    ],
     locale: "fr_FR",
-    images: [{ url: "/og-default.jpg", width: 1200, height: 630 }],
+    type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    site: "@ton_compte", // si tu en as un
+    title: "RPG-Gestionary - Plateforme de gestion de JDR",
+    description:
+      "Un service de gestion de fiches personnages, familiers et bien plus encore pour JDR.",
+    images: ["/icon1.png"],
+    creator: "@maskly_app",
   },
   robots: {
     index: true,
@@ -76,10 +98,7 @@ export default async function RootLayout({
     <html lang="fr" className={`${geist.variable}`}>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta
-          name="description"
-          content="Service d'Administration et de Gestion des Aventures"
-        />
+        <meta charSet="utf-8" />
         <link
           rel="apple-touch-icon"
           sizes="180x180"
