@@ -63,6 +63,7 @@ model User {
     Stories          Story[]
     Universes        UserToUniverse[]
     UniversesCreated Universe[]       @relation("CreateBy")
+    PasswordTokens   PasswordToken[]
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -74,6 +75,26 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+model PasswordToken {
+    id        String       @id @default(cuid())
+    tokenHash String       @unique
+    purpose   TokenPurpose
+    expires   DateTime
+    createdAt DateTime     @default(now())
+    usedAt    DateTime?
+    userId    String
+    User      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@index([userId])
+    @@index([expires])
+    @@index([purpose])
+}
+
+enum TokenPurpose {
+    RESET
+    INVITE
 }
 
 model Universe {
@@ -680,3 +701,5 @@ enum TileType {
     ROAD
     RIVER
 }
+
+//TODO : add AuditLog model for tracking changes in the system

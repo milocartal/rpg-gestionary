@@ -148,3 +148,124 @@ export function toFallback(name: string | null | undefined) {
     return fallbackWords.join(" ");
   }
 }
+
+/**
+ * Convertit une chaîne HTML en texte brut avec retours à la ligne.
+ * - Supprime <script> / <style>
+ * - Insère \n pour les balises de bloc et <br>
+ * - Décode les entités HTML courantes (&nbsp;, &amp;, &lt; ...)
+ * - Écrase les espaces multiples et normalise les sauts de ligne
+ */
+export function htmlToPlainText(html: string): string {
+  if (!html) return "";
+
+  // 1) Nettoyage préliminaire
+  let s = html
+    // enlever scripts / styles
+    .replace(/<script[\s\S]*?<\/script>/gi, "")
+    .replace(/<style[\s\S]*?<\/style>/gi, "");
+
+  // 2) Si on est côté navigateur, on profite du DOM pour un rendu fidèle
+  if (typeof window !== "undefined" && typeof document !== "undefined") {
+    const el = document.createElement("div");
+    el.innerHTML = s;
+    // innerText respecte mieux les sauts de ligne que textContent
+    const text = el.innerText.replace(/\u00A0/g, " "); // &nbsp;
+    return normalizeWhitespace(text);
+  }
+
+  // 3) Fallback Node.js (regex simple mais efficace)
+  // 3.1: <br> -> \n
+  s = s.replace(/<(br)\s*\/?>/gi, "\n");
+
+  // 3.2: Balises de bloc -> \n
+  const blockTags = [
+    "address",
+    "article",
+    "aside",
+    "blockquote",
+    "canvas",
+    "dd",
+    "div",
+    "dl",
+    "dt",
+    "fieldset",
+    "figcaption",
+    "figure",
+    "footer",
+    "form",
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "h6",
+    "header",
+    "hr",
+    "li",
+    "main",
+    "nav",
+    "noscript",
+    "ol",
+    "output",
+    "p",
+    "pre",
+    "section",
+    "table",
+    "thead",
+    "tbody",
+    "tfoot",
+    "tr",
+    "td",
+    "th",
+    "ul",
+    "video",
+  ];
+  const blockRe = new RegExp(`</?(${blockTags.join("|")})\\b[^>]*>`, "gi");
+  s = s.replace(blockRe, "\n");
+
+  // 3.3: Supprimer le reste des balises
+  s = s.replace(/<[^>]+>/g, "");
+
+  // 3.4: Décoder les entités HTML (numériques + quelques nommées)
+  // &#123; (décimal)
+  s = s.replace(/&#(\d+);/g, (_, dec: string) =>
+    String.fromCodePoint(parseInt(dec, 10)),
+  );
+  // &#x1F60A; (hexadécimal)
+  s = s.replace(/&#x([0-9a-fA-F]+);/g, (_, hex: string) =>
+    String.fromCodePoint(parseInt(hex, 16)),
+  );
+  // Entités nommées de base
+  const entities: Record<string, string> = {
+    nbsp: " ",
+    amp: "&",
+    lt: "<",
+    gt: ">",
+    quot: '"',
+    apos: "'",
+  };
+  s = s.replace(/&([a-zA-Z]+);/g, (_, name: string) =>
+    Object.prototype.hasOwnProperty.call(entities, name)
+      ? (entities[name] ?? "")
+      : "",
+  );
+
+  return normalizeWhitespace(s);
+}
+
+// Petite aide pour normaliser les espaces et sauts de ligne
+function normalizeWhitespace(input: string): string {
+  return (
+    input
+      // remplace suites d'espaces (incl. \t, \f, \v, nbsp) par un espace
+      .replace(/[ \t\f\v\u00A0]+/g, " ")
+      // supprime les espaces en début/fin de ligne
+      .split("\n")
+      .map((l) => l.trim())
+      .join("\n")
+      // compacte les suites de 3+ lignes vides en 2
+      .replace(/\n{3,}/g, "\n\n")
+      .trim()
+  );
+}

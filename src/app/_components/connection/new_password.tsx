@@ -28,9 +28,9 @@ import { api } from "~/trpc/react";
 import { Link } from "~/app/_components/ui/link";
 import { Input } from "~/app/_components/ui/input";
 
-const ResetPasswordSchema = z
+const SetPasswordSchema = z
   .object({
-    newPassword: z
+    password: z
       .string({ required_error: "Le mot de passe est requis" })
       .min(8, "Le mot de passe doit faire au moins 8 caractères")
       .max(64, "Le mot de passe doit faire entre 8 et 64 caractères"),
@@ -45,11 +45,11 @@ const ResetPasswordSchema = z
         "La confirmation du mot de passe doit faire entre 8 et 64 caractères",
       ),
   })
-  .refine((data) => data.newPassword === data.confirmPassword, {
+  .refine((data) => data.password === data.confirmPassword, {
     message: "Les mots de passe ne correspondent pas",
   });
 
-export const ResetPassword: React.FC<{ token: string | undefined }> = ({
+export const SetPassword: React.FC<{ token: string | undefined }> = ({
   token,
 }) => {
   const passwordRef = useRef<HTMLInputElement>(null);
@@ -65,29 +65,29 @@ export const ResetPassword: React.FC<{ token: string | undefined }> = ({
   }
 
   const [success, setSuccess] = useState(false);
-  const resetPassword = api.password.reset.useMutation({
+  const setPassword = api.password.set.useMutation({
     onSuccess: () => {
       form.reset();
       setSuccess(true);
     },
     onError: (error) => {
-      console.error("Error sending password reset email:", error);
+      console.error("Error sending password set email:", error);
       toast.error("Une erreur est survenue lors de l'envoi de l'email.");
     },
   });
 
-  const form = useForm<z.infer<typeof ResetPasswordSchema>>({
-    resolver: zodResolver(ResetPasswordSchema),
+  const form = useForm<z.infer<typeof SetPasswordSchema>>({
+    resolver: zodResolver(SetPasswordSchema),
     defaultValues: {
-      newPassword: "",
+      password: "",
       confirmPassword: "",
     },
   });
 
-  async function onSubmit(values: z.infer<typeof ResetPasswordSchema>) {
-    await resetPassword.mutateAsync({
+  async function onSubmit(values: z.infer<typeof SetPasswordSchema>) {
+    await setPassword.mutateAsync({
       token: token ?? "",
-      newPassword: values.newPassword,
+      password: values.password,
     });
   }
 
@@ -95,21 +95,15 @@ export const ResetPassword: React.FC<{ token: string | undefined }> = ({
     <Card className="mx-auto w-full max-w-md">
       {success ? (
         <CardHeader>
-          <CardTitle>
-            Votre mot de passe a été réinitialisé avec succès
-          </CardTitle>
+          <CardTitle>Votre mot de passe a été défini avec succès</CardTitle>
           <CardDescription>
-            Vous pouvez maintenant vous connecter avec votre nouveau mot de
-            passe.
+            Vous pouvez maintenant vous connecter avec votre mot de passe.
           </CardDescription>
         </CardHeader>
       ) : (
         <CardHeader>
-          <CardTitle>Réinitialiser le mot de passe</CardTitle>
-          <CardDescription>
-            Entrez votre adresse email pour recevoir un lien de réinitialisation
-            du mot de passe.
-          </CardDescription>
+          <CardTitle>Définir le mot de passe</CardTitle>
+          <CardDescription>Entrez votre nouveau mot de passe.</CardDescription>
         </CardHeader>
       )}
 
@@ -117,7 +111,7 @@ export const ResetPassword: React.FC<{ token: string | undefined }> = ({
         {success ? (
           <Fragment>
             <p className="text-center">
-              Votre mot de passe a été réinitialisé avec succès. Vous pouvez
+              Votre mot de passe a été défini avec succès. Vous pouvez
               maintenant vous connecter avec votre nouveau mot de passe.
             </p>
           </Fragment>
@@ -128,7 +122,7 @@ export const ResetPassword: React.FC<{ token: string | undefined }> = ({
               className="flex w-full flex-col items-start gap-4"
             >
               <FormField
-                name="newPassword"
+                name="password"
                 control={form.control}
                 render={({ field }) => (
                   <FormItem className="flex w-full flex-col">
@@ -178,7 +172,7 @@ export const ResetPassword: React.FC<{ token: string | undefined }> = ({
               <Button
                 type="submit"
                 className="w-full"
-                disabled={resetPassword.isPending}
+                disabled={setPassword.isPending}
               >
                 Réinitialiser le mot de passe
               </Button>

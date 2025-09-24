@@ -1,14 +1,12 @@
 import { HydrateClient } from "~/trpc/server";
-import { Header } from "~/app/_components/navigation";
 
 import { Link } from "~/app/_components/ui/link";
 
 export default async function PolitiqueConfidentialite() {
   return (
     <HydrateClient>
-      <Header title={`Politique de confidentialité | RPG Gestionary`} />
-      <main className="relative flex min-h-screen flex-col items-center justify-start gap-12 p-6 pt-24">
-        <section className="bg-primary/1 flex w-full flex-col items-start justify-start gap-4 rounded-md p-6 shadow">
+      <main className="h-auto w-full px-[10vw] py-[4vh] pt-28">
+        <section className="bg-primary/5 flex w-full flex-col items-start justify-start gap-4 rounded-md p-6 shadow">
           <div className="mb-4">
             <h2 className="mb-2 text-3xl font-bold">
               Politique de confidentialité

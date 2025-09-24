@@ -9,6 +9,7 @@ import { genderRouter } from "./routers/gender";
 import { imageRouter } from "./routers/image";
 import { itemRouter } from "./routers/item";
 import { mailRouter } from "./routers/mail";
+import { passwordRouter } from "./routers/password";
 import { populationRouter } from "./routers/population";
 import { skillRouter } from "./routers/skill";
 import { speciesRouter } from "./routers/species";
@@ -32,6 +33,7 @@ export const appRouter = createTRPCRouter({
   image: imageRouter,
   item: itemRouter,
   mail: mailRouter,
+  password: passwordRouter,
   population: populationRouter,
   skill: skillRouter,
   species: speciesRouter,

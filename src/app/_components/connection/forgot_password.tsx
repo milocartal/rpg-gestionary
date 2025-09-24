@@ -43,7 +43,7 @@ interface ForgotPasswordResult {
 }
 
 export const ForgotPassword: React.FC = () => {
-  const forgotPassword = api.user.forgotPassword.useMutation({
+  const forgotPassword = api.password.forgot.useMutation({
     onSuccess: () => {
       form.reset();
     },
