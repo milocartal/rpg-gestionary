@@ -126,11 +126,11 @@ export function can(session: Session | null): Query {
 
 export function canInUniverse(session: Session | null): Query {
   //console.log("session canInUniverse", session);
-  let role = "anonyme";
+  let role = "spectateur";
   if (!session) return acUnivers.can(role);
 
   if (!session.Univers) {
-    role = "anonyme";
+    role = "spectateur";
     return acUnivers.can(role);
   }
 
