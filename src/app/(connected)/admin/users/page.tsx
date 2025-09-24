@@ -6,6 +6,7 @@ import { db } from "~/server/db";
 import "~/styles/globals.css";
 import { HydrateClient } from "~/trpc/server";
 import { DataTableUser } from "~/app/_components/user/datatable";
+import { Header } from "~/app/_components/navigation/header/header";
 
 export default async function Users() {
   const session = await auth();
@@ -25,7 +26,8 @@ export default async function Users() {
 
   return (
     <HydrateClient>
-      <main className="relative flex min-h-screen flex-col items-center bg-[url('/assets/images/bg.webp')] bg-cover bg-fixed px-4 py-10">
+      <Header title={`Administration des utilisateurs | RPG Gestionary`} />
+      <main className="relative flex min-h-screen flex-col items-center bg-[url('/assets/images/bg.webp')] bg-cover bg-fixed px-4 py-10 pt-24">
         <div className="bg-background flex h-full w-full flex-col rounded-lg px-6 py-4 shadow">
           <DataTableUser data={users}>
             <Link href="/admin/users/new" className="w-full lg:w-auto">

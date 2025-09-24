@@ -6,6 +6,7 @@ import "~/styles/globals.css";
 import { HydrateClient } from "~/trpc/server";
 import { can } from "~/utils/accesscontrol";
 import { UpdateUser } from "~/app/_components/user";
+import { Header } from "~/app/_components/navigation/header/header";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -31,7 +32,10 @@ export default async function UserDetail({ params }: Props) {
 
   return (
     <HydrateClient>
-      <main className="relative flex min-h-screen flex-col items-center bg-[url('/assets/images/bg.webp')] bg-cover bg-fixed px-4 py-10">
+      <Header
+        title={`Détails de l'utilisateur ${user.name} | RPG Gestionary`}
+      />
+      <main className="relative flex min-h-screen flex-col items-center bg-[url('/assets/images/bg.webp')] bg-cover bg-fixed px-4 py-10 pt-24">
         <div className="bg-background flex h-full w-full flex-col rounded-lg px-6 py-4 shadow">
           <UpdateUser user={user} />
         </div>
