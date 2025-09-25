@@ -54,9 +54,9 @@ export const metadata: Metadata = {
     siteName: "RPG-Gestionary",
     images: [
       {
-        url: "/icon1.png",
-        width: 1200,
-        height: 630,
+        url: "/icon0.svg",
+        width: 1024,
+        height: 1024,
         alt: "RPG-Gestionary - Plateforme de gestion de JDR",
       },
     ],
@@ -69,7 +69,6 @@ export const metadata: Metadata = {
     description:
       "Un service de gestion de fiches personnages, familiers et bien plus encore pour JDR.",
     images: ["/icon1.png"],
-    creator: "@maskly_app",
   },
   robots: {
     index: true,
