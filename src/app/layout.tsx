@@ -8,14 +8,13 @@ import { Toaster } from "sonner";
 import { SidebarProvider } from "~/app/_components/ui/sidebar";
 import { env } from "~/env";
 
-const APP_NAME = "RPG Gestionary"; // change le nom
-const APP_URL = env.NEXT_PUBLIC_URL ?? "https://example.com"; // prod URL absolue
+const APP_URL = new URL(env.NEXT_PUBLIC_URL ?? "http://localhost:3000"); // prod URL absolue
 
 export const metadata: Metadata = {
-  metadataBase: new URL(APP_URL),
+  metadataBase: APP_URL,
   title: {
-    default: APP_NAME,
-    template: "%s · " + APP_NAME,
+    default: "RPG-Gestionary",
+    template: "%s · RPG-Gestionary",
   },
   description:
     "Plateforme de gestion de fiches personnages, familiers et bien plus encore pour JDR.",
@@ -30,10 +29,11 @@ export const metadata: Metadata = {
     "jeu de société",
     "plateau",
     "gestion de jeu",
+    "gestionnaire",
   ],
-  applicationName: APP_NAME,
+  applicationName: "RPG-Gestionary",
   authors: [
-    { name: APP_NAME },
+    { name: "RPG-Gestionary", url: APP_URL },
     { name: "Milo Cartal", url: "https://milocartal.com" },
   ],
   creator: "Milo Cartal",
@@ -41,6 +41,7 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/",
   },
+  manifest: "/manifest.json",
   appleWebApp: {
     title: "RPG-Gestionary",
     statusBarStyle: "default",
@@ -50,11 +51,11 @@ export const metadata: Metadata = {
     title: "RPG-Gestionary - Plateforme de gestion de JDR",
     description:
       "Un service de gestion de fiches personnages, familiers et bien plus encore pour JDR.",
-    url: new URL(env.NEXT_PUBLIC_URL ?? "http://localhost:3000"),
+    url: APP_URL,
     siteName: "RPG-Gestionary",
     images: [
       {
-        url: "/icon0.svg",
+        url: "/og-image.png",
         width: 1024,
         height: 1024,
         alt: "RPG-Gestionary - Plateforme de gestion de JDR",
@@ -68,11 +69,15 @@ export const metadata: Metadata = {
     title: "RPG-Gestionary - Plateforme de gestion de JDR",
     description:
       "Un service de gestion de fiches personnages, familiers et bien plus encore pour JDR.",
-    images: ["/icon1.png"],
+    images: ["/og-image.png"],
   },
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+    },
   },
   icons: {
     icon: [{ url: "/favicon.ico" }, { url: "/favicon.svg" }],
@@ -83,6 +88,10 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: "#f5e9cf",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 const geist = Geist({
@@ -95,25 +104,6 @@ export default async function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="fr" className={`${geist.variable}`}>
-      <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta charSet="utf-8" />
-        <link
-          rel="apple-touch-icon"
-          sizes="180x180"
-          href="/apple-touch-icon.png"
-        />
-        <link rel="icon" type="image/png" sizes="96x96" href="/icon1.png" />
-        <link
-          rel="icon"
-          type="image/svg+xml"
-          sizes="1024x1024"
-          href="/favicon.svg"
-        />
-        <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#f5e9cf" />
-        <meta name="apple-mobile-web-app-title" content="RPG-Gestionary" />
-      </head>
       <body>
         <TRPCReactProvider>
           <SidebarProvider>{children}</SidebarProvider>
