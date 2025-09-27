@@ -58,12 +58,15 @@ model User {
     sessions      Session[]
 
     // Relations
-    Animals          Animal[]
+    Pets             Pet[]
     Characters       Character[]
     Stories          Story[]
     Universes        UserToUniverse[]
     UniversesCreated Universe[]       @relation("CreateBy")
     PasswordTokens   PasswordToken[]
+
+    ReviewedPets       Pet[]       @relation("ReviewerPet")
+    ReviewedCharacters Character[] @relation("ReviewerCharacter")
 
     AuditLogs AuditLog[] @relation("Author")
 
@@ -173,7 +176,7 @@ model Species {
     maxHeight Float // cm
     minHeight Float // cm
 
-    Animals Animal[]
+    Pets Pet[]
 
     Universe   Universe @relation(fields: [universeId], references: [id], onDelete: Cascade)
     universeId String
@@ -231,7 +234,7 @@ model Story {
     createdById String
     CreatedBy   User   @relation(fields: [createdById], references: [id], onDelete: Cascade)
 
-    Animals    Animal[]
+    Pets       Pet[]
     Characters Character[]
 
     SessionsUnity SessionUnity[]
@@ -241,7 +244,28 @@ model Story {
     @@index([slug])
 }
 
-model Animal {
+enum LifeStage {
+    EGG
+    BABY
+    CHILD
+    TEEN
+    ADULT
+    ELDER
+}
+
+enum LifeStatus {
+    ALIVE
+    DEAD
+    UNCONSCIOUS
+    SLEEPING
+    POISONED
+    STUNNED
+    PARALYZED
+    BURNED
+    FROZEN
+}
+
+model Pet {
     id   String @id @default(cuid())
     name String
     slug String @unique
@@ -261,9 +285,12 @@ model Animal {
     appearance  String //@db.LongText
     personality String //@db.LongText
 
+    lifeStage  LifeStage  @default(CHILD)
+    lifeStatus LifeStatus @default(ALIVE)
+
     //Skills
-    Attributes Attribute[] @relation("AnimalAttribute")
-    Skills     Skill[]     @relation("AnimalSkills")
+    Attributes Attribute[] @relation("PetAttribute")
+    Skills     Skill[]     @relation("PetSkills")
     Modifiers  Modifier[]
 
     Species   Species @relation(fields: [speciesId], references: [id])
@@ -279,6 +306,12 @@ model Animal {
     User   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
     Items ItemInstance[]
+
+    isValid        Boolean   @default(false) // Indique si l'animal a été validé par le MJ
+    lastReviewedAt DateTime?
+    reviewById     String?
+    ReviewedBy     User?     @relation("ReviewerPet", fields: [reviewById], references: [id])
+    notes          String? //@db.LongText
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -304,6 +337,9 @@ model Character {
     weight Float // kg
     height Float // cm
 
+    lifeStage  LifeStage  @default(ADULT)
+    lifeStatus LifeStatus @default(ALIVE)
+
     hp Float
 
     genderId String
@@ -320,7 +356,7 @@ model Character {
     Modifiers  Modifier[]
 
     Classes CharacterClass[]
-    Animals Animal[]
+    Pets    Pet[]
 
     Items ItemInstance[]
 
@@ -332,6 +368,12 @@ model Character {
 
     storyId String
     Story   Story  @relation(fields: [storyId], references: [id], onDelete: Cascade)
+
+    isValid      Boolean   @default(false) // Indique si le personnage a été validé par le MJ
+    reviewedAt   DateTime?
+    reviewedById String?
+    ReviewedBy   User?     @relation("ReviewerCharacter", fields: [reviewedById], references: [id])
+    notes        String? //@db.LongText
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -350,7 +392,7 @@ model Gender {
     slug String @unique
 
     Characters Character[]
-    Animals    Animal[]
+    Pets       Pet[]
 
     universeId String
     Universe   Universe @relation(fields: [universeId], references: [id], onDelete: Cascade)
@@ -423,8 +465,8 @@ model Attribute {
     characterId String?
     Character   Character? @relation("CharacterAttribute", fields: [characterId], references: [id], onDelete: Cascade)
 
-    animalId String?
-    Animal   Animal? @relation("AnimalAttribute", fields: [animalId], references: [id], onDelete: Cascade)
+    petId String?
+    Pet   Pet?    @relation("PetAttribute", fields: [petId], references: [id], onDelete: Cascade)
 
     Modifiers Modifier[]
 
@@ -432,7 +474,7 @@ model Attribute {
     updatedAt DateTime @updatedAt
 
     @@unique([characterId, baseAttributeId])
-    @@unique([animalId, baseAttributeId])
+    @@unique([petId, baseAttributeId])
 }
 
 model BaseSkill {
@@ -466,8 +508,8 @@ model Skill {
     characterId String?
     Character   Character? @relation("CharacterSkills", fields: [characterId], references: [id], onDelete: Cascade)
 
-    animalId String?
-    Animal   Animal? @relation("AnimalSkills", fields: [animalId], references: [id], onDelete: Cascade)
+    petId String?
+    Pet   Pet?    @relation("PetSkills", fields: [petId], references: [id], onDelete: Cascade)
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -476,7 +518,7 @@ model Skill {
     Modifiers Modifier[]
 
     @@unique([characterId, baseSkillId])
-    @@unique([animalId, baseSkillId])
+    @@unique([petId, baseSkillId])
 }
 
 model Modifier {
@@ -499,8 +541,8 @@ model Modifier {
     characterId String?
     Character   Character? @relation(fields: [characterId], references: [id], onDelete: Cascade)
 
-    animalId String?
-    Animal   Animal? @relation(fields: [animalId], references: [id], onDelete: Cascade)
+    petId String?
+    Pet   Pet?    @relation(fields: [petId], references: [id], onDelete: Cascade)
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -564,8 +606,8 @@ model ItemInstance {
     characterId String?
     Character   Character? @relation(fields: [characterId], references: [id], onDelete: Cascade)
 
-    animalId String?
-    Animal   Animal? @relation(fields: [animalId], references: [id], onDelete: Cascade)
+    petId String?
+    Pet   Pet?    @relation(fields: [petId], references: [id], onDelete: Cascade)
 
     quantity Int     @default(1)
     equipped Boolean @default(false)
@@ -736,6 +778,7 @@ enum AuditAction {
     READ
     UPDATE
     DELETE
+    VALIDATE
 }
 
 // Adapt this enum to include all target types

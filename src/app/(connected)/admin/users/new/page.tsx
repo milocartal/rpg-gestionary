@@ -2,7 +2,6 @@ import { forbidden, unauthorized } from "next/navigation";
 
 import { auth } from "~/server/auth";
 
-import "~/styles/globals.css";
 import { HydrateClient } from "~/trpc/server";
 import { can } from "~/utils/accesscontrol";
 import { CreateUser } from "~/app/_components/user";

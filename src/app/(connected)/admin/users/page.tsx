@@ -3,7 +3,7 @@ import { unauthorized } from "next/navigation";
 import { Link } from "~/app/_components/ui/link";
 import { auth } from "~/server/auth";
 import { db } from "~/server/db";
-import "~/styles/globals.css";
+
 import { HydrateClient } from "~/trpc/server";
 import { DataTableUser } from "~/app/_components/user/datatable";
 import { Header } from "~/app/_components/navigation/header/header";
@@ -17,7 +17,7 @@ export default async function Users() {
 
   const users = await db.user.findMany({
     include: {
-      Animals: true,
+      Pets: true,
       Characters: true,
       Universes: true,
       UniversesCreated: true,

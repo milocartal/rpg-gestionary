@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound, unauthorized } from "next/navigation";
-import { CreateGender } from "~/app/_components/gender";
+import { CreateCharacter } from "~/app/_components/character";
 
 import { Header } from "~/app/_components/navigation";
 import { auth } from "~/server/auth";
@@ -27,6 +27,21 @@ export default async function NewGender() {
           },
         },
       },
+      include: {
+        Genders: true,
+        BaseAttributes: true,
+        Stories: true,
+        Populations: {
+          include: {
+            Modifiers: {
+              include: {
+                BaseAttribute: true,
+                BaseSkill: true,
+              },
+            },
+          },
+        },
+      },
     })
     .catch(() => {
       console.log("Univers not found");
@@ -35,12 +50,19 @@ export default async function NewGender() {
 
   return (
     <HydrateClient>
-      <Header back title={`Créer un genre | ${univers.name}`} />
+      <Header back title={`Créer un personnage | ${univers.name}`} />
       <main className="relative flex min-h-screen flex-col items-center bg-[url('/assets/images/bg.webp')] bg-cover bg-fixed px-4 pt-24 pb-10">
         <div className="bg-background flex h-full w-full flex-col rounded-lg px-6 py-4 shadow">
-          <h1 className="text-text mb-4 text-2xl font-bold">Créer un genre</h1>
+          <h1 className="text-text mb-4 text-2xl font-bold">
+            Créer un personnage
+          </h1>
 
-          <CreateGender univers={univers} />
+          <CreateCharacter
+            attributes={univers.BaseAttributes}
+            populations={univers.Populations}
+            stories={univers.Stories}
+            genders={univers.Genders}
+          />
         </div>
       </main>
     </HydrateClient>

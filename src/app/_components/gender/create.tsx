@@ -34,8 +34,8 @@ export const CreateGender: React.FC<CreateGenderProps> = ({ univers }) => {
 
   const createGender = api.gender.create.useMutation({
     onSuccess: () => {
-      toast.success("Gender créé avec succès");
-      router.push("/gender");
+      toast.success("Genre créé avec succès");
+      router.push("/genders");
     },
     onError: (error) => {
       console.error(error);
@@ -84,7 +84,7 @@ export const CreateGender: React.FC<CreateGenderProps> = ({ univers }) => {
           disabled={createGender.isPending}
           className="mt-4 self-end"
         >
-          {createGender.isPending ? "Création..." : "Créer le gender"}
+          {createGender.isPending ? "Création..." : "Créer le genre"}
         </Button>
       </form>
     </Form>

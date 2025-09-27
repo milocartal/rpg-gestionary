@@ -20,6 +20,7 @@ export const CreateCharacterSchema = z.object({
   hp: z.coerce.number().min(0, {
     message: "Les points de vie doivent être supérieurs ou égaux à 0",
   }),
+  image: z.string().optional(),
   genderId: z
     .string({ required_error: "Le genre est requis" })
     .min(1, { message: "Le genre doit être sélectionné" }),
@@ -41,11 +42,11 @@ export const CreateCharacterSchema = z.object({
   storyId: z
     .string({ required_error: "L'histoire est requise" })
     .min(1, { message: "L'histoire doit être sélectionnée" }),
-  skills: z
+  attributes: z
     .array(
       z.object({
-        baseSkillId: z.string({
-          required_error: "L'ID de la compétence de base est requis",
+        baseAttributeId: z.string({
+          required_error: "L'ID de l'attribut de base est requis",
         }),
         value: z.coerce.number().int().min(0, {
           message: "Le niveau doit être un nombre entier supérieur ou égal à 0",
@@ -53,7 +54,8 @@ export const CreateCharacterSchema = z.object({
       }),
     )
     .refine(
-      (skills) => skills.reduce((acc, skill) => acc + skill.value, 0) <= 100,
+      (attributes) =>
+        attributes.reduce((acc, attribute) => acc + attribute.value, 0) <= 100,
       {
         message: "La somme des niveaux de compétence ne doit pas dépasser 100",
       },
@@ -61,7 +63,7 @@ export const CreateCharacterSchema = z.object({
 });
 
 export const CharacterSchema = z.object({
-  id: z.string().cuid().optional(),
+  id: z.string().cuid(),
   name: z.string(),
   firstName: z.string(),
   age: z.number().int(),

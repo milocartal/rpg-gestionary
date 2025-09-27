@@ -101,13 +101,7 @@ acUnivers
   .deleteAny("base-attribute")
   .createAny("class")
   .updateAny("class")
-  .deleteAny("class");
-
-//Maitre du jeu
-acUnivers
-  .grant("maitre-du-jeu")
-  .extend("gestionnaire")
-  .readAny("maitre-du-jeu")
+  .deleteAny("class")
   .readAny("event")
   .createAny("event")
   .updateAny("event")
@@ -116,6 +110,13 @@ acUnivers
   .createAny("story")
   .updateAny("story")
   .deleteAny("story");
+
+//Maitre du jeu
+acUnivers
+  .grant("maitre-du-jeu")
+  .extend("gestionnaire")
+  .readAny("maitre-du-jeu")
+  .createAny("review");
 
 export function can(session: Session | null): Query {
   //console.log("session can", session);

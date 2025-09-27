@@ -6,7 +6,6 @@ import { Header } from "~/app/_components/navigation";
 
 import { auth } from "~/server/auth";
 import { db } from "~/server/db";
-import "~/styles/globals.css";
 import { HydrateClient } from "~/trpc/server";
 
 import NewUnivers from "~/app/(connected)/universes/new/page";
@@ -69,7 +68,7 @@ export default async function UniversDetail({ params }: Props) {
     where: { universeId: univers.id },
   });
 
-  const animals = await db.animal.count({
+  const pets = await db.pet.count({
     where: { Story: { universeId: univers.id } },
   });
   const characters = await db.character.count({
@@ -88,7 +87,7 @@ export default async function UniversDetail({ params }: Props) {
           univers={univers}
           species={species}
           populations={populations}
-          animals={animals}
+          pets={pets}
           characters={characters}
           stories={stories}
           session={session}

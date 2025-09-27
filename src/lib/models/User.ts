@@ -6,7 +6,7 @@ export type UserWithAll = Prisma.UserGetPayload<{
     Universes: true;
     UniversesCreated: true;
     Characters: true;
-    Animals: true;
+    Pets: true;
   };
 }>;
 

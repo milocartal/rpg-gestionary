@@ -140,4 +140,40 @@ export const universeRouter = createTRPCRouter({
       });
       return univers;
     }),
+
+  inviteUser: protectedProcedure
+    .input(
+      z.object({
+        universeId: z.string(),
+        userEmail: z.string().email(),
+        role: z.nativeEnum(UniversRolesEnum),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      if (!canInUniverse(ctx.session).updateOwn("univers").granted) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Vous n'avez pas la permission d'inviter un utilisateur",
+        });
+      }
+
+      const user = await db.user.findUnique({
+        where: { email: input.userEmail },
+      });
+
+      if (!user) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Utilisateur non trouvé",
+        });
+      }
+
+      await db.userToUniverse.create({
+        data: {
+          userId: user.id,
+          universeId: input.universeId,
+          role: input.role,
+        },
+      });
+    }),
 });

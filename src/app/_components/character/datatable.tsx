@@ -11,7 +11,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { FilePen, Trash2 } from "lucide-react";
+import { Eye, FilePen, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import * as React from "react";
 import { toast } from "sonner";
@@ -29,17 +29,18 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "~/app/_components/ui/tooltip";
-import { type UserWithAll } from "~/lib/models/User";
 import { api } from "~/trpc/react";
 import { withSessionProvider } from "~/utils/withSessionProvider";
 import { Checkbox } from "~/app/_components/ui/checkbox";
 
-interface UserDataTableProps {
-  data: UserWithAll[];
+import type { CharacterWithAll } from "~/lib/models/Character";
+
+interface CharacterDataTableProps {
+  data: CharacterWithAll[];
   children?: React.ReactNode;
 }
 
-const columns: ColumnDef<UserWithAll>[] = [
+const columns: ColumnDef<CharacterWithAll>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -65,73 +66,101 @@ const columns: ColumnDef<UserWithAll>[] = [
     enableHiding: false,
   },
   {
-    accessorFn: (row) => row.name,
+    accessorFn: (row) => {
+      return `${row.firstName} ${row.name}`;
+    },
     header: "Nom",
     cell: (data) => {
-      return <div className="text-xs">{data.getValue() as string}</div>;
+      return (
+        <div className="text-xs capitalize">{data.getValue() as string}</div>
+      );
     },
+    enableHiding: false,
   },
   {
-    accessorFn: (row) => row.email,
-    header: "Email",
+    accessorFn: (row) => row.age,
+    id: "Âge",
+    header: ({ column }) => {
+      return <DataTableColumnHeader column={column} title="Âge (ans)" />;
+    },
+    enableMultiSort: true,
     cell: (data) => {
-      return <div className="text-xs">{data.getValue() as string}</div>;
+      return (
+        <div className="text-xs capitalize">{data.getValue() as number}</div>
+      );
     },
   },
   {
-    accessorFn: (originalRow) => {
-      return originalRow.UniversesCreated.length;
-    },
-    id: "Univers crées",
+    accessorFn: (row) => row.height,
+    id: "Taille",
     header: ({ column }) => {
-      return <DataTableColumnHeader column={column} title="Univers crées" />;
-    },
-    cell: (info) => {
-      const nb = info.getValue() as number;
-      return <div className="text-xs">{nb}</div>;
+      return <DataTableColumnHeader column={column} title="Taille (m)" />;
     },
     enableMultiSort: true,
+    cell: (data) => {
+      return (
+        <div className="text-xs capitalize">{data.getValue() as number}</div>
+      );
+    },
   },
   {
-    accessorFn: (originalRow) => {
-      return originalRow.Pets.length;
-    },
-    id: "Familiers",
+    accessorFn: (row) => row.weight,
+    id: "Masse",
     header: ({ column }) => {
-      return <DataTableColumnHeader column={column} title="Familiers" />;
-    },
-    cell: (info) => {
-      const nb = info.getValue() as number;
-      return <div className="text-xs">{nb}</div>;
+      return <DataTableColumnHeader column={column} title="Masse (kg)" />;
     },
     enableMultiSort: true,
+    cell: (data) => {
+      return (
+        <div className="text-xs capitalize">{data.getValue() as number}</div>
+      );
+    },
   },
   {
-    accessorFn: (originalRow) => {
-      return originalRow.Characters.length;
-    },
-    id: "Personnages",
+    accessorFn: (row) => row.Modifiers.length,
+    id: "Bonus",
     header: ({ column }) => {
-      return <DataTableColumnHeader column={column} title="Personnages" />;
-    },
-    cell: (info) => {
-      const nb = info.getValue() as number;
-      return <div className="text-xs">{nb}</div>;
+      return <DataTableColumnHeader column={column} title="Bonus" />;
     },
     enableMultiSort: true,
+    cell: (data) => {
+      return (
+        <div className="text-xs capitalize">{data.getValue() as number}</div>
+      );
+    },
+  },
+  {
+    accessorFn: (row) => row.createdAt,
+    id: "createdAt",
+    header: ({ column }) => {
+      return <DataTableColumnHeader column={column} title="Créé le" />;
+    },
+    cell: (data) => {
+      const date = new Date(data.getValue() as string);
+      return (
+        <div className="text-xs">
+          {date.toLocaleDateString("fr-FR", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          })}
+        </div>
+      );
+    },
+    enableHiding: false,
   },
   {
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
-      const UserDataTableCell = () => {
+      const CharacterDataTableCell = () => {
         const router = useRouter();
-        const user = row.original;
+        const population = row.original;
 
-        const deleteUser = api.user.delete.useMutation({
+        const deleteCharacter = api.population.delete.useMutation({
           onSuccess: () => {
             router.refresh();
-            toast.success("Utilisateur supprimé");
+            toast.success("Character supprimé");
           },
           onError: () => {
             toast.error("Une erreur est survenue");
@@ -140,9 +169,9 @@ const columns: ColumnDef<UserWithAll>[] = [
 
         async function handleDelete() {
           try {
-            await deleteUser.mutateAsync({ id: user.id });
+            await deleteCharacter.mutateAsync({ id: population.id });
           } catch (error) {
-            console.error("Delete user error:", error);
+            console.error("Delete population error:", error);
             toast.error(
               error instanceof Error
                 ? error.message
@@ -156,7 +185,21 @@ const columns: ColumnDef<UserWithAll>[] = [
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
-                  href={`/admin/users/${user.id}`}
+                  href={`/populations/${population.slug}`}
+                  variant={"icon"}
+                  size={"icon"}
+                  className="text-succes p-0"
+                >
+                  <Eye className="h-4 w-4" />
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent className="text-primary">Aperçu</TooltipContent>
+            </Tooltip>
+
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  href={`/populations/${population.slug}/edit`}
                   variant={"icon"}
                   size={"icon"}
                   className="text-primary p-0"
@@ -164,7 +207,7 @@ const columns: ColumnDef<UserWithAll>[] = [
                   <FilePen className="h-4 w-4" />
                 </Link>
               </TooltipTrigger>
-              <TooltipContent>Modifier</TooltipContent>
+              <TooltipContent className="text-primary">Modifier</TooltipContent>
             </Tooltip>
 
             <Tooltip>
@@ -186,12 +229,15 @@ const columns: ColumnDef<UserWithAll>[] = [
         );
       };
 
-      return <UserDataTableCell />;
+      return <CharacterDataTableCell />;
     },
   },
 ];
 
-const DataTableUserOne: React.FC<UserDataTableProps> = ({ data, children }) => {
+const DataTableCharacterOne: React.FC<CharacterDataTableProps> = ({
+  data,
+  children,
+}) => {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -224,21 +270,16 @@ const DataTableUserOne: React.FC<UserDataTableProps> = ({ data, children }) => {
 
   /* const selectedRows = table.getFilteredSelectedRowModel().rows.map((row) => {
     return row.original.id;
-  });
- */
+  }); */
+
   return (
     <DataTableBase table={table} columns={columns} selection>
       {children}
       <Input
-        placeholder="Chercher un utilisateur..."
-        value={
-          (table.getColumn("Nom")?.getFilterValue() as string) ??
-          (table.getColumn("Email")?.getFilterValue() as string) ??
-          ""
-        }
+        placeholder="Chercher un personnage..."
+        value={(table.getColumn("Nom")?.getFilterValue() as string) ?? ""}
         onChange={(event) =>
-          table.getColumn("Nom")?.setFilterValue(event.target.value) &&
-          table.getColumn("Email")?.setFilterValue(event.target.value)
+          table.getColumn("Nom")?.setFilterValue(event.target.value)
         }
         className="max-w-sm"
       />
@@ -246,4 +287,4 @@ const DataTableUserOne: React.FC<UserDataTableProps> = ({ data, children }) => {
   );
 };
 
-export const DataTableUser = withSessionProvider(DataTableUserOne);
+export const DataTableCharacter = withSessionProvider(DataTableCharacterOne);

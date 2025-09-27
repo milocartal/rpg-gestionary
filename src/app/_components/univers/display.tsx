@@ -16,7 +16,7 @@ interface UniversResumeProps {
   univers: Universe;
   species: number;
   populations: number;
-  animals: number;
+  pets: number;
   characters: number;
   stories: number;
   readonly session: Session | null;
@@ -26,7 +26,7 @@ const UniversResumeOne: React.FC<UniversResumeProps> = ({
   univers,
   species,
   populations,
-  animals,
+  pets,
   characters,
   stories,
   session,
@@ -71,7 +71,7 @@ const UniversResumeOne: React.FC<UniversResumeProps> = ({
             <Separator orientation="vertical" className="hidden h-6 lg:block" />
             <p>{stories} histoires</p>
             <Separator orientation="vertical" className="hidden h-6 lg:block" />
-            <p>{animals} animaux</p>
+            <p>{pets} familiers</p>
             <Separator orientation="vertical" className="hidden h-6 lg:block" />
             <p>{characters} personnages</p>
           </div>

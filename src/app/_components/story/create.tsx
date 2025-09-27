@@ -147,7 +147,7 @@ export const CreateStory: React.FC<{ universeId: string }> = ({
           disabled={createStory.isPending}
           className="mt-4 self-end"
         >
-          {createStory.isPending ? "Création..." : "Créer l'univers"}
+          {createStory.isPending ? "Création..." : "Créer l'histoire"}
         </Button>
       </form>
     </Form>
