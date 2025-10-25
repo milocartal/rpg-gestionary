@@ -47,7 +47,7 @@ export const UpdateClass: React.FC<UpdateClassProps> = ({
       id: classObject.id,
       universeId: classObject.universeId,
       name: classObject.name,
-      description: classObject.description,
+      description: classObject.summary ?? "",
     },
   });
 

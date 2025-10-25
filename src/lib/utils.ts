@@ -11,7 +11,7 @@ export function cn(...inputs: ClassValue[]) {
  *
  * Recherche l'utilisateur dans la liste des utilisateurs de l'univers fourni via son ID,
  * et détermine son rôle en fonction de la chaîne de rôle. La priorité des rôles est la suivante :
- * "maitre-du-jeu", "gestionnaire", "roliste", "spectateur".
+ * "game_master", "gestionnaire", "role_player", "spectator".
  * Si l'utilisateur n'est pas trouvé ou n'a aucun rôle correspondant, retourne "anonyme".
  *
  * @param univers - L'objet univers contenant les utilisateurs et leurs rôles.
@@ -27,10 +27,10 @@ export function formatUniverseRole(
   let role = "anonyme";
   if (!user) return role;
 
-  if (user.role.includes("spectateur")) role = "spectateur";
-  if (user.role.includes("roliste")) role = "roliste";
-  if (user.role.includes("gestionnaire")) role = "gestionnaire";
-  if (user.role.includes("maitre-du-jeu")) role = "maitre-du-jeu";
+  if (user.role.includes("spectator")) role = "spectator";
+  if (user.role.includes("role_player")) role = "role_player";
+  if (user.role.includes("gestionnaire")) role = "game_master";
+  if (user.role.includes("game_master")) role = "game_master";
 
   return role;
 }
@@ -42,10 +42,10 @@ export function formatUniverseRole(
  * @param userId - L'identifiant de l'utilisateur dont le rôle doit être déterminé.
  * @returns Une chaîne représentant la classe Tailwind CSS pour la couleur de bordure selon le rôle de l'utilisateur.
  *
- * - "maitre-du-jeu" : bordure rouge
+ * - "game_master" : bordure rouge
  * - "gestionnaire" : bordure orange
- * - "roliste" : bordure verte
- * - "spectateur" : bordure bleue
+ * - "role_player" : bordure verte
+ * - "spectator" : bordure bleue
  * - tout autre rôle : bordure grise
  */
 export function SwitchBorderColor(
@@ -55,13 +55,13 @@ export function SwitchBorderColor(
   const role = formatUniverseRole(univers, userId);
 
   switch (role) {
-    case "maitre-du-jeu":
+    case "game_master":
       return "border-[#FC6254]";
     case "gestionnaire":
       return "border-[#FF7C50]";
-    case "roliste":
+    case "role_player":
       return "border-[#5EA880]";
-    case "spectateur":
+    case "spectator":
       return "border-[#5E80A8]";
     default:
       return "border-[#B4B4B4]";

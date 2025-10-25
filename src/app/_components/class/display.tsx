@@ -38,9 +38,7 @@ const ClassResumeOne: React.FC<ClassResumeProps> = ({ classData, session }) => {
           <h3 className="text-text mb-1 w-full text-center text-xl font-semibold lg:text-start">
             {classData.name}
           </h3>
-          <p className="text-muted-foreground text-sm">
-            {classData.description}
-          </p>
+          <p className="text-muted-foreground text-sm">{classData.summary}</p>
         </aside>
       </div>
     </section>

@@ -53,7 +53,7 @@ const universesDefaultLinks: GroupedNavLink[] = [
   },
   {
     groupTitle: "Mes personnages",
-    defaultOpen: false,
+    defaultOpen: true,
     links: [
       {
         title: "Personnages",
@@ -61,62 +61,8 @@ const universesDefaultLinks: GroupedNavLink[] = [
         icon: ReceiptText,
       },
       {
-        title: "Compagnons",
-        href: "/companions",
-        icon: Origami,
-      },
-    ],
-  },
-];
-
-const universesManagerLinks: GroupedNavLink[] = [
-  {
-    groupTitle: "Détails de l'univers",
-    defaultOpen: true,
-    links: [
-      {
-        title: "Contexte",
-        href: "/context",
-        icon: ScrollText,
-      },
-      {
-        title: "Histoires",
-        href: "/stories",
-        icon: BookMarked,
-      },
-      {
-        title: "Populations",
-        href: "/populations",
-        icon: VenetianMask,
-      },
-      {
-        title: "Espèces",
-        href: "/species",
-        icon: PawPrint,
-      },
-      {
-        title: "Attributs",
-        href: "/attributes",
-        icon: Binary,
-      },
-      {
-        title: "Compétences",
-        href: "/skills",
-        icon: Blocks,
-      },
-      {
-        title: "Classes",
-        href: "/classes",
-        icon: Landmark,
-      },
-      {
-        title: "Genres",
-        href: "/genders",
-        icon: Transgender,
-      },
-      {
-        title: "Objects",
-        href: "/items",
+        title: "Familiers",
+        href: "/pets",
         icon: Origami,
       },
     ],
@@ -173,21 +119,36 @@ const universesMasterLinks: GroupedNavLink[] = [
         href: "/items",
         icon: Origami,
       },
+      {
+        title: "Personnages",
+        href: "/characters",
+        icon: ReceiptText,
+      },
+      {
+        title: "Familiers",
+        href: "/pets",
+        icon: Origami,
+      },
     ],
   },
   {
     groupTitle: "Administration de l'univers",
-    defaultOpen: false,
+    defaultOpen: true,
     links: [
       {
-        title: "Utilisateurs",
-        href: "/users",
+        title: "Membres",
+        href: "/members",
         icon: UsersRound,
       },
       {
-        title: "Evenements",
+        title: "Événements",
         href: "/events",
         icon: Newspaper,
+      },
+      {
+        title: "PNJs",
+        href: "/npcs",
+        icon: ReceiptText,
       },
     ],
   },
@@ -195,7 +156,7 @@ const universesMasterLinks: GroupedNavLink[] = [
 
 const adminLinks: GroupedNavLink = {
   groupTitle: "Administration",
-  defaultOpen: false,
+  defaultOpen: true,
   links: [
     {
       title: "Utilisateurs",
@@ -245,10 +206,4 @@ const legalsLinks: GroupedNavLink = {
   ],
 };
 
-export {
-  universesDefaultLinks,
-  universesManagerLinks,
-  universesMasterLinks,
-  adminLinks,
-  legalsLinks,
-};
+export { universesDefaultLinks, universesMasterLinks, adminLinks, legalsLinks };

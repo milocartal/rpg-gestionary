@@ -5,7 +5,15 @@ export type UserWithAll = Prisma.UserGetPayload<{
   include: {
     Universes: true;
     UniversesCreated: true;
-    Characters: true;
+    CharactersOwned: true;
+    Pets: true;
+  };
+}>;
+
+export type UserInUniverse = Prisma.UserGetPayload<{
+  include: {
+    Universes: true;
+    CharactersOwned: true;
     Pets: true;
   };
 }>;

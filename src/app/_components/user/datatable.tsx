@@ -108,7 +108,7 @@ const columns: ColumnDef<UserWithAll>[] = [
   },
   {
     accessorFn: (originalRow) => {
-      return originalRow.Characters.length;
+      return originalRow.CharactersOwned.length;
     },
     id: "Personnages",
     header: ({ column }) => {

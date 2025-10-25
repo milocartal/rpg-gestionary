@@ -18,7 +18,7 @@ export default async function Users() {
   const users = await db.user.findMany({
     include: {
       Pets: true,
-      Characters: true,
+      CharactersOwned: true,
       Universes: true,
       UniversesCreated: true,
     },

@@ -53,11 +53,11 @@ export const classRouter = createTRPCRouter({
       for (let i = 0; i < MAX; i++) {
         const candidate = i === 0 ? baseSlug : `${baseSlug}-${i + 1}`;
         try {
-          return await db.baseAttribute.create({
+          return await db.class.create({
             data: {
               Universe: { connect: { id: input.universeId } },
               name: input.name,
-              description: input.description,
+              summary: input.description,
               slug: candidate,
             },
           });
@@ -98,7 +98,7 @@ export const classRouter = createTRPCRouter({
           where: { id: input.id },
           data: {
             name: input.name,
-            description: input.description,
+            summary: input.description,
             universeId: input.universeId,
           },
         });
