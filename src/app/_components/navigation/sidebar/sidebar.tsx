@@ -32,7 +32,6 @@ import {
   adminLinks,
   legalsLinks,
   universesDefaultLinks,
-  universesManagerLinks,
   universesMasterLinks,
 } from "./links";
 
@@ -57,11 +56,9 @@ const NavbarOne: React.FC<NavbarProps> = ({ session, univers }) => {
 
   let links: GroupedNavLink[] = [];
 
-  if (canInUniverse(session).readAny("maitre-du-jeu").granted) {
+  if (canInUniverse(session).readAny("game_master").granted) {
     links = universesMasterLinks;
-  } else if (canInUniverse(session).readAny("gestionnaire").granted) {
-    links = universesManagerLinks;
-  } else if (canInUniverse(session).readAny("default").granted) {
+  } else if (canInUniverse(session).readAny("role_player").granted) {
     links = universesDefaultLinks;
   }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import type { BaseAttribute, Gender, Story } from "@prisma/client";
+import type { BaseAttribute, Class, Gender, Story } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { Fragment, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -55,6 +55,7 @@ interface CreateCharacterProps {
   populations: PopulationWithDetailedModifiers[];
   stories: Story[];
   genders: Gender[];
+  classes: Class[];
 }
 
 export const CreateCharacter: React.FC<CreateCharacterProps> = ({

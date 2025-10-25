@@ -12,7 +12,7 @@ import {
 } from "~/server/api/trpc";
 import { db } from "~/server/db";
 
-import { can } from "~/utils/accesscontrol";
+import { can, canInUniverse } from "~/utils/accesscontrol";
 
 import { getPresignedUrl } from "~/utils/minio";
 import { issueToken } from "~/server/auth/password-token";
@@ -219,6 +219,25 @@ export const userRouter = createTRPCRouter({
       await sendMail(emailDetail);
 
       return user;
+    }),
+
+  verify: protectedProcedure
+    .input(z.object({ email: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      if (!canInUniverse(ctx.session).createAny("invite").granted) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Unsufficient privileges",
+          cause: "User cannot do this action based his current role",
+        });
+      }
+
+      const user = await db.user.findUnique({
+        where: { email: input.email },
+      });
+      if (!user) {
+        return { success: false, user: null };
+      } else return { success: true, user };
     }),
 
   getSession: protectedProcedure.query(({ ctx }) => {

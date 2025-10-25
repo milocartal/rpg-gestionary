@@ -97,9 +97,9 @@ export function SidebarUserNav({ session }: { session: Session | null }) {
                 <BadgeCheck />
                 Mon compte
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => router.push("/billing")}>
+              <DropdownMenuItem onClick={() => router.push("/dashboard")}>
                 <CreditCard />
-                Facturation
+                Tableau de bord
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => router.push("/notifications")}>
                 <Bell />

@@ -58,12 +58,13 @@ model User {
     sessions      Session[]
 
     // Relations
-    Pets             Pet[]
-    Characters       Character[]
-    Stories          Story[]
-    Universes        UserToUniverse[]
-    UniversesCreated Universe[]       @relation("CreateBy")
-    PasswordTokens   PasswordToken[]
+    Pets                 Pet[]
+    CharactersOwned      Character[]      @relation("CharacterOwner")
+    CharactersControlled Character[]      @relation("CharacterController")
+    Stories              Story[]
+    Universes            UserToUniverse[]
+    UniversesCreated     Universe[]       @relation("CreateBy")
+    PasswordTokens       PasswordToken[]
 
     ReviewedPets       Pet[]       @relation("ReviewerPet")
     ReviewedCharacters Character[] @relation("ReviewerCharacter")
@@ -350,6 +351,9 @@ model Character {
     appearance  String //@db.LongText
     personality String //@db.LongText
 
+    // Discriminant
+    kind CharacterKind @default(PC) // PC | NPC | COMPANION | SUMMON
+
     //Skills
     Attributes Attribute[] @relation("CharacterAttribute")
     Skills     Skill[]     @relation("CharacterSkills")
@@ -363,11 +367,15 @@ model Character {
     populationId String
     Population   Population @relation(fields: [populationId], references: [id])
 
-    userId String
-    User   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+    // Propriété/contrôle
+    ownerId String? // joueur “propriétaire” (null => souvent NPC)
+    Owner   User?   @relation("CharacterOwner", fields: [ownerId], references: [id])
 
-    storyId String
-    Story   Story  @relation(fields: [storyId], references: [id], onDelete: Cascade)
+    controlledById String? // joueur qui le pilote ponctuellement (sidekick, PNJ confié)
+    Controller     User?   @relation("CharacterController", fields: [controlledById], references: [id])
+
+    storyId String?
+    Story   Story?  @relation(fields: [storyId], references: [id], onDelete: Cascade)
 
     isValid      Boolean   @default(false) // Indique si le personnage a été validé par le MJ
     reviewedAt   DateTime?
@@ -378,12 +386,43 @@ model Character {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
+    // Spécifique PNJ (facultatif, mais pratique)
+    cr   Float? // niveau de danger/CR
+    role String? // “marchand”, “capitaine”, “ennemi”, ...
+    //factionId String?
+    //Faction   Faction? @relation(fields: [factionId], references: [id], onDelete: SetNull)
+
+    // Gabarits (templates) pour instancier des PNJ récurrents
+    isTemplate Boolean     @default(false)
+    templateId String?
+    Template   Character?  @relation("NpcTemplate", fields: [templateId], references: [id])
+    Instances  Character[] @relation("NpcTemplate")
+
+    // Visibilité
+    visibility Visibility @default(PRIVATE)
+
     @@unique([storyId, slug])
-    @@index([userId])
+    @@index([kind])
+    @@index([ownerId])
+    @@index([controlledById])
     @@index([storyId])
     @@index([populationId])
     @@index([genderId])
     @@index([slug])
+    @@index([ownerId, visibility])
+}
+
+enum CharacterKind {
+    PC
+    NPC
+    COMPANION
+    SUMMON
+}
+
+enum Visibility {
+    PRIVATE
+    SHARED
+    PUBLIC
 }
 
 model Gender {
@@ -406,34 +445,104 @@ model Gender {
 }
 
 model Class {
-    id          String @id @default(cuid())
-    name        String
-    slug        String @unique
-    description String //@db.LongText
-
-    Characters CharacterClass[]
+    id        String   @id @default(cuid())
+    name      String
+    slug      String   @unique
+    summary   String? // courte description
+    hitDie    Int? // ex: 8 pour d8
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
     universeId String
     Universe   Universe @relation(fields: [universeId], references: [id], onDelete: Cascade)
 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    @@unique([universeId, slug])
-    @@index([universeId])
-    @@index([slug])
+    Subclasses Subclass[]
+    Features   ClassFeature[]
+    Characters CharacterClass[]
 }
 
+model Subclass {
+    id      String @id @default(cuid())
+    classId String
+    Class   Class  @relation(fields: [classId], references: [id], onDelete: Cascade)
+
+    name        String
+    slug        String  @unique
+    summary     String?
+    unlockLevel Int     @default(3) // niveau d'accès à la sous-classe
+
+    Features   SubclassFeature[]
+    Characters CharacterClass[]
+}
+
+// Aptitudes de classe, éventuellement par niveau
+model ClassFeature {
+    id      String @id @default(cuid())
+    classId String
+    Class   Class  @relation(fields: [classId], references: [id], onDelete: Cascade)
+
+    name        String
+    slug        String @unique
+    description String
+    level       Int // niveau d’obtention
+    order       Int    @default(0) // tri au sein d’un même niveau
+
+    // optionnel: contraintes
+    Prerequisites FeaturePrerequisite[]
+}
+
+model SubclassFeature {
+    id         String   @id @default(cuid())
+    subclassId String
+    Subclass   Subclass @relation(fields: [subclassId], references: [id], onDelete: Cascade)
+
+    name        String
+    slug        String @unique
+    description String
+    level       Int
+    order       Int    @default(0)
+
+    Prerequisites FeaturePrerequisite[]
+}
+
+// Prérequis génériques et extensibles
+model FeaturePrerequisite {
+    id String @id @default(cuid())
+
+    // polymorphisme simple via clés optionnelles
+    classFeatureId String?
+    ClassFeature   ClassFeature? @relation(fields: [classFeatureId], references: [id], onDelete: Cascade)
+
+    subclassFeatureId String?
+    SubclassFeature   SubclassFeature? @relation(fields: [subclassFeatureId], references: [id], onDelete: Cascade)
+
+    // exemples: score, compétence, niveau mini, autre feature…
+    kind  PrereqKind
+    key   String // ex: "level" | "ability:STR" | "skill:athletics" | "feature:rage"
+    value String // ex: "5" ou "true" ou slug d'une feature
+}
+
+enum PrereqKind {
+    LEVEL
+    ABILITY_SCORE
+    SKILL
+    FEATURE
+}
+
+// Liaison optionnelle pour multiclasse (si tu l'autorises)
 model CharacterClass {
-    id          String    @id @default(cuid())
+    id          String  @id @default(cuid())
     characterId String
-    Character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
     classId     String
-    Class       Class     @relation(fields: [classId], references: [id], onDelete: Cascade)
+    subclassId  String?
+    level       Int     @default(1)
 
-    level Int
+    // si tu as déjà un model Character dans ton projet
+    Character Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+    Class     Class     @relation(fields: [classId], references: [id], onDelete: Cascade)
+    Subclass  Subclass? @relation(fields: [subclassId], references: [id])
 
-    @@unique([characterId, classId])
+    @@unique([characterId, classId]) // un perso ne prend qu’une fois une classe donnée
 }
 
 model BaseAttribute {
@@ -460,7 +569,7 @@ model Attribute {
     id              String        @id @default(cuid())
     baseAttributeId String
     BaseAttribute   BaseAttribute @relation(fields: [baseAttributeId], references: [id])
-    value           Int
+    value           Float
 
     characterId String?
     Character   Character? @relation("CharacterAttribute", fields: [characterId], references: [id], onDelete: Cascade)
@@ -503,7 +612,7 @@ model Skill {
     id          String    @id @default(cuid())
     baseSkillId String
     BaseSkill   BaseSkill @relation(fields: [baseSkillId], references: [id])
-    value       Int
+    value       Float
 
     characterId String?
     Character   Character? @relation("CharacterSkills", fields: [characterId], references: [id], onDelete: Cascade)
@@ -609,13 +718,15 @@ model ItemInstance {
     petId String?
     Pet   Pet?    @relation(fields: [petId], references: [id], onDelete: Cascade)
 
-    quantity Int     @default(1)
-    equipped Boolean @default(false)
+    quantity Int            @default(1)
+    slot     EquipmentSlot?
 
     notes String? //@db.LongText
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+
+    @@unique([characterId, slot], map: "uniq_equipped_slot") // si tu forces 1 item/slot
 }
 
 enum ItemType {
@@ -626,6 +737,18 @@ enum ItemType {
     MISC
     FOOD
     POTION
+}
+
+enum EquipmentSlot {
+    HEAD
+    CHEST
+    MAIN_HAND
+    OFF_HAND
+    RING
+    AMULET
+    BELT
+    FEET
+    BACK
 }
 
 //Unity part

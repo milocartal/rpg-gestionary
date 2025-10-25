@@ -77,7 +77,7 @@ export const PublicHeader: React.FC<PublicHeaderProps> = ({
           {session ? (
             <UserNav />
           ) : (
-            <Link href="/login" variant="clearLink">
+            <Link href="/login" variant="default">
               Se connecter
             </Link>
           )}

@@ -72,7 +72,7 @@ export const characterRouter = createTRPCRouter({
           populationId: input.populationId,
           storyId: input.storyId,
           slug,
-          userId: user.id,
+          ownerId: user.id,
           Attributes: {
             createMany: {
               data: input.attributes.map((attribute) => ({

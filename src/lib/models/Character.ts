@@ -9,6 +9,6 @@ export type CharacterWithAll = Prisma.CharacterGetPayload<{
     Population: true;
     Story: true;
     Pets: true;
-    User: true;
+    Owner: true;
   };
 }>;

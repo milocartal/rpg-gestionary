@@ -5,7 +5,12 @@ import { toSlug } from "~/lib/utils";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { db } from "~/server/db";
-import { can, canInUniverse, UniversRolesEnum } from "~/utils/accesscontrol";
+import {
+  can,
+  canInUniverse,
+  UniversRolesEnum as ACUniversRolesEnum,
+} from "~/utils/accesscontrol";
+import { UniverseRoleEnum } from "~/lib/models/Univers";
 
 export const universeRouter = createTRPCRouter({
   getAllFromSession: protectedProcedure.query(async ({ ctx }) => {
@@ -67,7 +72,7 @@ export const universeRouter = createTRPCRouter({
             data: {
               userId: ctx.session.user.id,
               universeId: univers.id,
-              role: UniversRolesEnum.MANAGER,
+              role: ACUniversRolesEnum.GAME_MASTER,
             },
           });
           return univers;
@@ -146,7 +151,7 @@ export const universeRouter = createTRPCRouter({
       z.object({
         universeId: z.string(),
         userEmail: z.string().email(),
-        role: z.nativeEnum(UniversRolesEnum),
+        role: UniverseRoleEnum,
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -172,6 +177,53 @@ export const universeRouter = createTRPCRouter({
         data: {
           userId: user.id,
           universeId: input.universeId,
+          role: input.role,
+        },
+      });
+    }),
+
+  updateUser: protectedProcedure
+    .input(
+      z.object({
+        universeId: z.string(),
+        userId: z.string(),
+        name: z.string(),
+        role: UniverseRoleEnum,
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      if (!canInUniverse(ctx.session).updateOwn("univers").granted) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message:
+            "Vous n'avez pas la permission de modifier le rôle d'un utilisateur",
+        });
+      }
+
+      const userToUniverse = await db.userToUniverse.findUnique({
+        where: {
+          userId_universeId: {
+            userId: input.userId,
+            universeId: input.universeId,
+          },
+        },
+      });
+
+      if (!userToUniverse) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Utilisateur dans l'univers non trouvé",
+        });
+      }
+
+      await db.userToUniverse.update({
+        where: {
+          userId_universeId: {
+            userId: input.userId,
+            universeId: input.universeId,
+          },
+        },
+        data: {
           role: input.role,
         },
       });
